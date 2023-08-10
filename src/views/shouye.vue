@@ -68,6 +68,12 @@
       <div class="center2_right">7日处置量趋势
       </div>
     </div>
+    <div class="center3">
+      <div class="center3_one">处置涉诈类型分析
+      </div>
+    </div>
+    <div class="myfooter">
+    </div>
 
     <el-dialog
       title="修改密码"
@@ -558,11 +564,27 @@ export default {
 .center2 {
   display: flex;
   justify-content: space-between;
+  margin: 0 50px;
 }
 .center2_left,.center2_center,.center2_right{
-  height: 100px;
-  margin: 10px;
-  background-color: pink !important;
+  font-size: 30px;
+  height: 320px; // width/height=1.58
+  width: 500px;
+  margin: 20px;
+  background: url(../assets/img/newbg/kuangbg.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
+.center3{
+  margin: 0 69px;
+}
+.center3_one{
+  font-size: 30px;
+  height: 356px;
+  width: 100%;
+  background: url(../assets/img/newbg/kuangbg2.png);
+  background-size: cover;
+  background-repeat: no-repeat;
 }
 .center1 {
   width: 100%;
@@ -588,7 +610,7 @@ export default {
 
 .nav {
   width: 1027px;
-  height: 6%;
+  height: 4%;
   margin: 0 auto;
   // border: 1px solid red;
   // background: url('../assets/newimg/newhome/形状 6.png') no-repeat;
@@ -651,7 +673,15 @@ export default {
   //  text-shadow: 0 0 20px rgba(189, 207, 228, 0.5);
 }
 
-
+.myfooter {
+  position:fixed;
+  bottom: 8px;
+  height: 83px;
+  width: 100%;
+  background: url(../assets/img/newbg/bottombg.png);
+  background-size: cover;
+  background-repeat: no-repeat;
+}
 .fanhui {
   position: absolute;
   left: 0.5%;

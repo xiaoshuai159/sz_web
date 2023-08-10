@@ -13,7 +13,7 @@
 
     <div class="dp_top">
       <!-- 预留 -->
-      <div class="logo">深圳市反诈技术支持平台—{{ namenav }}</div>
+      <div class="logo">深圳市反诈技术支撑平台—{{ namenav }}</div>
       <div class="nav" v-show="$route.path==='/findUser'||$route.path==='/findRole'||$route.path==='/dept'">
         
         <el-button

@@ -4,7 +4,7 @@
       <!-- 头部 -->
       <div class="top1">
         <div class="top1_title">
-          <div class="title">深圳市反诈技术支持平台</div>
+          <div class="title">深圳市反诈技术支撑平台</div>
         </div>
         <!-- 头部_光条-->
         <div class="top1_line">

@@ -61,19 +61,70 @@
       </div>
     </div>
     <div class="center2">
-      <div class="center2_left">处置统计
+      <div class="center2_left">
+       <div class="gsh1">&nbsp;·处置统计</div>
+       <br>
+       <div class="center2_left_test1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总处置数量</div>
+       <img src="../assets/img/weixin4.png" class="picture_test1">
+       <img src="../assets/img/weixin4.png" class="picture_test2">
+       <img src="../assets/img/weixin4.png" class="picture_test3">
+       <img src="../assets/img/weixin4.png" class="picture_test4">
+       <img src="../assets/img/weixin4.png" class="picture_test5">
+       <img src="../assets/img/weixin4.png" class="picture_test6">
+       <img src="../assets/img/weixin4.png" class="picture_test7">
+       <div class="center2_left_test2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;昨日处置数量</div>
+       <img src="../assets/img/weixin2.png" class="picture_test8">
+       <img src="../assets/img/weixin2.png" class="picture_test9">
+       <img src="../assets/img/weixin2.png" class="picture_test10">
+       <img src="../assets/img/weixin2.png" class="picture_test11">
+       <div class="center2_left_test3">日环比12%</div>
+       <img src="../assets/img/weixin3.png" class="picture_test12">
       </div>
-      <div class="center2_center">7日处置高危类型TOP5
+      <div class="center2_center">
+        <div class="gsh2">·7日处置高危类型TOP5</div>
       </div>
-      <div class="center2_right">7日处置量趋势
+      <div class="center2_right">
+        <div class="gsh3">·7日处置量趋势</div>
       </div>
     </div>
+
     <div class="center3">
-      <div class="center3_one">处置涉诈类型分析
+      <div class="center3_one">
+        <div class="gsh4">&nbsp;·处置涉诈类型分析</div>
+        <div class="pos pos1">
+          <input type="checkbox" class="box box1">全部类型
+        </div>
+        <div class="pos pos2">
+          <input type="checkbox" class="box box2">虚假贷款
+        </div>
+        <div class="pos pos3">
+          <input type="checkbox" class="box box3">虚假电商
+        </div>
+        <div class="pos pos4">
+          <input type="checkbox" class="box box4">虚假理财
+        </div>
+        <div class="pos pos5">
+          <input type="checkbox" class="box box5">杀猪盘赌
+        </div>
+        <div class="pos pos6">
+          <input type="checkbox" class="box box6">下载链接
+        </div>
+        <div class="pos pos7">
+          <input type="checkbox" class="box box7">冒充客服
+        </div>
+        <div class="pos pos8">
+          <input type="checkbox" class="box box8">刷单返利
+        </div>
+        <div class="pos pos9">
+          <input type="checkbox" class="box box9">网络游戏
+        </div>
+        <div class="pos pos10">
+          <input type="checkbox" class="box box10">网络婚恋
+        </div>
       </div>
     </div>
-    <div class="myfooter">
-    </div>
+
+    <div class="myfooter"></div>
 
     <el-dialog
       title="修改密码"
@@ -566,26 +617,151 @@ export default {
   justify-content: space-between;
   margin: 0 50px;
 }
+.gsh1{
+  margin-top: 20px;
+  font-size: 20px;
+}
+.gsh2{
+  margin-top: 20px;
+  margin-left: 20px;
+  font-size: 20px;
+}
+.gsh3{
+  margin-top: 20px;
+  margin-left: 20px;
+  font-size: 20px;
+}
+.gsh4{
+  margin-top: 20px;
+  margin-left: 20px;
+  font-size: 20px;
+}
 .center2_left,.center2_center,.center2_right{
   font-size: 30px;
-  height: 320px; // width/height=1.58
-  width: 500px;
-  margin: 20px;
+  color:#2fbcfc;
+  height: 360px; // width/height=1.58
+  width: 600px;
+  margin-top: 20px;
+  margin-bottom: 70px;
+  margin-left: 20px;
+  margin-right: 30px;
   background: url(../assets/img/newbg/kuangbg.png);
   background-size: cover;
   background-repeat: no-repeat;
+}
+
+.center2_left_test{
+  color: #00fff3;
+}
+.center2_left_test2{
+  color:darkorange;
+}
+.center2_left_test3{
+  display: inline;
+  margin-left: 20px;
+  color: #19c9d5;
+  vertical-align:super;
+  font-size:20px ;
+}
+.picture_test1{
+  width: 40px;
+  height: 40px;
+  margin-left: 80px;
+  margin-top: 10px;
+}
+.picture_test2{
+  width: 40px;
+  height: 40px;
+  margin-left: 13px;
+  margin-top: 10px;
+}
+.picture_test3{
+  width: 40px;
+  height: 40px;
+  margin-left: 13px;
+  margin-top: 10px;
+}
+.picture_test4{
+  width: 40px;
+  height: 40px;
+  margin-left: 13px;
+  margin-top: 10px;
+}
+.picture_test5{
+  width: 40px;
+  height: 40px;
+  margin-left: 13px;
+  margin-top: 10px;
+}
+.picture_test6{
+  width: 40px;
+  height: 40px;
+  margin-left: 13px;
+  margin-top: 10px;
+}
+.picture_test7{
+  width: 40px;
+  height: 40px;
+  margin-left: 13px;
+  margin-top: 10px;
+}
+.picture_test8{
+  width: 40px;
+  height: 40px;
+  margin-left: 80px;
+  margin-top: 10px;
+}
+.picture_test9{
+  width: 40px;
+  height: 40px;
+  margin-left: 13px;
+  margin-top: 10px;
+}
+.picture_test10{
+  width: 40px;
+  height: 40px;
+  margin-left: 13px;
+  margin-top: 10px;
+}
+.picture_test11{
+  width: 40px;
+  height: 40px;
+  margin-left: 13px;
+  margin-top: 10px;
+}
+.picture_test12{
+  vertical-align:text-top;
 }
 .center3{
   margin: 0 69px;
 }
 .center3_one{
-  font-size: 30px;
+  font-size: 17px;
   height: 356px;
   width: 100%;
   background: url(../assets/img/newbg/kuangbg2.png);
   background-size: cover;
   background-repeat: no-repeat;
+  color:#25c0fd;
+  overflow: hidden;
 }
+.pos{
+  margin-left: 90px;
+  font-size: 19px;
+  color:#fff;
+}
+.pos1{
+  color:aqua;
+  margin-top: 7px;
+}
+.box{
+  border-style: solid;
+  width: 21px;
+  height: 11px;
+  border: 2px solid blue;
+  outline: none;
+}
+
 .center1 {
   width: 100%;
   height: 91.3%;

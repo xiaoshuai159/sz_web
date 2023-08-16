@@ -62,64 +62,55 @@
     </div>
     <div class="center2">
       <div class="center2_left">
-       <div class="gsh1">&nbsp;·处置统计</div>
+       <div class="gsh3"><span>·</span> 处置统计</div>
        <br>
-       <div class="center2_left_test1">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;总处置数量</div>
-       <img src="../assets/img/weixin4.png" class="picture_test1">
-       <img src="../assets/img/weixin4.png" class="picture_test2">
-       <img src="../assets/img/weixin4.png" class="picture_test3">
-       <img src="../assets/img/weixin4.png" class="picture_test4">
-       <img src="../assets/img/weixin4.png" class="picture_test5">
-       <img src="../assets/img/weixin4.png" class="picture_test6">
-       <img src="../assets/img/weixin4.png" class="picture_test7">
-       <div class="center2_left_test2">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;昨日处置数量</div>
-       <img src="../assets/img/weixin2.png" class="picture_test8">
-       <img src="../assets/img/weixin2.png" class="picture_test9">
-       <img src="../assets/img/weixin2.png" class="picture_test10">
-       <img src="../assets/img/weixin2.png" class="picture_test11">
-       <div class="center2_left_test3">日环比12%</div>
-       <img src="../assets/img/weixin3.png" class="picture_test12">
+       <div class="center2_left_test1">总处置数量</div>
+       <div class="picture_test1"></div>
+       <div class="picture_test2"></div>
+       <div class="picture_test2"></div>
+       <div class="picture_test2"></div>
+       <div class="picture_test2"></div>
+       <div class="picture_test2"></div>
+       <div class="picture_test2"></div>
+       <div class="center2_left_test2">昨日处置数量</div>
+       <div class="picture_test3"></div>
+       <div class="picture_test4"></div>
+       <div class="picture_test4"></div>
+       <div class="picture_test4"></div>
+       <div class="center2_left_test3">日环比 12%</div>
+       <img class="picture_test12" src="../assets/img/newbg/weixin3.png">
       </div>
       <div class="center2_center">
-        <div class="gsh2">·7日处置高危类型TOP5</div>
+        <div class="gsh3"><span>·</span> 7日处置高危类型TOP5</div>
+        <div style="width: 100%;height: 80%;">
+          <div ref="mypieChart" style="width:100%; height: 100%;"></div>
+        </div>      
       </div>
       <div class="center2_right">
-        <div class="gsh3">·7日处置量趋势</div>
+        <div class="gsh3"><span>·</span> 7日处置量趋势</div>
+        <div style="width: 100%;height: 80%;">
+          <div ref="mybarChart" style="width:100%; height: 100%;"></div>
+        </div>
       </div>
     </div>
 
     <div class="center3">
       <div class="center3_one">
-        <div class="gsh4">&nbsp;·处置涉诈类型分析</div>
-        <div class="pos pos1">
-          <input type="checkbox" class="box box1">全部类型
+        <div class="gsh3"><span>·</span> 处置涉诈类型分析</div>
+        <div class="pos">
+          <input type="checkbox" class="box"><span class="pos1">全部类型</span><br>
+          <input type="checkbox" class="box">虚假贷款<br>
+          <input type="checkbox" class="box">虚假电商<br>
+          <input type="checkbox" class="box">虚假理财<br>
+          <input type="checkbox" class="box">杀猪盘赌<br>
+          <input type="checkbox" class="box">下载链接<br>
+          <input type="checkbox" class="box">冒充客服<br>
+          <input type="checkbox" class="box">刷单返利<br>
+          <input type="checkbox" class="box">网络游戏<br>
+          <input type="checkbox" class="box">网络婚恋
         </div>
-        <div class="pos pos2">
-          <input type="checkbox" class="box box2">虚假贷款
-        </div>
-        <div class="pos pos3">
-          <input type="checkbox" class="box box3">虚假电商
-        </div>
-        <div class="pos pos4">
-          <input type="checkbox" class="box box4">虚假理财
-        </div>
-        <div class="pos pos5">
-          <input type="checkbox" class="box box5">杀猪盘赌
-        </div>
-        <div class="pos pos6">
-          <input type="checkbox" class="box box6">下载链接
-        </div>
-        <div class="pos pos7">
-          <input type="checkbox" class="box box7">冒充客服
-        </div>
-        <div class="pos pos8">
-          <input type="checkbox" class="box box8">刷单返利
-        </div>
-        <div class="pos pos9">
-          <input type="checkbox" class="box box9">网络游戏
-        </div>
-        <div class="pos pos10">
-          <input type="checkbox" class="box box10">网络婚恋
+        <div style="display: inline-block; margin-left: 15px; width: 88%; height: 70%;">
+          <div ref="mylineChart" style="width:100%; height: 100%;"></div>
         </div>
       </div>
     </div>
@@ -195,7 +186,7 @@
 
 <script>
 import dayjs from 'dayjs'
-import 'echarts-gl'
+
 export default {
   // components: { getDiscover },
   data() {
@@ -332,13 +323,16 @@ export default {
       // loading1: false,
     }
   },
-
-
   computed: {
     // username() {
     //   let username = JSON.parse(window.sessionStorage.getItem('one'))
     //   return username ? username : this.name
     // },
+  },
+  mounted() {
+    this.drawpieChart()
+    this.drawbarChart()
+    this.drawlineChart()
   },
   methods: {
     dh() {
@@ -411,142 +405,123 @@ export default {
       })
       this.dialog = false
     },
-    //左侧——趋势
-    drawLinezhexian() {
-      // this.loading1=true
-      // eslint-disable-next-line camelcase
-      var bar_qx = this.$refs.echartsshouye3zhexian
-      // eslint-disable-next-line camelcase
-
-      let myChart1 = this.$echarts.init(bar_qx)
-
+    drawpieChart() {
+      let bar_qx = this.$refs.mypieChart
+      let pieChart = this.$echarts.init(bar_qx)
       window.addEventListener('resize', function () {
-        myChart1.resize()
-        // console.log(1)
+        pieChart.resize()
       })
-      myChart1.clear()
-      myChart1.setOption(this.setOptionzhexian())
-
-      // console.log(this.qutest);
+      pieChart.clear()
+      pieChart.setOption(this.setOptionPie()) // 待完善：记得销毁echarts和resize
     },
-    setOptionzhexian() {
+    setOptionPie() {
       let option = {
-        animation: false,
-        feature: {
-          saveAsImage: {
-            show: false,
-          },
+        toolbox: {
+          show: true
         },
-
+        series: [
+          {
+            name: 'Nightingale Chart',
+            type: 'pie',
+            // radius: [50, 250],
+            center: ['50%', '50%'],
+            roseType: 'area',
+            itemStyle: {
+              borderRadius: 8
+            },
+            data: [
+              { value: 40, name: 'rose 1' },
+              { value: 38, name: 'rose 2' },
+              { value: 32, name: 'rose 3' },
+              { value: 30, name: 'rose 4' },
+              { value: 28, name: 'rose 5' },
+              { value: 26, name: 'rose 6' },
+              { value: 22, name: 'rose 7' },
+              { value: 18, name: 'rose 8' }
+            ]
+          }
+        ]
+      }
+      // this.loading1=false
+      return option
+    },
+    drawbarChart() {
+      let bar_qx = this.$refs.mybarChart
+      let barChart = this.$echarts.init(bar_qx)
+      window.addEventListener('resize', function () {
+        barChart.resize()
+      })
+      barChart.clear()
+      barChart.setOption(this.setOptionBar()) // 待完善：记得销毁echarts和resize
+    },
+    setOptionBar() {
+      let option = {
+        title: {
+          text: 'World Population'
+        },
         tooltip: {
           trigger: 'axis',
-
           axisPointer: {
-            lineStyle: {
-              color: '#66B3FF',
-            },
+            type: 'shadow'
+          }
+        },
+        legend: {},
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {   
+          type: 'category',
+          data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'World']
+        },
+        yAxis: {
+          type: 'value',
+          boundaryGap: [0, 0.01]
+        },
+        series: [
+          {
+            name: '2011',
+            type: 'bar',
+            data: [18203, 23489, 29034, 104970, 131744, 630230]
           },
-        },
-        color: ['#fc7278', '#fba64f', '#99f8f7'], //高 中 低
-        legend: {
-          right: '5%',
-          top: '3%',
-          icon: 'rect',
-          itemHeight: 5,
-          itemWidth: 10,
-          data: [
-            {
-              name: '高危',
-              textStyle: {
-                color: ['#f9fefc'],
-              },
-            },
-            {
-              name: '中危',
-              textStyle: {
-                color: ['#f9fefc'],
-              },
-            },
-            {
-              name: '低危',
-              textStyle: {
-                color: ['#f9fefc'],
-              },
-            },
-          ],
-        },
-
+          {
+            name: '2012',
+            type: 'bar',
+            data: [19325, 23438, 31000, 121594, 134141, 681807]
+          }
+        ]
+      }
+      // this.loading1=false
+      return option
+    },
+    drawlineChart() {
+      let line_qx = this.$refs.mylineChart
+      let lineChart = this.$echarts.init(line_qx)
+      window.addEventListener('resize', function () {
+        lineChart.resize()
+      })
+      lineChart.clear()
+      lineChart.setOption(this.setOptionLine()) // 待完善：记得销毁echarts和resize
+    },
+    setOptionLine(){
+      let option = {
         xAxis: {
           type: 'category',
           boundaryGap: false,
-          data: this.yujingqs.datanum.reverse(),
-          axisLabel: {
-            // rotate: -20,
-            //  让x轴文字方向为竖向
-            // interval: 0,
-            //修改x轴文字
-            textStyle: {
-              color: '#f7ffff',
-            },
-          },
-
-          axisLine: {
-            lineStyle: {
-              color: '#666',
-              width: 1,
-            },
-          },
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
         },
-
-        yAxis: [
-          {
-            type: 'value',
-            axisLine: { show: false },
-            axisTick: { show: false },
-            splitLine: { show: false },
-            splitLine: {
-              lineStyle: {
-                color: ['#1e324a'],
-              },
-            },
-            axisLabel: {
-              textStyle: {
-                color: '#828d9a',
-              },
-            },
-          },
-        ],
-
+        yAxis: {
+          type: 'value'
+        },
         series: [
           {
-            name: '高危',
+            data: [820, 932, 901, 934, 1290, 1330, 1320],
             type: 'line',
-            data: this.yujingqs.gaoweinum.reverse(),
-            // smooth: true,
-          },
-          {
-            name: '中危',
-            type: 'line',
-
-            data: this.yujingqs.inTotalnum.reverse(),
-            // smooth: true,
-          },
-          {
-            name: '低危',
-            type: 'line',
-
-            data: this.yujingqs.lowTotalnum.reverse(),
-            // smooth: true,
-          },
-        ],
-
-        grid: {
-          x: 40,
-          y: 40,
-          x2: 20,
-          y2: 20,
-          borderWidth: 1,
-        },
+            areaStyle: {}
+          }
+        ]
       }
       // this.loading1=false
       return option
@@ -576,7 +551,7 @@ export default {
 }
 .top1 {
   width: 100%;
-  height: 11%;
+  height: 9.7%;
   /* background-color: blue; */
   /* border: 1px solid blue; */
   position: relative;
@@ -588,8 +563,8 @@ export default {
   text-align: center;
   font-family: 'heiti';
   // font-size: 31px;
-  height:80px;
-  line-height: 80px;
+  height:75px;
+  line-height: 75px;
   font-size: 42px;
   letter-spacing: 7px /* 12/16 */;
   color:#19c9d5;
@@ -600,11 +575,12 @@ export default {
   // text-shadow: 0 0 20px rgba(0, 121, 255, 0.5);
 }
 .top1_title {
-  height: 110px;
+  height: 100px;
   width: 100%;
-  background: url('../assets/img/newbg/header_bg.png') no-repeat 100% 100%;
-  // background-position: 0;
-  background-size: cover;
+  background-image: url('../assets/img/newbg/header_bg.png');
+  background-repeat: no-repeat;
+  // background-size: cover;  // 不会让图片走形，尽可能完整
+  background-size: 100% 100%; // 根据容器大小拉伸图片，会让图片走形
 }
 .top1_line {
   height: 10px;
@@ -615,143 +591,95 @@ export default {
 .center2 {
   display: flex;
   justify-content: space-between;
-  margin: 0 50px;
+  margin: 0 36px;
 }
-.gsh1{
-  margin-top: 20px;
-  font-size: 20px;
-}
-.gsh2{
-  margin-top: 20px;
-  margin-left: 20px;
-  font-size: 20px;
-}
+
 .gsh3{
-  margin-top: 20px;
-  margin-left: 20px;
+  margin-top: 28px;
+  margin-left: 28px;
   font-size: 20px;
 }
-.gsh4{
-  margin-top: 20px;
-  margin-left: 20px;
-  font-size: 20px;
-}
+
 .center2_left,.center2_center,.center2_right{
-  font-size: 30px;
-  color:#2fbcfc;
+  font-size: 20px;
+  color:#32c5ff;
   height: 360px; // width/height=1.58
   width: 600px;
   margin-top: 20px;
-  margin-bottom: 70px;
   margin-left: 20px;
   margin-right: 30px;
   background: url(../assets/img/newbg/kuangbg.png);
-  background-size: cover;
+  background-size: 100% 100%;
   background-repeat: no-repeat;
 }
 
-.center2_left_test{
-  color: #00fff3;
+.center2_left_test1{
+  color: #72e7ee;
+  margin-left: 38px;
 }
 .center2_left_test2{
-  color:darkorange;
+  color:#c9c391;
+  margin-top: 14px;
+  margin-left: 38px;
 }
 .center2_left_test3{
-  display: inline;
-  margin-left: 20px;
-  color: #19c9d5;
-  vertical-align:super;
-  font-size:20px ;
+  display: inline-block;
+  // margin-left: 30px;
+  color: #18c5e7;
+  // vertical-align:super;
+  transform: translate(40px,-20px);
+  font-size:20px;
 }
 .picture_test1{
-  width: 40px;
-  height: 40px;
-  margin-left: 80px;
-  margin-top: 10px;
+  display: inline-block;
+  background-image: url(../assets/img/newbg/lanbg.png);
+  background-size: 100% 100%;
+  width: 52px;
+  height: 52px;
+  margin-left: 68px;
+  margin-top: 20px;
 }
 .picture_test2{
-  width: 40px;
-  height: 40px;
+  display: inline-block;
+  background-image: url(../assets/img/newbg/lanbg.png);
+  background-size: 100% 100%;
+  width: 52px;
+  height: 52px;
   margin-left: 13px;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 .picture_test3{
-  width: 40px;
-  height: 40px;
-  margin-left: 13px;
-  margin-top: 10px;
+  display: inline-block;
+  background-image: url(../assets/img/newbg/weixin2.png);
+  background-size: 100% 100%;
+  width: 52px;
+  height: 52px;
+  margin-left: 68px;
+  margin-top: 20px;
 }
 .picture_test4{
-  width: 40px;
-  height: 40px;
+  display: inline-block;
+  background-image: url(../assets/img/newbg/weixin2.png);
+  background-size: 100% 100%;
+  width: 52px;
+  height: 52px;
   margin-left: 13px;
-  margin-top: 10px;
-}
-.picture_test5{
-  width: 40px;
-  height: 40px;
-  margin-left: 13px;
-  margin-top: 10px;
-}
-.picture_test6{
-  width: 40px;
-  height: 40px;
-  margin-left: 13px;
-  margin-top: 10px;
-}
-.picture_test7{
-  width: 40px;
-  height: 40px;
-  margin-left: 13px;
-  margin-top: 10px;
-}
-.picture_test8{
-  width: 40px;
-  height: 40px;
-  margin-left: 80px;
-  margin-top: 10px;
-}
-.picture_test9{
-  width: 40px;
-  height: 40px;
-  margin-left: 13px;
-  margin-top: 10px;
-}
-.picture_test10{
-  width: 40px;
-  height: 40px;
-  margin-left: 13px;
-  margin-top: 10px;
-}
-.picture_test11{
-  width: 40px;
-  height: 40px;
-  margin-left: 13px;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 .picture_test12{
   vertical-align:text-top;
+  width: 14px;
+  transform: translate(50px,-16px);
 }
-.center3{
-  margin: 0 69px;
-}
-.center3_one{
-  font-size: 17px;
-  height: 356px;
-  width: 100%;
-  background: url(../assets/img/newbg/kuangbg2.png);
-  background-size: cover;
-  background-repeat: no-repeat;
-  color:#25c0fd;
-  overflow: hidden;
-}
+
 .pos{
+  display: inline-block;
   margin-left: 90px;
   font-size: 19px;
   color:#fff;
 }
 .pos1{
-  color:aqua;
+  color:#72e7ee;
   margin-top: 7px;
 }
 .box{
@@ -761,7 +689,21 @@ export default {
   border: 2px solid blue;
   outline: none;
 }
-
+.center3{
+  margin-top: 30px;
+  margin-left: 55px;
+  margin-right:65px
+}
+.center3_one{
+  font-size: 17px;
+  height: 356px;
+  width: 100%;
+  background: url(../assets/img/newbg/kuangbg2.png);
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  color:#32c5ff;
+  overflow: hidden;
+}
 .center1 {
   width: 100%;
   height: 91.3%;
@@ -786,7 +728,7 @@ export default {
 
 .nav {
   width: 1027px;
-  height: 4%;
+  height: 3.2%;
   margin: 0 auto;
   // border: 1px solid red;
   // background: url('../assets/newimg/newhome/形状 6.png') no-repeat;
@@ -852,10 +794,10 @@ export default {
 .myfooter {
   position:fixed;
   bottom: 8px;
-  height: 83px;
+  height: 6vh;
   width: 100%;
   background: url(../assets/img/newbg/bottombg.png);
-  background-size: cover;
+  background-size: 100% 100%;
   background-repeat: no-repeat;
 }
 .fanhui {

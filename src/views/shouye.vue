@@ -82,9 +82,7 @@
       </div>
       <div class="center2_center">
         <div class="gsh3"><span>·</span> 7日处置高危类型TOP5</div>
-        <div style="width: 100%;height: 80%;">
-          <div ref="mypieChart" style="width:100%; height: 100%;"></div>
-        </div>      
+        <div ref="mypieChart" class="add1"></div> 
       </div>
       <div class="center2_right">
         <div class="gsh3"><span>·</span> 7日处置量趋势</div>
@@ -109,7 +107,7 @@
           <input type="checkbox" class="box">网络游戏<br>
           <input type="checkbox" class="box">网络婚恋
         </div>
-        <div style="display: inline-block; margin-left: 15px; width: 88%; height: 70%;">
+        <div style="display: inline-block; margin-left: 15px; width: 88%; height: 70%;" class="add2">
           <div ref="mylineChart" style="width:100%; height: 100%;"></div>
         </div>
       </div>
@@ -415,29 +413,28 @@ export default {
       pieChart.setOption(this.setOptionPie()) // 待完善：记得销毁echarts和resize
     },
     setOptionPie() {
+
       let option = {
         toolbox: {
           show: true
         },
+
         series: [
           {
             name: 'Nightingale Chart',
             type: 'pie',
-            // radius: [50, 250],
-            center: ['50%', '50%'],
-            roseType: 'area',
-            itemStyle: {
+            radius: [10, 90],
+            center: ['50%', '50%'],                                        
+            roseType: 'area',                                                     
+            itemStyle: { 
               borderRadius: 8
-            },
+            },                                                
             data: [
-              { value: 40, name: 'rose 1' },
-              { value: 38, name: 'rose 2' },
-              { value: 32, name: 'rose 3' },
-              { value: 30, name: 'rose 4' },
-              { value: 28, name: 'rose 5' },
-              { value: 26, name: 'rose 6' },
-              { value: 22, name: 'rose 7' },
-              { value: 18, name: 'rose 8' }
+              { value: 26, name: '40%赌博',itemStyle: {color:'red'}},
+              { value: 25, name: '21%刷单返利',itemStyle: {color:'green'}},
+              { value: 20, name: '15%理财',itemStyle: {color:'blue'}},
+              { value: 15, name: '14%贷款',itemStyle: {color:'purple'}},
+              { value: 10, name: '8%网络婚恋，交友',itemStyle: {color:'pink'}}
             ]
           }
         ]
@@ -445,6 +442,7 @@ export default {
       // this.loading1=false
       return option
     },
+
     drawbarChart() {
       let bar_qx = this.$refs.mybarChart
       let barChart = this.$echarts.init(bar_qx)
@@ -455,47 +453,105 @@ export default {
       barChart.setOption(this.setOptionBar()) // 待完善：记得销毁echarts和resize
     },
     setOptionBar() {
+
+
       let option = {
+
         title: {
-          text: 'World Population'
+          text: ''
         },
+
+
         tooltip: {
           trigger: 'axis',
           axisPointer: {
             type: 'shadow'
           }
         },
-        legend: {},
+
+
+        legend: 
+        {
+          x:'right',
+          y:'top',
+          padding:[10,50,0,0],
+          orient: 'vertical',
+          textStyle:
+          {
+            color:'#ccc',
+          }
+        },
+
         grid: {
-          left: '3%',
-          right: '4%',
-          bottom: '3%',
+          left: '5%',
+          right: '6%',
+          bottom: '10%',
           containLabel: true
         },
+
+
         xAxis: {   
           type: 'category',
-          data: ['Brazil', 'Indonesia', 'USA', 'India', 'China', 'World']
+          data: ['5.17', '5.18', '5.19', '5.20', '5.21', '5.22','5.23'],
+          axisLine: 
+          {  
+                lineStyle: {
+                    color: "#fff",
+                }
+          },
+          splitLine:
+          {
+          show:false
+          }
         },
-        yAxis: {
+
+
+        yAxis: 
+        {  
+        splitLine:
+        {
+          show:false
+        },
           type: 'value',
-          boundaryGap: [0, 0.01]
+          interval:100, 
+          min:0, 
+          max:500,
+          axisLine: 
+          {  
+                lineStyle: {
+                    color: "#fff",
+                }
+          }
         },
+
+
         series: [
           {
-            name: '2011',
+            name: '同源',
             type: 'bar',
-            data: [18203, 23489, 29034, 104970, 131744, 630230]
+            data: [283, 346, 251, 412, 141, 312,415],
+            itemStyle:
+            {
+                normal:
+              {
+                color:'#4ad2ff'
+              }
+            },
           },
+          
           {
-            name: '2012',
+            name: '警情',
             type: 'bar',
-            data: [19325, 23438, 31000, 121594, 134141, 681807]
-          }
+            data: [165,252,324,163,245,451,255]
+          },
         ]
+
+
       }
       // this.loading1=false
       return option
     },
+
     drawlineChart() {
       let line_qx = this.$refs.mylineChart
       let lineChart = this.$echarts.init(line_qx)
@@ -507,25 +563,104 @@ export default {
     },
     setOptionLine(){
       let option = {
+
+     
+
         xAxis: {
+          axisLine: {
+            lineStyle: {
+              color: '#912CEE'
+            }
+          },
           type: 'category',
-          boundaryGap: false,
-          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+          boundaryGap: true,
+          axisLabel: {
+            interval: 0  
+            },
+          data: ['1', '2', '3', '4', '5', '6', '7','8','9','10','11', '12', '13', '14', '15', '16', '17','18','19','20','21', '22', '23', '24', '25', '26', '27','28','29','30']
         },
+
+        grid: {
+            top: '16%',   
+            left: '3%', 
+            right: '8%',
+            bottom: '3%',
+            containLabel: true
+        },
+
         yAxis: {
-          type: 'value'
+          type: 'value',
+          name: '星期/月',
+          interval:500, 
+          min:0, 
+          max:3500 ,
+          axisLine: {
+            lineStyle: {
+              color: '#87CEFA'
+            }
+          },
         },
+
+        legend: 
+        {
+          x:'right',
+          y:'top',
+          padding:[2,300,200,100],
+          orient: 'horizontal',
+          textStyle:
+          {
+            color:'#ccc',
+          }
+        },
+
         series: [
           {
-            data: [820, 932, 901, 934, 1290, 1330, 1320],
+            name:'同源处理量',
+            data: [1000,2423,2357,2315,1257,2351,3123,1953,2584,1954,2334,2751,2407,3256,1169,2536,2451,2345,2238,3128,3321,1260,2475,2453,1112,2765,1238,2431,1230,2351],
             type: 'line',
-            areaStyle: {}
+            areaStyle: {},
+            symbol:'square',
+            symbolSize:5,
+            itemStyle:{
+            borderColor:'purple',
+            normal: 
+            {
+            color: 'purple', 
+            lineStyle: 
+            {
+              color: 'purple' 
+            }
+            }
+            }
+          },
+
+          {
+            name:'案件量',
+            data: [1400,2523,2257,2515,3257,1351,3143,1653,2484,1254,2634,2751,2607,3251,1269,3136,1451,3345,1238,3128,1321,2260,3475,1453,3112,1765,3238,1431,3230,1351],
+            type: 'line',
+            areaStyle: {},
+            symbol:'square',
+            symbolSize:5,
+            itemStyle:
+            {
+              borderColor:'yellow',
+              normal: 
+              {
+            color: 'yellow', 
+            lineStyle: 
+            {
+            color: 'yellow' 
+            }
+              }
+            }
           }
+
         ]
       }
       // this.loading1=false
       return option
     },
+
     ret1() {
       this.$router.push('/home')
       window.localStorage.clear()
@@ -537,10 +672,17 @@ export default {
 
 <style  scoped lang='less'>
 @import '../common/font.css';
+
+.add1{
+  height: 300px;
+  width: 500px;
+  margin-left: 50px;
+  margin-bottom: 200px;
+  margin-right: 500px;
+}
 .dp {
   width: 100%;
   height: 100%;
-
   /* width: 100%;
   height: 58.5625rem /* 937/16 */
   /* // z-index: -1; */

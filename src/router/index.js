@@ -131,6 +131,30 @@ const routes = [
         },
         component: () => import('../views/gitDiscoverca')
       },
+      {
+        path: '/disposePage',
+        name: 'disposePage',
+        meta: {
+          title: '处置'
+        },
+        component: () => import('../views/disposePage')
+      },
+      {
+        path: '/specialPage',
+        name: 'specialPage',
+        meta: {
+          title: '特办'
+        },
+        component: () => import('../views/specialPage')
+      },
+      {
+        path: '/relevancePage',
+        name: 'relevancePage',
+        meta: {
+          title: '关联'
+        },
+        component: () => import('../views/relevancePage')
+      },
       // {
       //   path: '/taishi',
       //   name: 'taishi',

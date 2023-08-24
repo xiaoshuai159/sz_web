@@ -100,18 +100,15 @@ export default {
       
     // },
     },
-      created() {
-    // this.getUrl();
-    
-  },
 };
 </script>
 <style>
   .content-box{
+    background-color: #020723;
     /* background:#031123; */
-        background-image: url(../assets/img/shouye/bg1.png);
+        /* background-image: url(../assets/img/shouye/bg1.png);
     background-repeat: no-repeat;
-    background-size: 100% 100%;
+    background-size: 100% 100%; */
     /* left: 15rem; */
   }
   .content-collapse{

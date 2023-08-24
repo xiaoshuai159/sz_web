@@ -8,20 +8,16 @@
     <!-- 头部 -->
     <div class="top1">
       <div class="top1_title">
-        <!-- 头部_一级标头 -->
-        <!-- 中卫市境外网址处置平台 -->
         <div class="title">深圳市反诈技术支撑平台</div>
-        <!-- 7.4 测试暂时关闭 -->
-        <!-- <div class="topguanli">
+        <div class="topguanli">
           <div class="role">
-            <img :src="require('../assets/img/shouye/guanliyuan.png')" alt="" />
-            
+            <img :src="require('../assets/img/shouye/guanliyuan.png')" alt="" />            
             <el-dropdown
               class="user-name"
               trigger="click"
               @command="handleCommand"
             >            
-              <span class="el-dropdown-link">
+              <span class="el-dropdown-link" style="position: relative;top:2px">
                 {{ username }}
                 <i class="el-icon-caret-bottom"></i>
               </span>
@@ -36,14 +32,15 @@
             </el-dropdown>
           </div>
         </div>
-        <div>
-        <div class="fanhui" @click="ret1">
-          <img src="../assets/img/shouye/返回按钮.png" alt="" />
-        </div>
-      </div> -->
+        
+          <div class="fanhui">
+          {{curDate}}
+          </div>
+        
       </div>
     </div>
-    <div class="nav">
+    <Navlist></Navlist>
+    <!-- <div class="nav">
       <div class="nav_li">
         <ul class="daohang3">
           <li
@@ -59,7 +56,7 @@
           </li>
         </ul>
       </div>
-    </div>
+    </div> -->
     <div class="center2">
       <div class="center2_left">
        <div class="gsh3"><span>·</span> 处置统计</div>
@@ -184,9 +181,12 @@
 
 <script>
 import dayjs from 'dayjs'
-
+import Navlist from '@/components/hearderdongtainav.vue'
 export default {
   // components: { getDiscover },
+  components:{
+    Navlist: Navlist, 
+  },
   data() {
     let pwd = JSON.parse(window.sessionStorage.getItem('pwd'))
     var validatePwd = (rule, value, callback) => {
@@ -208,6 +208,7 @@ export default {
       }
     }
     return {
+      curDate: dayjs().format("YYYY年MM月DD日"),
       rules: {
         oldpwd: [
           {
@@ -258,48 +259,21 @@ export default {
           name: '发现',
           path: '/gitDiscoverca',
         },{
-          name: '处置'
+          name: '处置',
+          path: '/disposePage',
         },{
           name: '警情',
           path:'/getWarningfourg'
         },{
-          name: '特办'
+          name: '特办',
+          path: '/specialPage'
         },{
-          name: '关联'
+          name: '关联',
+          path: '/relevancePage'
         },
         {
           name: '管理',
-          path: '/findUser',
-        },
-      ],
-      daohang1: [
-        {
-          name: '首页',
-          path: '/shouye',
-        },{
-          name: '发现',
-          path: '/gitDiscoverca',
-        },{
-          name: '预警',
-          path:'/getWarningfourg'
-        },
-        {
-          name: '系统管理',
-          path: '/findUser',
-        },
-      ],
-      daohang2: [
-      {
-          name: '首页',
-          path: '/shouye',
-        },
-           {
-          name: '预警',
-          path:'/getWarningfourg'
-        },
-        {
-          name: '发现',
-          path: '/gitDiscoverca',
+          path: '/findRole',
         },
       ],
       //头部loading
@@ -322,10 +296,10 @@ export default {
     }
   },
   computed: {
-    // username() {
-    //   let username = JSON.parse(window.sessionStorage.getItem('one'))
-    //   return username ? username : this.name
-    // },
+    username() {
+      let username = JSON.parse(window.sessionStorage.getItem('one'))
+      return username ? username : this.name
+    },
   },
   mounted() {
     this.drawpieChart()
@@ -683,38 +657,21 @@ export default {
 .dp {
   width: 100%;
   height: 100%;
-  /* width: 100%;
-  height: 58.5625rem /* 937/16 */
-  /* // z-index: -1; */
   background-color: #020723;
-  // background-image: url('../assets/newimg/newhome/背景.png');
-  // background-repeat: no-repeat;
-  // background-size: 100% 100%;
 }
 .top1 {
   width: 100%;
   height: 9.7%;
-  /* background-color: blue; */
-  /* border: 1px solid blue; */
   position: relative;
 }
 .title {
-  // position: absolute;
-  // left: 38%;
-  // top: 15%;
   text-align: center;
   font-family: 'heiti';
-  // font-size: 31px;
   height:75px;
   line-height: 75px;
   font-size: 42px;
   letter-spacing: 7px /* 12/16 */;
   color:#19c9d5;
-  // 实现文字渐变 background-image、-webkit-background-clip、-webkit-text-fill-color
-  // background-image: linear-gradient(0deg, #f8f8fb 0%, #8ec4fd 100%);
-  // -webkit-background-clip: text;
-  // -webkit-text-fill-color: transparent;
-  // text-shadow: 0 0 20px rgba(0, 121, 255, 0.5);
 }
 .top1_title {
   height: 100px;
@@ -723,12 +680,6 @@ export default {
   background-repeat: no-repeat;
   // background-size: cover;  // 不会让图片走形，尽可能完整
   background-size: 100% 100%; // 根据容器大小拉伸图片，会让图片走形
-}
-.top1_line {
-  height: 10px;
-  width: 100%;
-  // background: url('../assets/newimg/newhome/光.png') no-repeat;
-  // background-size: 100% 100%;
 }
 .center2 {
   display: flex;
@@ -778,6 +729,8 @@ export default {
   background-size: 100% 100%;
   width: 52px;
   height: 52px;
+  line-height: 52px;
+  text-align: center; 
   margin-left: 68px;
   margin-top: 20px;
 }
@@ -787,6 +740,8 @@ export default {
   background-size: 100% 100%;
   width: 52px;
   height: 52px;
+  line-height: 52px;
+  text-align: center; 
   margin-left: 13px;
   margin-top: 20px;
 }
@@ -796,6 +751,8 @@ export default {
   background-size: 100% 100%;
   width: 52px;
   height: 52px;
+  line-height: 52px;
+  text-align: center; 
   margin-left: 68px;
   margin-top: 20px;
 }
@@ -805,6 +762,8 @@ export default {
   background-size: 100% 100%;
   width: 52px;
   height: 52px;
+  line-height: 52px;
+  text-align: center; 
   margin-left: 13px;
   margin-top: 20px;
 }
@@ -871,6 +830,8 @@ export default {
 .nav {
   width: 1027px;
   height: 3.2%;
+
+  // background-color: pink;
   margin: 0 auto;
   // border: 1px solid red;
   // background: url('../assets/newimg/newhome/形状 6.png') no-repeat;
@@ -944,9 +905,10 @@ export default {
 }
 .fanhui {
   position: absolute;
-  left: 0.5%;
+  left: 3.5%;
   top: 15%;
-  cursor: pointer;
+  color:#11d8e5;
+  font-size: 20px;
 }
 .fanhui img {
   width: 75px;

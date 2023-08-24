@@ -5,7 +5,7 @@
     <el-row style="margin-bottom: 20px" >
       <el-col :span="24">
         <el-button
-          class="el-button-chaxun left top"
+          class="el-button-daochu left top"
           type="primary"
           size="mini"
           @click="add"
@@ -36,38 +36,9 @@
         </template>
       </el-table-column>
       <el-table-column label="角色名称" prop="roleName">
-        <!-- <template slot-scope="scope">
-                {{ js(scope.row.roleName) }}
-              </template> -->
       </el-table-column>
-      <el-table-column label="角色标识" prop="remark"> </el-table-column>
       <el-table-column label="角色描述" prop="descr"> </el-table-column>
-      <!-- <el-table-column label="数据权限" prop="fraudTime">
-            </el-table-column> -->
-      <el-table-column label="创建时间" prop="createTime"> </el-table-column>
-      <!-- v-if="getRole1('updateRoleName' && 'delRole' && 'saveRoleMenuRefList')" v-if="getRole1('updateRoleName')" v-if="getRole1('delRole')"-->
-      <el-table-column
-        label="操作"        
-      >
-        <template slot-scope="scope">
-          <div v-if="Object.keys(scope.row).length > 0">
-            <el-button
-              type="text"
-              size="mini"
-              @click="bj(scope.row)"              
-              style="color: #7ffdf9"
-              >编辑</el-button
-            >
-            <el-button
-              type="text"
-              size="mini"
-              @click="del(scope.row.id)"              
-              style="color: #fa7b7e"
-              >删除</el-button
-            >
-          </div>
-        </template>
-      </el-table-column>
+
     </el-table>
     <!-- //分页 -->
     <div class="bottom">

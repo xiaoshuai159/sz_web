@@ -1,146 +1,106 @@
 <template>
+  <!-- 长安发现 -->
+  <!-- 长安发现 -->
+  <!-- 长安发现 -->
   <div class="right_main_under">
     <Navlist></Navlist>
-    <!-- <div class="title_top">查询条件</div> -->
+
     <div class="search_select_form bg">
-      <el-form
-        :inline="true"
-        :model="formInline"
-        class="demo-form-inline"
-        size="mini"
-      >
-      <!-- 数据来源 -->
-      <el-form-item label="数据来源">
-          <el-select
-            style="width: 100px;"
-            v-model="newdomainSimpleVo.sourceType"
-            placeholder="数据来源"
-            clearable
-            @clear="sourceType_clearFun(newdomainSimpleVo.sourceType)"
-          >
-            <el-option
-              v-for="item in selectData.sourceTypeData"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+      <template>
+        <el-form
+          :inline="true"
+          :model="formInline"
+          class="demo-form-inline"
+          size="mini"
+        >
+        <el-form-item label="上传人">
+          <el-input v-model.trim="newdomainSimpleVo.uploader" placeholder="上传人">
+          </el-input>
+        </el-form-item>
+          <!-- 发现日期 -->
+          <el-form-item label="上传时间">
+            <el-date-picker
+              v-model="newdomainSimpleVo.dateRange"
+              type="daterange"
+              :change="dataCreate_change(newdomainSimpleVo.dateRange)"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="yyyy-MM-dd"
             >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <!-- 诈骗时间 -->
-        <el-form-item label="处置时间">
-          <el-date-picker
-            v-model="newdomainSimpleVo.dateValue_find"
-            type="daterange"
-            :change="dataCreate_change(newdomainSimpleVo.dateValue_find)"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            value-format="yyyy-MM-dd HH:mm:ss"
-            :default-time="['00:00:00', '23:59:59']"
-          >
-          </el-date-picker>
-        </el-form-item>
-        <!-- 诈骗类型 -->
-        <el-form-item label="诈骗类型">
-          <el-select
-            v-model.trim="newdomainSimpleVo.fraud"
-            placeholder="诈骗类型"
-            clearable
-            style="width: 120px;"
-            @clear="fraudType_clearFun(newdomainSimpleVo.fraud)"
-          >
-            <el-option
-              v-for="item in selectData.fraudypeData"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+            </el-date-picker>
+          </el-form-item>
+          <!-- 诈骗大类 -->
+          <el-form-item label="诈骗类型">
+            <el-select v-model.trim="newdomainSimpleVo.fraudType" clearable placeholder="诈骗类型" style="width: 120px;">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="协议">
+            <el-select v-model.trim="newdomainSimpleVo.protocol" clearable placeholder="协议" class="el-input-width">
+              <el-option
+                v-for="item in options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item>
+            <el-button
+              type="primary"
+              class="el-button-daochu"
+              size="mini"
+              @click.native.stop="searchTabData"
+              >查询</el-button
             >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="处置状态">
-          <el-select
-            class="el-input-width"
-            v-model.trim="newdomainSimpleVo.Status"
-            placeholder="状态"
-            clearable
-            @clear="WarningType_clearFun(newdomainSimpleVo.Status)"
-          >
-            <el-option
-              v-for="item in selectData.Status"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+            <el-button
+              class="el-button-daochu"
+              type="primary"
+              size="mini"
+              @click.native="resetFun"
+              >重置</el-button
             >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="协议">
-          <el-select
-            class="el-input-width"
-            v-model.trim="newdomainSimpleVo.Protocol"
-            placeholder="协议"
-            clearable
-            @clear="WarningType_clearFun(newdomainSimpleVo.Protocol)"
-          >
-            <el-option
-              v-for="item in selectData.Protocol"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+            <el-button
+              class="el-button-daochu"
+              type="primary"
+              size="mini"
+              @click.native="put"
+              >模板下载</el-button
             >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="未处置原因">
-          <el-select
-            class="el-input-width"
-            v-model.trim="newdomainSimpleVo.Reason"
-            placeholder="原因"
-            clearable
-            @clear="WarningType_clearFun(newdomainSimpleVo.Reason)"
-          >
-            <el-option
-              v-for="item in selectData.Reason"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+
+            <el-button
+              class="el-button-daochu"
+              type="primary"
+              size="mini"
+              >批量导入</el-button
             >
-            </el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button
-            class="el-button-chaxun"
-            type="primary"
-            size="mini"
-            @click.native="searchTabData"
-            v-preventReClick
-            >查询</el-button
-          >
-          <el-button
-            class="el-button-chongzhi"
-            type="primary"
-            size="mini"
-            @click.native="resetFun"
-            >重置</el-button
-          >
-          <el-button
-            class="el-button-daochu"
-            type="primary"
-            size="mini"
-            @click.native.stop="put"
-            :loading="loadingbut"
-            >{{ loadingbuttext }}</el-button
-          >
-          <!-- v-if="getRole1('downloadWarning')" -->
-        </el-form-item>
-      </el-form>
+            <el-button
+              class="el-button-daochu"
+              type="primary"
+              size="mini"
+              >APK上传</el-button
+            >
+            <el-button
+              class="el-button-daochu"
+              type="primary"
+              size="mini"
+              >新增</el-button
+            >
+            <!-- v-if="getRole1('downloadRaw')" :disabled="this.tableData.length == 0"  7.4 测试 -->
+            <!-- </template> -->
+          </el-form-item>
+        </el-form>
+      </template>
     </div>
-    <!-- <div class="list_xia"> -->
     <!-- //列表 -->
-    <!-- <div class="title_top">查询结果</div> -->
+    <Err v-if="errFlag"></Err>
+    <!-- <div class="list_xia"> -->
     <el-table
       :row-class-name="tableRowClassName"
       :row-key="getRowKeys"
@@ -148,60 +108,30 @@
       :data="tableData"
       style="width: 100%"
       :height="heights"
+      id="onetable"
       size="mini"
       class="tableStyle"
-      id="onetable"
       @selection-change="handleSelectionChange"
     >
-      <!-- max-height="600px" -->
-
-      <el-table-column type="selection" :reserve-selection="true" width="55">
+      <el-table-column
+        type="selection"
+        width="55"
+        
+      ></el-table-column>
+      <!-- :reserve-selection="true" -->
+      <el-table-column label="域名" prop="domain">
+        <!-- min-width="10%" -->
       </el-table-column>
-      <el-table-column label="处置时间" prop="fraudTime" show-overflow-tooltip>
-      </el-table-column>
-      <el-table-column label="诈骗类型" show-overflow-tooltip width="150">
+      <el-table-column label="诈骗类型" prop="type">
         <template slot-scope="scope">
-          <!-- {{ shuzu(scope.row.fraudType) }}
-           -->
           {{ scope.row.fraudType }}
         </template>
       </el-table-column>
-      <el-table-column
-        width="200"
-        show-overflow-tooltip
-        label="域名"
-        prop="domainName"
-      ></el-table-column>
-      <el-table-column label="处置状态" prop="Status" width="100">
-      </el-table-column>
-      <el-table-column label="协议" prop="Protocol"> </el-table-column>
-      <el-table-column
-        label="数据来源"
-        prop="dataSource"
-        show-overflow-tooltip
-      >
-      </el-table-column>
-      <el-table-column
-        label="未处置原因"
-        prop="Reason"
-        show-overflow-tooltip
-      >
-      </el-table-column>
-      <!-- <el-table-column label="操作" width="100">
-        <template slot-scope="scope">
-          <div>
-            <el-button
-              type="text"
-              v-if="Object.keys(scope.row).length > 0"
-              size="mini"
-              @click="ckxq(scope.row.id)"
-            >
-              查看详情
-            </el-button>
-          </div>
-        </template>
-      </el-table-column> -->
+      <el-table-column label="协议" prop="protocol"> </el-table-column>
+      <el-table-column label="上传人" prop="person"> </el-table-column>
+      <el-table-column label="备注" prop="remark"> </el-table-column>
     </el-table>
+
     <!-- //分页 -->
     <div class="bottom">
       <div class="ss">
@@ -218,158 +148,26 @@
         </el-pagination>
       </div>
     </div>
-    <!-- </div>  -->
+    <!-- </div> -->
 
-    <!-- ====================== -->
+    <!-- 截图 -->
 
     <el-dialog
+      :title="jietutitle"
+      :visible.sync="newkanjietu"
+      width="45%"
+      height="40%"
+      :before-close="newkanjietuclose"
       :close-on-click-modal="false"
-      title="查看详情"
-      :visible.sync="xiangqing"
-      width="50%"
-      :before-close="handleClose1"
-      class="dialogInfo"
-      top="5vh"
     >
-      <div class="xiangqinglist">
-        <div class="list1">
-          <div class="list2">
-            <div class="list4">
-              <span class="listtitle">诈骗时间：</span>
-              <span
-                class="listtitle1" :title="xintableData.fraudTime"
-                >{{ xintableData.fraudTime }}</span
-              >
-            </div>
-            <div class="list5">
-              <span class="listtitle">诈骗网站域名：</span>
-              <span
-                class="listtitle1" :title="xintableData.domainName"
-                >{{ xintableData.domainName }}</span
-              >
-            </div>
-          </div>
-          <div class="list3">
-            <div class="list4">
-              <span class="listtitle">诈骗类型：</span>
-              <span
-                class="listtitle1"  :title="xintableData.fraudType"
-                >{{ xintableData.fraudType }}</span
-              >
-            </div>
-            <div class="list5">
-              <span class="listtitle">预警等级：</span>
-              <span
-                class="listtitle1" :title="xintableData.earlyGrade"
-                >{{ xintableData.earlyGrade }}</span
-              >
-            </div>
-          </div>
-        </div>
-        <div class="list1">
-          <div class="list2">
-            <div class="list4">
-              <span class="listtitle">受害人IP：</span>
-              <span
-                class="listtitle1"  :title="xintableData.userIp"
-                >{{  xintableData.userIp }}</span
-              >
-            </div>
-            <div class="list5">
-              <span class="listtitle">受害人端口：</span>
-              <span
-                class="listtitle1"   :title="xintableData.userPort"
-                >{{ xintableData.userPort }}</span
-              >
-            </div>
-          </div>
-          <div class="list3">
-            <div class="list4">
-              <span class="listtitle">受害人IP归属地：</span>
-              <span class="listtitle1" :title="xintableData.userIpAscription">{{  
-                 xintableData.userIpAscription
-              }}</span>
-            </div>
-            <div class="list5">
-              <span class="listtitle">手机号：</span>
-              <span
-                class="listtitle1"   :title="xintableData.phone"
-                >{{  xintableData.phone }}</span
-              >
-            </div>
-          </div>
-        </div>
-
-        <div class="list1">
-          <div class="list2">
-            <div class="list4">
-              <span class="listtitle">手机号归属地：</span>
-              <span
-                class="listtitle1"  :title="xintableData.phoneAddress"
-                >{{  xintableData.phoneAddress }}</span
-              >
-            </div>
-            <div class="list5">
-              <span class="listtitle">诈骗网站IP：</span>
-              <span
-                class="listtitle1"   :title="xintableData.fraudIp"
-                >{{  xintableData.fraudIp }}</span
-              >
-            </div>
-          </div>
-          <div class="list3">
-            <div class="list4">
-              <span class="listtitle">诈骗网站端口： </span>
-              <span
-                class="listtitle1"   :title="xintableData.fraudPort"
-                >{{  xintableData.fraudPort }}</span
-              >
-            </div>
-            <div class="list5">
-              <span class="listtitle">诈骗网站IP归属地：</span>
-              <span
-                class="listtitle1"    :title="xintableData.fraudIpAscription"
-                >{{  xintableData.fraudIpAscription }}</span
-              >
-            </div>
-          </div>
-        </div>
-        <div class="list1">
-          <div class="list2">
-            <div class="list4">
-              <span class="listtitle">身份证：</span>
-              <span
-                class="listtitle1"   :title="xintableData.idCard"
-                >{{  xintableData.idCard }}</span
-              >
-            </div>
-            <div class="list5">
-              <span class="listtitle">银行卡：</span>
-              <span
-                class="listtitle1"  :title="xintableData.bankCard"
-                >{{  xintableData.bankCard }}</span
-              >
-            </div>
-          </div>
-          <div class="list3">
-            <!-- <div class="list4">
-              <span class="listtitle">数据源: </span>
-              <span
-                class="listtitle1"
-                >{{  xintableData.dataSource}}</span
-              >
-            </div> -->
-            <div class="list4">
-              <span class="listtitle"></span>
-              <span class="listtitle1"></span>
-            </div>
-            <div class="list5">
-              <span class="listtitle"></span>
-              <span class="listtitle1"></span>
-            </div>
-          </div>
-        </div>
-      </div>
+      <img
+        v-if="!this.xinshi"
+        :src="this.jieURL"
+        ref="img"
+        alt=""
+        class="img"
+      />
+      <div v-if="this.xinshi" class="xinashititle">{{ xianshititle }}</div>
     </el-dialog>
   </div>
 </template>
@@ -377,55 +175,24 @@
 <script>
 import Navlist from '@/components/hearderdongtainav.vue'
 import getRole from '@/utils/promission.js'
-import yujingweifen from '@/utils/yujingweifenlei.js'
+import Err from '@/components/err.vue'
 import dayjs from 'dayjs'
 export default {
+  // inject: ["reload"],
+  components: {},
   data() {
     return {
       heights: undefined,
-      tableDatalist: [],
+      errFlag: false,
+      errFlagTimer: undefined,
       loadingbuttext: '导出',
       loadingbut: false,
-      xintableData: {
-        fraudTime: '', //诈骗时间
-        domainName: '', //诈骗网站域名
-        fraudType: '', //诈骗类型
-        earlyGrade: '', //预警等级：
-        userIp: '', //受害人IP：
-        userPort: '', //受害人端口：
-        userIpAscription: '', //受害人IP归属地：
-        phone: '', //手机号
-        phoneAddress: '', //手机号归属地
-        fraudIp: '', //诈骗网站IP
-        fraudPort: '', //诈骗网站端口
-        fraudIpAscription: '', //诈骗网站IP归属地
-        idCard: '', //身份证：
-        bankCard: '', //银行卡：
-        dataSource: '', //数据源
-      },
-      xiangqing: false,
-      isLoading: false,
-      newdomainSimpleVo: {
-        photo: null, //手机号
-        dateValue_find: [
-          dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
-            ' ' +
-            '00:' +
-            '00:' +
-            '00',
-          dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
-        ], //诈骗时间
-        unit: null, //推送单位
-        sourceType: null, //数据来源
-        Status: null,
-        fraud: null, //诈骗类型
-        dateValue_find1: null, //图表时间
-        Reason:null
-      },
-      whiteSearchList1: {
-        startCreateTime1: '',
-        endCreateTime1: '',
-      },
+      loading: true,
+      gridData: [
+        // {
+        //   sourceIp:12009
+        // }
+      ],
       whiteSearchList: {
         startCreateTime:
           dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
@@ -436,76 +203,173 @@ export default {
         endCreateTime:
           dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
       },
+      isLoading: false,
+
+      dialogFormVisible: false,
+
       formInline: {
         user: '',
         region: '',
       },
-      tableData: [
-        // {
-        //   fraudTime: 'we',
-        // },
-      ],
+      newdomainSimpleVo: {
+        uploader:null,
+        dateRange:[dayjs().subtract(1, 'month').format('YYYY-MM-DD'),dayjs().format('YYYY-MM-DD')],
+        dateValue_find: [
+          dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
+            ' ' +
+            '00:' +
+            '00:' +
+            '00',
+          dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
+        ],
+        //发现日期
+        url: null, //URL
+        source: '中卫', //来源
+        fraudType: null, //诈骗大类
+        typebig: null,
+        destIP:null
+      },
+
+      domainFeedbackVo: {
+        accessSystemType: null,
+        feedbackStatus: null,
+      },
+
       mypageable: {
-        pageNo: 1,
+        pageNum: 1,
         pageSize: 10,
       },
+      mypageable1: {
+        pageNum1: 1,
+        pageSize1: 10,
+      },
+      total1: 1,
       total: 1,
       totalPages: '',
-      selectData: {
-        Reason:[],
-        Status:[],
-        Protocol:[],
-        sourceTypeData: [{ value: '长安通信', label: '长安通信' }],
-        WarningTypeData: [
-          { value: '高危', label: '高危' },
-          { value: '中危', label: '中危' },
-          { value: '低危', label: '低危' },
-        ],
-        unitTypeData: [
+      totalPages1: '',
+      newkanjietu: false,
+      jietutitle: '',
+      jieURL: '',
+      xianshititle: '暂无图片',
+      clicktitle: '点击查看图片',
+      xinshi: false,
+        // 改之后：单级别下拉框
+        options:[
           {
-            value: '四川省成都市公安局刑警支队',
-            label: '四川省成都市公安局刑警支队',
-          },
+              value: 'DK',
+              label: '贷款',
+            },
+            {
+              value: 'SD',
+              label: '刷单返利类',
+            },
+            {
+              value: 'GJF',
+              label: '冒充公检法类',
+            },
+            {
+              value: 'LC',
+              label: '理财',
+            },
+            {
+              value: 'SZP',
+              label: '杀猪盘',
+            },
+            {
+              value: 'KF',
+              label: '冒充客服类',
+            },
+            {
+              value: 'DS',
+              label: '电商类诈骗',
+            },
+            {
+              value: 'JY',
+              label: '网络婚恋、交友类',
+            },
+            {
+              value: 'ZX',
+              label: '虚假征信类',
+            },
+            {
+              value: 'YX',
+              label: '网络游戏产品虚假交易类',
+            },
         ],
+      selectData: {
+        sourceTypeData: [
+          // { value: 'CA', label: '长安' },
+          // { value: 'YC', label: '4G' },
+          { value: 'ZW', label: '中卫' },
+        ],
+
         fraudypeData: [
-          { value: '贷款', label: '贷款' },
-          { value: '理财', label: '理财' },
-          { value: '冒充客服', label: '冒充客服' },
-          { value: '杀猪盘', label: '杀猪盘' },
-          // { value: '冒充公检法', label: '冒充公检法' },
-          { value: '冒充公检法', label: '冒充公检法' },
-          { value: '刷单', label: '刷单' },
-          { value: '虚假购物', label: '虚假购物' },
-               { value: '其他类型诈骗', label: '其他类型诈骗' },
+          { value: 'DK', label: '贷款代办信用卡类' },
+          { value: 'SD', label: '刷单返利类' },
+          { value: 'GJF', label: '冒充公检法类' },
+
+          // { value: "GW", label: "网络购物" },
+          { value: 'OTHER', label: '其他类型诈骗' },
+          { value: 'KF', label: '冒充客服类' },
+          { value: 'JJGW', label: '冒充军警购物诈骗' },
+          { value: 'SZP', label: '杀猪盘' },
+          { value: 'DS', label: '电商类诈骗' },
+          { value: 'JY', label: '网络婚恋、交友类' },
+          { value: 'ZX', label: '虚假征信类' },
+          { value: 'MC', label: '冒充领导、熟人类' },
+          { value: 'YX', label: '网络游戏产品虚假交易类' },
+          { value: 'APP', label: '分发平台' },
+          { value: 'XZYM', label: '下载页面' },
         ],
       },
-      newqutest: [],
-      newqutest1: [],
-      newqutest2: [],
-      newqutest3: [],
-      newzhutest1: [],
-      newzhutest2: [],
-      newzhutest3: [],
-      newzhutest4: [],
-      newwarningStatisticsTypeList: [],
+      tableData: [
+        // {
+        //   url: "www.baidu.com11",
+        //   visits: "100",
+        // },
+      ],
+      tableDatalist: [],
+
+      newurl: '',
+      arr: [],
+      yuming: '',
     }
   },
-  // created() {  // 7.4 测试关闭
-  //   this.getTabData()
-  //   // this.echartslist1()
-  // },
   components: {
     Navlist: Navlist, //将别名demo 变成 组件 Demo
+    Err: Err,
   },
+
+  computed: {},
+  // created() {  // 7.4 测试暂时关闭接口
+  //   this.getTabData()
+  // },
   mounted() {
-    this.yangshi()
+    this.yangshi()  // 
+    // setInterval(function () {
+    // document
+    //   .querySelectorAll('.el-cascader-panel .el-radio ')
+    //   .forEach((val) => {
+    //     val.style.display = 'none'
+    //   })
+    // }, 10)
+
+    // console.log();
+    //层级下拉框
+    // setInterval(function () {
+    //   document.querySelectorAll('.el-cascader-node__label').forEach((el) => {
+    //     el.onclick = function () {
+    //       if (this.previousElementSibling) this.previousElementSibling.click()
+    //     }
+    //   })
+    // }, 1000)
   },
   methods: {
     yangshi() {
       this.heights =
         window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 270
       document.querySelector('#onetable .el-table__body tbody').style.height =
-        (this.heights / 10) * 9 + 'px' // var rows = document.querySelectorAll('#onetable .el-table__row ') // // console.log( document.querySelectorAll('#onetable .el-table__row ')); // rows.forEach((item) => { //   item.style.height = Math.floor(this.heights / 11) + 'px' // })
+        ((this.heights - 5) / 10) * 9 + 'px' // var rows = document.querySelectorAll('#onetable .el-table__row ') // // console.log( document.querySelectorAll('#onetable .el-table__row ')); // rows.forEach((item) => { //   item.style.height = Math.floor(this.heights / 11) + 'px' // })
 
       document.querySelector('#onetable .has-gutter tr ').style.height =
         Math.floor(this.heights / 11) + 'px' // // 监听浏览器高度变化，修改表格高度
@@ -515,40 +379,199 @@ export default {
           window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 270
 
         document.querySelector('#onetable .el-table__body tbody').style.height =
-          (this.heights / 10) * 9 + 'px' // var rows = document.querySelectorAll('#onetable .el-table__row ') // rows.for
-
-        document.querySelector('#onetable .has-gutter tr ').style.height =
-          Math.floor(this.heights / 11) + 'px'
+          ((this.heights - 5) / 10) * 9 + 'px' // var rows = document.querySelectorAll('#onetable .el-table__row ') // rows.for
       }
     },
-
+    //查看截图
+    jietu(time, userimg) {
+      this.jietutitle = userimg
+      this.imgtu(time, userimg)
+      this.newkanjietu = true
+    },
+    //获取截图
+    async imgtu(time, userimg) {
+      const { data: res } = await this.$http.get('/discover/getImage', {
+        params: {
+          imageName: userimg,
+          disDate: dayjs(time).format('YYYY/MM/DD'),
+        },
+      })
+      if (res.code == 200) {
+        if (res.data != null) {
+          this.xinshi = false
+          this.jieURL = res.data
+        } else {
+          this.xinshi = true
+        }
+      }
+    },
+    newkanjietuclose() {
+      this.newkanjietu = false
+    },
+    //层级下拉框
+    handleChange(val) {
+      //  //地区选择之后将下拉框界面收起
+      if (this.newdomainSimpleVo.fraudType != null) {
+        this.$refs.cascader.toggleDropDownVisible()
+        if (this.newdomainSimpleVo.fraudType.length > 1) {
+          this.newdomainSimpleVo.typebig = null
+        } else {
+          this.newdomainSimpleVo.typebig = this.newdomainSimpleVo.fraudType[0]
+        }
+      }
+    },
     getRole1(data) {
       return getRole(data)
       // console.log( getRole(data));
     },
+    //初始化获取数据
+    async getTabData() {
+      if (this.newdomainSimpleVo.fraudType == '') {
+        this.newdomainSimpleVo.fraudType = null
+      }
+      let getlist = {
+        startDay: this.newdomainSimpleVo.dateRange[0],
+        endDay:this.newdomainSimpleVo.dateRange[1],
+        uploader:this.newdomainSimpleVo.uploader,
+        protocol:this.newdomainSimpleVo.protocol,
+        page: this.mypageable.pageNum,
+        pageSize: this.mypageable.pageSize,
+        fraudType: this.newdomainSimpleVo.fraudType
+      }
+      console.log(getlist);
+      const { data: res } = await this.$http.get(
+        '/alarm/list',
+        getlist
+      )
+      // console.log(res);
+      if (res.code == 200) {
+        // if(res.data.content.length>0){
+        this.tableData = res.dataList
+        let tableDataLength = this.tableData.ledngth
+        let timer = null
+        timer ? clearTimeout(timer) : ''
+        if (this.tableData.length < 10) {
+          for (var i = this.tableData.length; i < 10; i++) {
+            this.tableData.push({})
+          }
+        }
+        if (tableDataLength < 10) {
+          timer = setTimeout(() => {
+            for (var i = tableDataLength; i < 10; i++) {
+              document.querySelectorAll('#onetable tbody .el-checkbox')[
+                i
+              ].style.display = 'none'
+            }
+          })
+        }
+        this.total = res.totalSum
+        this.totalPages = res.totalPage // }else{ //   this.$message('无数据') // }
+      }
+    },
+    //查询
+    async searchTabData() {
+      this.mypageable.pageNum = 1
+      this.getTabData()
+      // this.getTabData()
+      // this.resetFun()
+      // let getlist = {
+      //   startDiscoverDate: this.whiteSearchList.startCreateTime,
+      //   endDiscoverDate: this.whiteSearchList.endCreateTime,
+      //   mypageable: this.mypageable,
+      //   // url: this.newdomainSimpleVo.domain,
+      //   type: this.newdomainSimpleVo.domain,
+      //   visits: this.newdomainSimpleVo.visits,
+      // }
+      // const { data: res } = await this.$http.post(
+      //   '/discover/getDiscover',
+      //   getlist
+      // )
+      // // console.log(res);
+      // if (res.code == 200) {
+      //   this.mypageable.pageNum = 1
+      //   this.tableData = res.data.content
+      //   this.total = res.data.totalElements
+      //   this.totalPages = res.data.totalPages
+      // } else {
+      //   this.$message('无数据')
+      //   this.mypageable.pageNum = 1
+      //   this.mypageable.pageSize = 10
+      //   this.getTabData()
+      //   this.resetFun()
+      // }
+    },
+
+    //重置方法
+    resetFun() {
+      // this.newdomainSimpleVo.dateValue_find = null
+      // this.newdomainSimpleVo = {
+      //   domain: null, //域名
+      //   dateValue_find: null, //时间
+      // }
+      this.newdomainSimpleVo.fraudType = null
+      this.newdomainSimpleVo.url = null
+      this.newdomainSimpleVo.dateValue_find = null
+      (this.whiteSearchList = {
+        startCreateTime: null,
+        endCreateTime: null,
+      }),
+        this.getTabData()
+    },
     handleSelectionChange(val) {
       this.tableDatalist = val
     },
-    //下载
 
-    put() {
+    // newput() {
+    //   if (this.tableDatalist.length == 0) {
+    //     this.$confirm(
+    //       '您可以对数据进行勾选下载，若要下载全部发现数据点击确定?',
+    //       '提示',
+    //       {
+    //         confirmButtonText: '确定',
+    //         cancelButtonText: '取消',
+    //         type: 'warning',
+    //       }
+    //     )
+    //       .then(async () => {
+    //         this.put()
+    //       })
+    //       .catch(() => {
+    //         this.$message('已取消')
+    //       })
+    //   } else {
+    //     this.put()
+    //   }
+    // },
+    //下载   //文件流
+    async put() {
+      // console.log(this.tableDatalist)
+      // if (this.tableDatalist.length > 0) {
+      // let arr = []
+      // this.tableDatalist.forEach((item) => {
+      //   arr.push(item.id)
+      // })
+      if (this.newdomainSimpleVo.fraudType == '') {
+        this.newdomainSimpleVo.fraudType = null
+      }
+      let getlist = {
+        discoverTimeDTO: {
+          startTime: this.whiteSearchList.startCreateTime,
+          endTime: this.whiteSearchList.endCreateTime,
+        },
+
+        pageable: this.mypageable,
+        // sourceEnum: this.newdomainSimpleVo.source,
+        fraudType: this.newdomainSimpleVo.fraudType,
+        url: this.newdomainSimpleVo.url,
+      }
+      console.log(getlist);
       this.loadingbuttext = '...加载中'
       this.loadingbut = true
-      let getTabDataList = {
-        earlyGrade: this.newdomainSimpleVo.Status,
-        endFraudTime: this.whiteSearchList.endCreateTime,
-
-        fraudType: this.newdomainSimpleVo.fraud,
-        newPage: this.mypageable,
-        phoneNum: this.newdomainSimpleVo.photo,
-        startFraudTime: this.whiteSearchList.startCreateTime,
-      }
-
       this.$http({
         method: 'POST',
-        url: '/warning_ca/downloadCAWarning',
+        url: '/discover/downloadDiscover',
         responseType: 'blob',
-        data: getTabDataList,
+        data: getlist,
       })
         .then((res) => {
           // const blob = new Blob([res.data], {
@@ -556,6 +579,8 @@ export default {
           // })
           //        const url = window.URL.createObjectURL(blob)
           // window.open(url, '_blank')
+
+          // console.log(title);
           let that = this
           let blob = res.data
           if (blob.type == 'application/json') {
@@ -570,7 +595,7 @@ export default {
             }
             reader.readAsText(blob)
           } else {
-            let title = dayjs().format('YYYYMMDD') + '-预警导出.xlsx'
+            let title = dayjs().format('YYYYMMDD') + '发现导出.xlsx'
 
             let binaryData = []
             binaryData.push(blob)
@@ -591,11 +616,10 @@ export default {
 
             this.loadingbuttext = '导出'
             this.loadingbut = false
+
             // 移除改下载标签
             document.body.removeChild(aLink)
           }
-
-          // console.log(title);
         })
         .catch((err) => {
           // console.log(err)
@@ -603,392 +627,422 @@ export default {
           this.loadingbuttext = '导出'
           this.loadingbut = false
         })
-    },
-    // async put123() {
-    //   this.loadingbuttext = '...加载中'
-    //   this.loadingbut = true
-    //   let arr = []
-    //   this.tableDatalist.forEach((item) => {
-    //     arr.push(item.id)
-    //   })
-    //   let putlist = {
-    //     warningSimpleVo: {
-    //       // pushUnit: this.newdomainSimpleVo.unit,
-    //       dataSource: this.newdomainSimpleVo.sourceType,
-    //       earlyGrade: this.newdomainSimpleVo.Warning,
-    //       fraudType: this.newdomainSimpleVo.fraud,
-    //     },
-    //     warningTimeVo: {
-    //       startFraudTime: this.whiteSearchList.startCreateTime,
-    //       endFraudTime: this.whiteSearchList.endCreateTime,
-    //     },
-    //     idList: arr,
-    //   }
-
-    //   const { data: res } = await this.$http.post(
-    //     '/warning/downloadWarning',
-    //     putlist
-    //   )
-    //   if (res.code == 200) {
-    //     this.loadingbuttext = '导出'
-    //     this.loadingbut = false
-    //     let newurl = res.expandData.url
-    //     let eleLink = document.createElement('a')
-    //     eleLink.download = name
-    //     // const down = window.location.origin
-    //     // eleLink.href = "http://172.31.1.61:8080" + newurl;
-    //     // const down = window.location.origin
-    //     eleLink.href = newurl
-
-    //     // console.log(eleLink);
-    //     eleLink.click()
-    //     eleLink.remove()
-    //     if (this.tableDatalist.length > 0) {
-    //       this.$refs.multipleTable.clearSelection()
-    //     }
-    //   } else {
-    //     this.$message(res.message)
-    //   }
-    // },
-
-    //曲线图++++++++++++++++++++++++++++++++++++1111
-    // drawLine() {
-    //   // eslint-disable-next-line camelcase
-    //   var bar_qx = this.$refs.chart
-    //   let myChart = this.$echarts.init(bar_qx)
-    //   myChart.setOption(this.setOption1())
-    // },
-    // setOption1() {
-    //   let option = {
-    //     feature: {
-    //       saveAsImage: {
-    //         show: false,
-    //       },
-    //     },
-    //     title: {},
-    //     tooltip: {
-    //       trigger: 'axis',
-    //       axisPointer: {
-    //         lineStyle: {
-    //           color: '#66B3FF',
-    //         },
-    //       },
-    //     },
-    //     color: ['#fac858', '#EE6666', '#91cc75'], //绿色  橙色
-    //     legend: {
-    //       data: [
-    //         {
-    //           name: '高',
-    //           textStyle: {
-    //             color: ['#fac858'],
-    //           },
-    //         },
-    //         {
-    //           name: '中',
-    //           textStyle: {
-    //             color: ['#EE6666'],
-    //           },
-    //           //  ["处置域名数", "域名访问量"]
-    //         },
-    //         {
-    //           name: '低',
-    //           textStyle: {
-    //             color: ['#91cc75'],
-    //           },
-    //           //  ["处置域名数", "域名访问量"]
-    //         },
-    //       ],
-    //     },
-    //     grid: {
-    //       y2: 140,
-    //     },
-
-    //     xAxis: {
-    //       type: 'category',
-    //       boundaryGap: false,
-    //       data: this.newqutest,
-
-    //       axisLabel: {
-    //         // rotate: -20,
-    //         //  让x轴文字方向为竖向
-    //         // interval: 0,
-    //       },
-    //       axisLine: {
-    //         lineStyle: {
-    //           color: '#fff',
-    //           width: 1,
-    //         },
-    //       },
-    //     },
-
-    //     yAxis: {
-    //       type: 'value',
-    //       splitLine: {
-    //         lineStyle: {
-    //           color: ['#fff'],
-    //         },
-    //       },
-    //       nameTextStyle: {
-    //         color: ['#fff'],
-    //       },
-    //       axisLine: {
-    //         lineStyle: {
-    //           color: '#fff',
-    //           width: 1,
-    //         },
-    //       },
-    //     },
-    //     series: [
-    //       {
-    //         name: '高',
-    //         type: 'line',
-
-    //         data: this.newqutest1,
-    //         smooth: true,
-    //       },
-    //       {
-    //         name: '中',
-    //         type: 'line',
-
-    //         data: this.newqutest2,
-    //         smooth: true,
-    //       },
-    //       {
-    //         name: '低',
-    //         type: 'line',
-
-    //         data: this.newqutest3,
-    //         smooth: true,
-    //       },
-    //     ],
-    //     dataZoom: [
-    //       {
-    //         id: 'dataZoomX',
-    //         type: 'inside',
-    //         xAxisIndex: [0],
-    //         filterMode: 'none',
-    //         start: 0,
-    //         end: 200,
-    //       },
-    //     ],
-    //     grid: {
-    //       x: 60,
-    //       y: 40,
-    //       x2: 40,
-    //       y2: 40,
-    //       borderWidth: 1,
-    //     },
-    //   }
-    //   return option
-    // },
-
-    // 初始化数据
-    async getTabData() {
-      let getTabDataList = {
-        earlyGrade: this.newdomainSimpleVo.Status,
-        endFraudTime: this.whiteSearchList.endCreateTime,
-
-        fraudType: this.newdomainSimpleVo.fraud,
-        newPage: this.mypageable,
-        phoneNum: this.newdomainSimpleVo.photo,
-        startFraudTime: this.whiteSearchList.startCreateTime,
-      }
-      const { data: res } = await this.$http.post(
-        '/warning_ca/getWarningCAPage',
-        getTabDataList
-      )
-      if (res.code == 200) {
-        this.tableData = res.data.content
-        let tableDataLength = this.tableData.length
-        let timer = null
-        timer ? clearTimeout(timer) : ''
-        if (this.tableData.length < 10) {
-          for (var i = this.tableData.length; i < 10; i++) {
-            this.tableData.push({})
-          }
-        }
-        if (tableDataLength < 10) {
-          timer = setTimeout(() => {
-            for (var i = tableDataLength; i < 10; i++) {
-              document.querySelectorAll('#onetable tbody .el-checkbox')[
-                i
-              ].style.display = 'none'
-            }
-          })
-        }
-        this.total = res.data.totalElements
-        this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
-      }
-    },
-
-    //查询
-    searchTabData() {
-      this.mypageable.pageNo = 1
-      this.getTabData()
-      // let getTabDataList = {
-      //   warningSimpleVo: {
-      //     pushUnit: this.newdomainSimpleVo.unit,
-      //     dataSource: this.newdomainSimpleVo.sourceType,
-      //     earlyGrade: this.newdomainSimpleVo.Warning,
-      //     fraudType: this.newdomainSimpleVo.fraud,
-      //   },
-      //   warningTimeVo: {
-      //     startFraudTime: this.whiteSearchList.startCreateTime,
-      //     endFraudTime: this.whiteSearchList.endCreateTime,
-      //   },
-      //   mypageable: this.mypageable,
-      // };
 
       // const { data: res } = await this.$http.post(
-      //   "/warning/getWarning",
-      //   getTabDataList
-      // );
-      // if (res.code == 200) {
-      //   this.mypageable.pageNum = 1;
-      //   // if (res.data.content.length > 0) {
-      //   // console.log(res.data.content);
-      //   this.tableData = res.data.content;
-      //   this.total = res.data.totalElements;
-      //   this.totalPages = res.data.totalPages;
+      //   '/discover/downloadDiscover',
+      //   getlist
+      // )
 
-      //   // } else {
-      //   // this.mypageable.pageNum = 1;
-      //   // this.mypageable.pageSize = 10;
-      //   // this.getTabData();
-      //   // }
+      // if (res.code == 200) {
+      //   this.loadingbuttext = '导出'
+      //   this.loadingbut = false
+      //   let newurl = res.expandData.url
+      //   let eleLink = document.createElement('a')
+      //   eleLink.download = name
+      //   // const down = window.location.origin
+      //   // eleLink.href = "http://172.31.1.61:8080" + newurl;
+      //   // const down = window.location.origin
+      //   eleLink.href = newurl
+      //   // console.log(eleLink);
+      //   eleLink.click()
+      //   eleLink.remove()
+      //   this.$refs.multipleTable.clearSelection()
       // } else {
-      //   this.$message("无数据");
-      //   this.mypageable.pageNum = 1;
-      //   this.mypageable.pageSize = 10;
-      //   this.getTabData();
-      //   this.resetFun();
+      //   this.$message(res.message)
+      // }
+      // }
+      //  else {
+      //   // this.$message('请勾选')
+      //   this.errFlag = true
+      //   clearTimeout(this.errFlagTimer)
+      //   this.errFlagTimer = setTimeout(() => {
+      //     this.errFlag = false
+      //   }, 2000)
+      //   // this.err
       // }
     },
+    //访问量
+    // async fangwenl(val) {
+    //   this.gridData = []
+    //   this.loading = true
+    //   this.yuming = val.url
+    //   this.arr.push(val.id)
+    //   this.dialogTableVisible = true
+    //   let list = {
+    //     mypageable: {
+    //       pageNum: this.mypageable1.pageNum1,
+    //       pageSize: this.mypageable1.pageSize1,
+    //     },
+    //     masterIds: this.arr,
+    //     endDiscoverTime: null,
+    //     startDiscoverTime: null,
+    //   }
+    //   const { data: res } = await this.$http.post('/discover/getRawData', list)
+    //   if (res.code == 200) {
+    //     this.loading = false
+    //     this.gridData = res.data.content
+    //     this.total1 = res.data.totalElements
+    //     this.totalPages1 = res.data.totalPages
+    //   }
+    // },
+    handleSizeChange(val) {
+      // console.log(val);
+      this.mypageable.pageSize = val
+      this.getTabData()
+    },
+    // async   handleSizeChange1(val) {
+    //   // console.log(val);
+    //   this.mypageable1.pageSize1 = val;
+    //   // this.fangwenl();
+    //    let list={
+    //  mypageable:{
+    //    pageNum:this.mypageable1.pageNum1,
+    //    pageSize:this.mypageable1.pageSize1
+    //  },
 
-    dataCreate_change1(val) {
-      if (val && val != '') {
-        this.whiteSearchList1.startCreateTime1 = val[0]
-        this.whiteSearchList1.endCreateTime1 = val[1]
-      } else {
-        this.whiteSearchList1.startCreateTime1 = null
-        this.whiteSearchList1.endCreateTime1 = null
+    //  masterIds:this.arr,
+    //  endDiscoverTime: null,
+    //  startDiscoverTime: null,
+    //   }
+    //   const {data:res}= await this.$http.post('/discover/getRawData',list)
+    //   if(res.code==200){
+    //     this.gridData=res.data.content
+    //       this.total1 = res.data.totalElements;
+    //     this.totalPages1 = res.data.totalPages;
+    //   }
+    // },
+    handleCurrentChange(val) {
+      // console.log(val, 111);
+
+      this.mypageable.pageNum = val
+
+      // console.log( this.mypageable.pageNum);
+      this.getTabData()
+    },
+    async handleCurrentChange1(val) {
+      this.gridData = []
+      this.loading = true
+      this.mypageable1.pageNum1 = val
+
+      // console.log( this.mypageable.pageNum);
+      // this.fangwenl();
+      let list = {
+        mypageable: {
+          pageNum: this.mypageable1.pageNum1,
+          pageSize: this.mypageable1.pageSize1,
+        },
+        masterIds: this.arr,
+        endDiscoverTime: null,
+        startDiscoverTime: null,
+      }
+      const { data: res } = await this.$http.post('/discover/getRawData', list)
+      if (res.code == 200) {
+        this.loading = false
+        this.gridData = res.data.content
+        this.total1 = res.data.totalElements
+        this.totalPages1 = res.data.totalPages
       }
     },
-    //诈骗时间
+    modelType1_clearFun(val) {
+      if (val == '') {
+        this.newdomainSimpleVo.source = null
+      }
+    },
+
     dataCreate_change(val) {
       if (val && val != '') {
         this.whiteSearchList.startCreateTime = val[0]
         this.whiteSearchList.endCreateTime = val[1]
       } else {
         this.whiteSearchList.startCreateTime = null
-
         this.whiteSearchList.endCreateTime = null
       }
     },
-    sourceType_clearFun(val) {
-      if (val == '') {
-        this.newdomainSimpleVo.sourceType = null
-      }
-    },
-    unitType_clearFun(val) {
-      if (val == '') {
-        this.newdomainSimpleVo.unit = null
-      }
-    },
-    WarningType_clearFun(val) {
-      if (val == '') {
-        this.newdomainSimpleVo.Status = null
-      }
-    },
-    fraudType_clearFun(val) {
-      if (val == '') {
-        this.newdomainSimpleVo.fraud = null
-      }
-    },
-    //row-keys
-    modelType1_photo(val) {
-      if (val == '') {
-        this.newdomainSimpleVo.uploadPerson = null
-      }
-    },
-    //重置方法
-    resetFun() {
-      this.newdomainSimpleVo = {
-        photo: null,
-        dateValue_find: null,
-        sourceType: null,
-        // sourceType: null,
-        fraud: null,
-        unit: null,
-        Status: null,
-      }
-      this.whiteSearchList = {
-        startCreateTime: null,
-        endCreateTime: null,
-      }
-      this.mypageable.pageNo = 1
-      this.getTabData()
-    },
-    // 分页
-    handleSizeChange(val) {
-      // console.log(val);
-      this.mypageable.pageSize = val
-      this.getTabData()
-    },
-    handleCurrentChange(val) {
-      // console.log(val, 111);
-
-      this.mypageable.pageNo = val
-
-      // console.log( this.mypageable.pageNum);
-      this.getTabData()
-    },
-
-    // handleSelectionChange(val) {
-    //   this.tableDatalist = val;
+    // handleClose(done) {
+    //   this.mypageable1.pageNum1 = 1
+    //   this.arr = []
+    //   this.dialogTableVisible = false
+    // },
+    //    eldialogout() {
+    //   (this.isShow = false), this.$refs.multipleTable.clearSelection(); //清除选中的数据
     // },
     getRowKeys(row) {
       return row.id
     },
+    bigtype(val) {
+      var status = ''
+      switch (val) {
+        case 'KF':
+          status = '冒充客服类'
+          break
+        case 'GJF':
+          status = '冒充公检法类'
+          break
+        case 'SD':
+          status = '刷单返利类'
+          break
+        case 'DK':
+          status = '贷款代办信用卡类'
+          break
+        case 'JJGW':
+          status = '冒充军警购物诈骗'
+          break
+        case 'SZP':
+          status = '杀猪盘'
+          break
+        case 'DS':
+          status = '电商类诈骗'
+          break
+        case 'LC':
+          status = '理财'
+          break
+        case 'JY':
+          status = '网络婚恋、交友类'
+          break
+        case 'ZX':
+          status = '虚假征信类'
+          break
+        case 'MC':
+          status = '冒充领导、熟人类'
+          break
+        case 'YX':
+          status = '网络游戏产品虚假交易类'
+          break
+        case 'OTHER':
+          status = '其他类型诈骗'
+          break
+        case 'APP':
+          status = '分发平台'
+          break
+        case 'XZYM':
+          status = '下载页面'
+          break
+        case 'HC':
+          status = '灰产'
+          break
+        default:
+          status = val
+          break
+      }
+      return status
+    },
 
-    // 数据来源
-    // shuzu(val){
-    //   if(val=='1'){
-    //     return '贷款'
-    //   }
-    //    else if(val=='2'){
-    //     return '理财'
-    //   }
-    //   else  if(val=='3'){
-    //     return '冒充客服'
-    //   }
-    //   else  if(val=='4'){
-    //     return '杀猪盘'
-    //   }
-    //   else  if(val=='5'){
-    //     return '冒充公检法'
-    //   }
-    //   else  if(val=='6'){
-    //     return '刷单'
-    //   }
-    // }
-    // shuzu(val) {
-    //   if (val == '贷款') {
-    //     return '贷款'
-    //   } else if (val == '理财') {
-    //     return '理财'
-    //   } else if (val == '冒充电商客服') {
-    //     return '冒充电商客服'
-    //   } else if (val == '杀猪盘') {
-    //     return '杀猪盘'
-    //   } else if (val == '冒充公检法') {
-    //     return '冒充公检法'
-    //   } else if (val == '刷单') {
-    //     return '刷单'
-    //   } else if (val == '博彩/投资/交友') {
-    //     return '博彩/投资/交友'
-    //   }
-    // },
+    smalltype(val) {
+      var status = ''
+      switch (val) {
+        case 'kf_ds':
+          status = '冒充电商客服'
+          break
+        case 'kf_wl':
+          status = '冒充物流客服'
+          break
+        case 'kf_other':
+          status = '冒充其他客服类'
+          break
+        case 'gjf_mc':
+          status = '冒充公检法'
+          break
+        case 'gjf_gs':
+          status = '工商平台类'
+          break
+        case 'gjf_etc':
+          status = 'ETC通行卡'
+          break
+        case 'gjf_other':
+          status = '其他政府机关或单位组织'
+          break
+        case 'sd_cz':
+          status = '充值（红包）返利'
+          break
+
+        case 'dk_xyk':
+          status = '虚假代办信用卡'
+          break
+        case 'dk_te':
+          status = '虚假提额套现'
+          break
+        case 'dk_dk':
+          status = '虚假贷款'
+          break
+        case 'dk_other':
+          status = '其他贷款类'
+          break
+        case 'szp_lc':
+          status = '虚假投资理财类'
+          break
+        case 'szp_dubo':
+          status = '博彩彩票'
+          break
+        case 'szp_ty':
+          status = '体育直播，比分竞猜'
+          break
+        case 'szp_yx':
+          status = '棋牌游戏'
+          break
+        case 'ds_gw':
+          status = '虚假购物'
+          break
+        case 'ds_fw':
+          status = '虚假服务'
+          break
+        case 'ds_other':
+          status = '其他电商类'
+          break
+        case 'jy_jr':
+          status = '冒充外国军人'
+          break
+        case 'jy_hl':
+          status = '网络婚恋'
+          break
+        case 'jy_jy':
+          status = '网络交友，聊天交友'
+          break
+        case 'jy_other':
+          status = '其他交友类'
+          break
+        case 'zx_xyd':
+          status = '消除校园贷记录'
+          break
+        case 'zx_bljl':
+          status = '消除不良记录'
+          break
+        case 'zx_other':
+          status = '其他征信'
+          break
+        case 'mc_ld':
+          status = '冒充领导'
+          break
+        case 'mc_sr':
+          status = '冒充熟人'
+          break
+        case 'mc_gz':
+          status = '冒充公众人物'
+          break
+        case 'mc_other':
+          status = '冒充其他身份类'
+          break
+        case 'yx_card':
+          status = '游戏币、游戏点卡诈骗'
+          break
+        case 'yx_zhzb':
+          status = '游戏账号、游戏装备诈骗'
+          break
+        case 'yx_other':
+          status = '其他游戏产品虚假交易'
+          break
+        case 'other_zj':
+          status = '虚假中奖诈骗'
+          break
+        case 'other_zp':
+          status = '虚假招聘'
+          break
+        case 'other_jp':
+          status = '机票退改签诈骗'
+          break
+        case 'other_tp':
+          status = 'ps图片诈骗'
+          break
+        case 'jjgw':
+          status = '冒充军警购物诈骗'
+          break
+        case 'app_ff':
+          status = '分发平台'
+          break
+        case 'xzym':
+          status = '下载页面'
+          break
+        case 'hc_fw':
+          status = '灰产服务'
+          break
+        case 'hc_other':
+          status = '灰产其他'
+          break
+        case 'hc':
+          status = '灰产'
+          break
+        case 'kf':
+          status = '冒充客服类'
+          break
+        case 'gjf':
+          status = '冒充公检法类'
+          break
+        case 'sd':
+          status = '刷单返利类'
+          break
+        case 'dk':
+          status = '贷款代办信用卡类'
+          break
+        case 'jjgw':
+          status = '冒充军警购物诈骗'
+          break
+        case 'szp':
+          status = '杀猪盘'
+          break
+        // case 'DS':
+        //   status = '电商类诈骗'
+        //   break
+        case 'jy':
+          status = '网络婚恋、交友类'
+          break
+        case 'zx':
+          status = '虚假征信类'
+          break
+        case 'mc':
+          status = '冒充领导、熟人类'
+          break
+        case 'yx':
+          status = '网络游戏产品虚假交易类'
+          break
+        case 'other':
+          status = '其他类型诈骗'
+          break
+        case 'app':
+          status = '分发平台'
+          break
+        case 'xzym':
+          status = '下载页面'
+          break
+
+        default:
+          status = val
+          break
+      }
+      return status
+    },
+
+    zP(val) {
+      if (val == 'DK') {
+        return '贷款代办信用卡类'
+      } else if (val == 'SD') {
+        return '刷单返利类'
+      } else if (val == 'GJF') {
+        return '冒充公检法类'
+      } else if (val == 'KF') {
+        return '冒充客服类'
+      } else if (val == 'OTHER') {
+        return '其他类型诈骗'
+      } else if (val == 'JJGW') {
+        return '冒充军警购物诈骗'
+      } else if (val == 'SZP') {
+        return '杀猪盘'
+      } else if (val == 'DS') {
+        return '电商类诈骗'
+      } else if (val == 'JY') {
+        return '网络婚恋、交友类'
+      } else if (val == 'ZX') {
+        return '虚假征信类'
+      } else if (val == 'MC') {
+        return '冒充领导、熟人类'
+      } else if (val == 'YX') {
+        return '网络游戏产品虚假交易类'
+      } else if (val == 'APP') {
+        return '分发平台'
+      } else if (val == 'XZYM') {
+        return '下载页面'
+      } else {
+        return val
+      }
+    },
     tableRowClassName({ rowIndex }) {
       if (rowIndex % 2 === 0) {
         return 'warning-row'
@@ -997,29 +1051,29 @@ export default {
       }
       return ''
     },
-    async ckxq(val) {
-      // console.log(val);
-
-      const { data: res } = await this.$http.get('/warning_ca/tailDetail', {
-        params: {
-          id: val.toString(),
-        },
-      })
-      if (res.code == 200) {
-        this.xintableData = res.data
-
-        // console.log(this.xintableData);
-        this.xiangqing = true
-      }
-    },
-    handleClose1() {
-      this.xiangqing = false
+    // 转ip
+    zhuanip(num) {
+      var str
+      var tt = new Array()
+      tt[0] = (num >>> 24) >>> 0
+      tt[1] = ((num << 8) >>> 24) >>> 0
+      tt[2] = (num << 16) >>> 24
+      tt[3] = (num << 24) >>> 24
+      str =
+        String(tt[0]) +
+        '.' +
+        String(tt[1]) +
+        '.' +
+        String(tt[2]) +
+        '.' +
+        String(tt[3])
+      return str
     },
   },
 }
 </script>
 
-<style scoped lang='less'>
+<style  scoped lang='less'>
 // 按钮hover
 .right_main_under /deep/ .el-button-chaxun:focus,
 .right_main_under /deep/ .el-button-chaxun:hover {
@@ -1037,11 +1091,6 @@ export default {
   background-size: 100% 100%;
 }
 
-.el-table::before {
-  height: 0;
-  /* // 将高度修改为0 */
-}
-// 点击变黑
 /deep/ .el-table__fixed-right::before,
 .el-table__fixed::before {
   background-color: #192d45;
@@ -1049,11 +1098,92 @@ export default {
 /deep/.el-table--enable-row-hover .el-table__body tr:hover > td {
   background-color: transparent;
 }
+
+/deep/.el-table--border::after,
+.el-table--group::after,
+.el-table::before {
+  background-color: #192d45 !important;
+}
+.el-pagination {
+  text-align: right;
+}
+.bottom {
+  width: 100%;
+  height: 40px /* 60/16 */ /* 40/16 */;
+  background-color: rgba(11, 48, 78, 0.6);
+  padding-bottom: 1%;
+  .ss_l {
+    float: left;
+    margin-top: 13px;
+    span {
+      margin-left: 1.25rem /* 10/16 */;
+      margin-right: 1.25rem /* 20/16 */;
+      a {
+        color: #fff;
+      }
+      a:hover {
+        color: red;
+      }
+    }
+  }
+  .ss {
+    float: right;
+  }
+}
+
+.bottom1 {
+  width: 100%;
+  height: 50px /* 60/16 */ /* 40/16 */;
+
+  box-sizing: border-box;
+  .ss1 {
+    float: right;
+    margin-right: 46px /* 46/16 */;
+  }
+}
+.warning {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  height: 5rem /* 80/16 */;
+  .item {
+    .el-button {
+      width: 9.375rem /* 150/16 */ /* 100/16 */;
+      height: 4rem /* 80/16 */;
+      font-size: 18px;
+      background-color: rgb(93, 93, 199);
+      color: #fff;
+      border: 1px solid transparent;
+    }
+  }
+}
+
+// * el-divider 修改高度&虚线效果 */
+.el-divider--horizontal {
+  margin-top: 0.625rem /* 10/16 */;
+  background: 0 0;
+  // border-top: 1px solid #596168;
+}
+.dialist {
+  padding: 0 1.25rem /* 10/16 */ 1.25rem 0 /* 20/16 */;
+  .ss {
+    margin-right: 1.5rem /* 20/16 */;
+  }
+}
+// /deep/.el-dialog {
+//   margin: 5vh auto !important;
+// }
+
+// /deep/ .el-dialog__body {
+//   height: 70vh;
+//   overflow: auto;
+// }
+.urlcolor {
+  color: #909090;
+}
 .tubiao {
   width: 100% /* 1558/16 */;
   height: 12.5rem /* 200/16 */ /* 300/16 */;
-  margin-bottom: 2rem;
-  box-sizing: border-box;
 }
 .tubiao1 {
   width: 100% /* 1558/16 */;
@@ -1069,16 +1199,6 @@ export default {
   /* 100/16 */ /* 40/16 */
   box-sizing: border-box;
   background-color: #07293f;
-  border-radius: 10px;
-}
-.right {
-  width: 40%;
-  height: 10rem;
-  background-color: #07293f;
-  // float: right;
-  // padding: 1.25rem /* 20/16 */ /* 50/16 */ 3.125rem /* 100/16 */;
-  box-sizing: border-box;
-  border-radius: 10px;
 }
 #bar_qx {
   height: 10rem /* 240/16 */ /* 260/16 */ /* 200/16 */;
@@ -1088,13 +1208,26 @@ export default {
 #bar_zz {
   height: 10rem /* 200/16 */;
   // margin-left: 1.875rem /* 30/16 */ /* 20/16 */;
-  padding-top: 0.625rem /* 10/16 */;
   margin-left: 0.625rem;
 }
-.qwqw {
-  margin-top: 10px;
-  border: 1px solid transparent !important;
+.right {
+  width: 40%;
+  height: 10rem;
+
+  // float: right;
+  // padding: 1.25rem /* 20/16 */ /* 50/16 */ 3.125rem /* 100/16 */;
+  box-sizing: border-box;
+  background-color: #07293f;
 }
+.el-table__body /deep/ .el-button--mini {
+  color: #fff;
+}
+// .el-table::before {
+//   height: 10px;
+// }
+// .dialogInfo /deep/ .el-table__row {
+//   height: 40px !important;
+// }
 .title_top {
   background: url(../assets/img/list/biaotibeijing.png) no-repeat;
   color: #fff;
@@ -1113,102 +1246,80 @@ export default {
 //   // background: url(../assets/img/list/zhongkuang.png) no-repeat;
 //   // background-size: 100%;
 // }
-
-.xiangqinglist {
-  // background-color: red;
-  width: 100%;
-  height: 600px;
-  box-sizing: border-box;
-  .list1 {
-    // flex-flow: column;
-    height: 120px;
-    width: 100%;
-    // background-color: #fff;
-    margin-top: 10px;
-    margin-bottom: 5px;
-    .list2 {
-      width: 100%;
-      height: 50%;
-      background: url(../assets/img/shouye/矩形.png) no-repeat;
-      background-size: 100% 100%;
-    }
-    .list3 {
-      width: 100%;
-      height: 50%;
-      // background-color: blue;
-      background: url(../assets/img/shouye/边框.png) no-repeat;
-      background-size: 100% 100%;
-    }
-    .list4 {
-      width: 57%;
-      height: 100%;
-      float: left;
-      align-items: center;
-      display: -webkit-flex;
-    }
-    .list5 {
-      width: 43%;
-      height: 100%;
-      float: left;
-      align-items: center;
-      display: -webkit-flex;
-    }
-    .listtitle {
-      font-size: 12px;
-      color: #94a4a7;
-      padding-left: 20px;
-      box-sizing: border-box;
-      width: 130px;
-    }
-    .listtitle1 {
-      flex: 1;
-      font-size: 12px;
-      color: #fff;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-  }
+/*alert 成功弹出框样式*/
+// .dialogInfo /deep/ .el-dialog {
+//   background: #021c2d url(../assets/img/shouye/背景框.png) no-repeat;
+//   background-size: 100% 100%;
+//   padding: 10px;
+//   opacity: 0.85;
+//   box-sizing: border-box;
+//   .el-dialog__headerbtn {
+//     top: 8px !important;
+//     .el-dialog__close {
+//       color: #fff;
+//       font-size: 16px;
+//     }
+//   }
+//   .el-dialog__header {
+//     margin: 20px 50px 0px 40px;
+//     background: url(../assets/img/shouye/标题矩形.png) no-repeat;
+//     background-size: 100% 100%;
+//   }
+//   .el-dialog__title,
+//   .gailan h3,
+//   .gailan1 h3 {
+//     color: #2fbcfc;
+//   }
+//   .gailan h3,
+//   .gailan1 h3 {
+//     padding-left: 10px;
+//   }
+// }
+//滚动条
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+  background-color: #f5f5f5;
+  border-radius: 5px;
 }
 
-// 弹窗
-.dialogInfo /deep/ .el-dialog {
-  background: #021c2d url(../assets/img/shouye/背景框.png) no-repeat;
-  background-size: 100% 100%;
-  padding: 10px;
-  opacity: 0.9;
-  box-sizing: border-box;
-  .el-dialog__headerbtn {
-    top: 5px !important;
-    right: 10px !important;
-    .el-dialog__close {
-      color: #fff;
-      font-size: 14px;
-    }
-  }
-  .el-dialog__header {
-    margin: 20px 20px 0px 20px;
-    background: url(../assets/img/shouye/标题矩形.png) no-repeat;
-    background-size: 100% 100%;
-  }
-  .el-dialog__title,
-  .gailan h3,
-  .gailan1 h3 {
-    color: #2fbcfc;
-  }
-  .gailan h3,
-  .gailan1 h3 {
-    padding-left: 10px;
-  }
+/*定义滚动条轨道 内阴影+圆角*/
+::-webkit-scrollbar-track {
+  // -webkit-box-shadow: inset 0 0 3px #2fbcfc;
+  border-radius: 5px;
+  background-color: #f5f5f5;
+}
+
+/*定义滑块 内阴影+圆角*/
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  // -webkit-box-shadow: inset 0 0 3px #2fbcfc;
+  // background-color: #23749c;
+  background-color: #7f8a96 !important;
 }
 .list_xia {
   padding-bottom: 20px;
   background-color: rgba(8, 38, 61, 0.6);
 }
-.bottom {
-  width: 100%;
-  height: 40px /* 60/16 */ /* 40/16 */;
-  background-color: rgba(11, 48, 78, 0.5);
-  padding-bottom: 1%;
+
+/* 修改表格的滚动条*/
+/deep/ .el-table__body-wrapper::-webkit-scrollbar {
+  width: 5px;
+  height: 10px;
+}
+
+/* 表格滚动条的滑块*/
+/deep/ .el-table__body-wrapper::-webkit-scrollbar-thumb {
+  background-color: #7f8a96 !important;
+  //  background-color: #7f8a96;
+  border-radius: 3px;
+}
+.dianji {
+  cursor: pointer;
+}
+.xinashititle {
+  width: 100px;
+  height: 20px;
+  margin: 0 auto;
 }
 </style>

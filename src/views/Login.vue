@@ -6,15 +6,13 @@
         <div class="top1_title">
           <div class="title">深圳市反诈技术支撑平台</div>
         </div>
-        <!-- 头部_光条-->
-        <!-- 冲突test -->
-        <div class="top1_line">
+      </div>
+      <!-- 头部_光条-->
+      <div class="top1_line">
           <div class="top12_line">
             <div class="top12_line_son"></div>
           </div>
         </div>
-      </div>
-      <div class="ms-xxgx"></div>
       <div class="ms-login">
         <div class="ms-title">欢迎登录</div>
         <el-form
@@ -82,45 +80,48 @@ export default {
   },
   methods: {
     submitForm(param) {
-      this.$router.push('/shouye')
-      // this.$refs[param].validate(async (valid) => {   // 7.4 测试暂时关闭接口
-      //   if (valid) {
-      //     try {
-      //       const formData = new FormData()
-      //       formData.append('username', this.param.username)
-      //       formData.append('password', this.param.password)
-      //       const res = await this.$http.post('/login', formData)
-      //       if (res.data.code == 200) {
+      this.$refs[param].validate(async (valid) => {   // 7.4 测试暂时关闭接口
+        if (valid) {
+          try {
+            // const formData = new FormData()
+            // formData.append('username', this.param.username)
+            // formData.append('password', this.param.password)
+            const loginData = {
+              username: this.param.username,
+              password: this.param.password
+            }
+            const res = await this.$http.post('/user/login', loginData)
+            if (res.data.code == 200) {
       
-      //         this.$message('登录成功')
-      //         window.sessionStorage.setItem(
-      //           'one',
-      //           JSON.stringify(this.param.username)
-      //         )
-      //         window.sessionStorage.setItem(
-      //           'pwd',
-      //           JSON.stringify(this.param.password),
+              this.$message('登录成功')
+              window.sessionStorage.setItem(
+                'one',
+                JSON.stringify(this.param.username)
+              )
+              window.sessionStorage.setItem(
+                'pwd',
+                JSON.stringify(this.param.password),
 
-      //         )
-      //         window.sessionStorage.setItem('isLogin', 'true')
-      //         window.sessionStorage.setItem(
-      //           'qx',
-      //           JSON.stringify(res.data.data.roleType)
-      //         )
-      //         // window.sessionStorage.setItem("role", role);
-      //         this.$router.push('/shouye')
-      //       } else {
-      //         this.$message('账号或密码错误！')
+              )
+              window.sessionStorage.setItem('isLogin', 'true')
+              // window.sessionStorage.setItem(
+              //   'qx',
+              //   JSON.stringify(res.data.data.roleType)
+              // )
+              // window.sessionStorage.setItem("role", role);
+              this.$router.push('/shouye')
+            } else {
+              this.$message('账号或密码错误！')
               
-      //       }
-      //     } catch (e) {
-      //       this.$message.error(e)
-      //     }
-      //   } else {
-      //     this.$message.error('请输入账号和密码')
-      //     return false
-      //   }
-      // })
+            }
+          } catch (e) {
+            this.$message.error(e)
+          }
+        } else {
+          this.$message.error('请输入账号和密码')
+          return false
+        }
+      })
     },
   },
 }
@@ -134,20 +135,47 @@ export default {
   position: relative;
 }
 .title {
-  position: absolute;
-  left: 38%;
-  top: 15%;
+  text-align: center;
   font-family: 'heiti';
-  font-size: 31px;
+  height:85px;
+  line-height: 85px;
+  font-size: 40px;
+  letter-spacing: 3px /* 12/16 */;
   background-image: linear-gradient(0deg, #f8f8fb 0%, #8ec4fd 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 .top1_title {
-  height: 65px;
+  height: 85px;
   width: 100%;
-  background: url('../assets/newimg/newhome/顶部.png') no-repeat 100% 100%;
-  background-size: cover;
+  background-image: url('../assets/newimg/newhome/顶部.png');
+  background-repeat: no-repeat;
+  // background-size: cover;  // 不会让图片走形，尽可能完整
+  background-size: 100% 100%; // 根据容器大小拉伸图片，会让图片走形
+  
+}
+.login-wrap {
+  /* position: relative; */
+  position: fixed;
+  width: 100%;
+  height: 100%;
+
+  background: url(../assets/Login/src/背景.png) no-repeat 100% 100%;
+
+  background-size: 100% 100%;
+}
+.ms-title {
+  width: 100%;
+  line-height: 70px;
+  text-align: center;
+  font-size: 26px;
+  color: #fff9fdc7;
+  padding-top: 30px;
+  letter-spacing: 8px;
+  text-decoration: none;
+  font-family: 'siyuanheitinormal1'; /*设置字体*/
+
+  text-shadow: 0 0 5px #fffffd;
 }
 .top1_line {
   height: 15px;
@@ -217,30 +245,6 @@ export default {
     left: 100%;
     top: 0px;
   }
-}
-
-.login-wrap {
-  /* position: relative; */
-  position: fixed;
-  width: 100%;
-  height: 100%;
-
-  background: url(../assets/Login/src/背景.png) no-repeat 100% 100%;
-
-  background-size: 100% 100%;
-}
-.ms-title {
-  width: 100%;
-  line-height: 70px;
-  text-align: center;
-  font-size: 26px;
-  color: #fff9fdc7;
-  padding-top: 30px;
-  letter-spacing: 8px;
-  text-decoration: none;
-  font-family: 'siyuanheitinormal1'; /*设置字体*/
-
-  text-shadow: 0 0 5px #fffffd;
 }
 
 .ms-login {
@@ -328,32 +332,5 @@ export default {
   font-size: 12px;
   //  -webkit-transform: scale(0.9);
   font-weight: 600;
-}
-.ms-xxgx {
-  position: relative;
-  top: -1%;
-  left: 15%;
-  background: url(../assets/img/login/光效xx.png) no-repeat 100% 100%;
-  background-size: 100% 100%;
-  width: 200px;
-  height: 100px;
-  animation: myfour 2s linear infinite;
-}
-@keyframes myfour {
-  0% {
-    opacity: 0.6;
-  }
-  25% {
-    opacity: 0.8;
-  }
-  50% {
-    opacity: 1;
-  }
-  75% {
-    opacity: 0.8;
-  }
-  100% {
-    opacity: 0.6;
-  }
 }
 </style>

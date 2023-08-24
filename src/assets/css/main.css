@@ -27,7 +27,7 @@ a {
     width: 100%;
     /* left: 200px; */
     left: 0;
-    top: 70px;
+    top: 90px;
     bottom: 0;
     /* padding-bottom: 30px; */
     -webkit-transition: left .3s ease-in-out;
@@ -45,8 +45,8 @@ a {
     /* padding: 10px; */
     /* overflow-y: scroll; */
     box-sizing: border-box;
-    background: url(../img/shouye/背景边框.png)  no-repeat;
-    background-size: 100% 100%;
+    /* background: url(../img/shouye/背景边框.png)  no-repeat;
+    background-size: 100% 100%; */
     padding: 20px 20px 30px  20px;
 }
 

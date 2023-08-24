@@ -1,21 +1,9 @@
 <template>
-  <div class="header">
-    <!-- 折叠按钮 -->
-    <!-- <img src="@/assets/img/police.png" alt />
-    <div class="logo">综合处置系统</div>
-    <div class="collapse-btn" @click="collapseChage"></div>
-    <div class="header-right">
-      <div class="header-user-con">
-     
-        <div class="btn-bell"></div>
-     
-      -->
-
-    <div class="dp_top">
-      <!-- 预留 -->
-      <div class="logo">深圳市反诈技术支撑平台—{{ namenav }}</div>
-      <div class="nav" v-show="$route.path==='/findUser'||$route.path==='/findRole'||$route.path==='/dept'">
-        
+  <div class="app dp">
+    <div class="top1">
+      <div class="top1_title">
+        <div class="title">深圳市反诈技术支撑平台</div>
+        <div class="nav" v-show="$route.path==='/findUser'||$route.path==='/findRole'||$route.path==='/dept'">       
         <el-button
           size="mini"
           type="primary"
@@ -26,130 +14,139 @@
           @click="navclick(item.name, item.menuName)"
           >{{ item.menuName }}</el-button
         >
-        <!-- <el-button size="mini" type="primary" class="navnum">角色管理</el-button>
-        <el-button size="mini" type="primary" class="navnum">用户管理</el-button>
-        <el-button size="mini" type="primary" class="navnum">日志管理</el-button> -->
       </div>
-      <div class="topguanli">
-        <!-- <span class="img"> -->
-        <!-- <img src="../assets/img/guanliyuan.png" alt="" /> </span
-          > -->
-        <!-- <span class="guanliy">管理员</span
-          ><span class="tuichu" @click="tuichu">退出</span> -->
-        <div class="role">
-          <img :src="require('../assets/img/shouye/guanliyuan.png')" alt="" />
-          <!-- <el-dropdown   4.3 测试暂时关闭
-            class="user-name"
-            trigger="click"
-            @command="handleCommand"
-          >
-            <span class="el-dropdown-link">
-              {{ username }}
-              <i class="el-icon-caret-bottom"></i>
-            </span>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item command="upload">修改密码</el-dropdown-item>
-                <el-dropdown-item divided command="loginout"
-                  >退出登录</el-dropdown-item
-                >
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown> -->
+        <div class="topguanli">
+          <div class="role">
+            <img :src="require('../assets/img/shouye/guanliyuan.png')" alt="" />            
+            <el-dropdown
+              class="user-name"
+              trigger="click"
+              @command="handleCommand"
+            >            
+              <span class="el-dropdown-link">
+                {{ username }}
+                <i class="el-icon-caret-bottom"></i>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item command="upload">修改密码</el-dropdown-item>
+                  <el-dropdown-item divided command="loginout"
+                    >退出登录</el-dropdown-item
+                  >
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </div>
+        </div>
+        <div>
+        <div class="fanhui">
+         {{curDate}}
         </div>
       </div>
-      <div>
-        <!-- <button><span></span>返回</button> -->
-      </div>
-      <!-- <div class="fanhui" @click="tuichudapin" style="padding-top: 10px">
-          退出大屏
-        </div> -->
-
-      <!-- <div class="fanhui">退出大屏</div> -->
+      <!-- <div class="nav">
+        <div class="nav_li">
+          <ul class="daohang3">
+            <li
+              v-for="(item, index) in daohang"
+              :key="index"
+            >
+              <span>
+                <router-link
+                  :to="{ path: item.path, query: { name: item.name } }" class="classA"
+                  >{{ item.name }}</router-link
+                >
+              </span>
+            </li>
+          </ul>
+        </div>
+      </div> -->
     </div>
-    <!-- 头部_光条-->
-    <div class="top1_line">
-      <!-- <div class="top11_line"></div> -->
-      <div class="top12_line">
-        <div class="top12_line_son"></div>
-      </div>
-      <!-- <div class="top13_line"></div> -->
+        <el-dialog
+          title="修改密码"
+          :visible.sync="dialog"
+          width="30%"
+          :before-close="handleClose1"
+          class="dialogInfo"
+        >
+        <el-form
+          :rules="rules"
+          ref="newdomainSimpleVo"
+          label-width="80px"
+          :inline="true"
+          :model="newdomainSimpleVo"
+          class="demo-form-inline search_select_form"
+          size="mini"
+        >
+          <el-form-item label="原密码" prop="oldpwd">
+            <el-input
+              v-model="newdomainSimpleVo.oldpwd"
+              placeholder="请输入原密码"
+            ></el-input>
+          </el-form-item>
+          <el-form-item
+            label="原密码"
+            prop="oldpwd"
+            style="visibility: hidden"
+            v-if="yinc"
+          >
+            <el-input
+              v-model="newdomainSimpleVo.oldpwd"
+              placeholder="请输入原密码"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="新密码" prop="xinpwd">
+            <el-input
+              v-model="newdomainSimpleVo.xinpwd"
+              placeholder="请输入新密码"
+            ></el-input>
+          </el-form-item>
+          <el-form-item label="确认密码" prop="xinpwd2">
+            <el-input
+              v-model="newdomainSimpleVo.xinpwd2"
+              placeholder="请再次输入新密码"
+            ></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button
+            @click="submitForm('newdomainSimpleVo')"
+            type="primary"
+            size="mini"
+            class="el-button-xitongerr"
+            >修 改</el-button
+          >
+          <el-button
+            class="el-button-xitongup"
+            type="primary"
+            @click="err"
+            size="mini"
+            >取 消</el-button
+          >
+        </span>
+      </el-dialog>
     </div>
-    <!-- ============================== -->
-
-    <!-- ============================== -->
-    <!-- </div>
+    
+    <!-- <div class="dp_top">
+      <div class="logo">深圳市反诈技术支撑平台—{{ namenav }}</div>
+      <div class="nav" v-show="$route.path==='/findUser'||$route.path==='/findRole'||$route.path==='/dept'">        
+        <el-button
+          size="mini"
+          type="primary"
+          class="navnum"
+          v-for="(item, index) in daohangnum"
+          :key="index"
+          :class="['/' + item.name !== $route.path ? '' : 'yangshi']"
+          @click="navclick(item.name, item.menuName)"
+          >{{ item.menuName }}</el-button
+        >
+      </div>
     </div> -->
-
-    <el-dialog
-      title="修改密码"
-      :visible.sync="dialog"
-      width="30%"
-      :before-close="handleClose1"
-      class="dialogInfo"
-    >
-      <el-form
-        :rules="rules"
-        ref="newdomainSimpleVo"
-        label-width="80px"
-        :inline="true"
-        :model="newdomainSimpleVo"
-        class="demo-form-inline search_select_form"
-        size="mini"
-      >
-        <el-form-item label="原密码" prop="oldpwd">
-          <el-input
-            v-model="newdomainSimpleVo.oldpwd"
-            placeholder="请输入原密码"
-          ></el-input>
-        </el-form-item>
-        <el-form-item
-          label="原密码"
-          prop="oldpwd"
-          style="visibility: hidden"
-          v-if="yinc"
-        >
-          <el-input
-            v-model="newdomainSimpleVo.oldpwd"
-            placeholder="请输入原密码"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="新密码" prop="xinpwd">
-          <el-input
-            v-model="newdomainSimpleVo.xinpwd"
-            placeholder="请输入新密码"
-          ></el-input>
-        </el-form-item>
-        <el-form-item label="确认密码" prop="xinpwd2">
-          <el-input
-            v-model="newdomainSimpleVo.xinpwd2"
-            placeholder="请再次输入新密码"
-          ></el-input>
-        </el-form-item>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button
-          @click="submitForm('newdomainSimpleVo')"
-          type="primary"
-          size="mini"
-          class="el-button-xitongerr"
-          >修 改</el-button
-        >
-        <el-button
-          class="el-button-xitongup"
-          type="primary"
-          @click="err"
-          size="mini"
-          >取 消</el-button
-        >
-      </span>
-    </el-dialog>
   </div>
 </template>
 
 <script>
 // import { sendWebsocket, closeWebsocket } from "@/utils/websocket.js";
-
+import dayjs from 'dayjs'
 export default {
   // inject: ["reload"],
   data() {
@@ -173,6 +170,7 @@ export default {
       }
     }
     return {
+      curDate: dayjs().format("YYYY年MM月DD日"),
       rules: {
         oldpwd: [
           {
@@ -229,8 +227,9 @@ export default {
       old: '',
       daohangtitle: '',
       daohangnum: [
-        { menuName: "用户管理", menuUrl: "/user/findUser",name: "findUser" },
         { menuName: "角色管理", menuUrl: "/role/findRole",name: "findRole" },
+        { menuName: "用户管理", menuUrl: "/user/findUser",name: "findUser" },
+        
         { menuName: "日志管理", menuUrl: "/dept",name: "dept" }
       ],
       namenav: '',
@@ -377,6 +376,55 @@ export default {
 </script>
 <style scoped lang='less'>
 @import '../common/font.css';
+.dp {
+  width: 100%;
+  height: 100%;
+
+  /* width: 100%;
+  height: 58.5625rem /* 937/16 */
+  /* // z-index: -1; */
+  background-color: #020723;
+  // background-image: url('../assets/newimg/newhome/背景.png');
+  // background-repeat: no-repeat;
+  // background-size: 100% 100%;
+}
+.top1 {
+  width: 100%;
+  height: 9.7%;
+  position: relative;
+}
+.top1_title {
+  height: 100px;
+  width: 100%;
+  background-image: url('../assets/img/newbg/header_bg.png');
+  background-repeat: no-repeat;
+  // background-size: cover;  // 不会让图片走形，尽可能完整
+  background-size: 100% 100%; // 根据容器大小拉伸图片，会让图片走形
+}
+.title {
+  text-align: center;
+  font-family: 'heiti';
+  height:75px;
+  line-height: 75px;
+  font-size: 42px;
+  letter-spacing: 7px /* 12/16 */;
+  color:#19c9d5;
+}
+.topguanli {
+  width: 8.1% /* 150/16 */ /* 277/16 */;
+  height: 50% /* 30/16 */ /* 35/16 */;
+  position: absolute;
+  right: 0%;
+  top: 20%;
+}
+.role {
+  height: 30px /* 30/16 */;
+}
+.role img {
+  height: 30px;
+  vertical-align: middle;
+  /* margin-top:10px */
+}
 .dialog-footer /deep/ .el-button-xitongerr {
   background: url(../assets/img/shouye/确定按钮.png) no-repeat;
   background-size: cover;
@@ -430,20 +478,6 @@ img {
   height: 35px;
   margin: 15px; */
 }
-.header .logo {
-  position: absolute;
-  left: 36%;
-  top: 20%;
-  font-family: 'heiti';
-  font-size: 25px;
-  /* letter-spacing: 5px ; */
-  background-image: linear-gradient(0deg, #f8f8fb 0%, #8ec4fd 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  width: 28%;
-  text-align: center;
-  text-shadow: 0 0 20px rgba(0, 121, 255, 0.5);
-}
 .header-right {
   float: right;
   padding-right: 20px;
@@ -494,6 +528,8 @@ img {
   border-radius: 50%;
 }
 .el-dropdown-link {
+  position: relative;
+  top:6px;
   color: #fff;
   cursor: pointer;
 }
@@ -501,27 +537,6 @@ img {
   text-align: center;
 }
 /* ++++++++++ */
-.dp_top {
-  width: 100%;
-  height: 60px;
-  background: url('../assets/newimg/newhome/顶部.png') no-repeat 100% 100%;
-  // background-position: 0;
-  background-size: cover;
-  position: relative;
-  /* background-color: red; */
-}
-.dp_top .img {
-  display: block;
-  float: left;
-}
-
-.dp_top .topguanli {
-  width: 8.1% /* 150/16 */ /* 277/16 */;
-  height: 50% /* 30/16 */ /* 35/16 */;
-  position: absolute;
-  right: 0%;
-  top: 20%;
-}
 .role {
   height: 30px /* 30/16 */;
 }
@@ -568,93 +583,14 @@ img {
 }
 .fanhui {
   position: absolute;
-  left: 0.5%;
+  left: 3.5%;
   top: 15%;
-  cursor: pointer;
+  color:#11d8e5;
+  font-size: 20px;
 }
 .fanhui img {
   width: 75px;
   height: 40px;
-}
-.top1_line {
-  height: 10px;
-  width: 100%;
-
-  // background: url('../assets/newimg/newhome/光.png') no-repeat;
-  // background-size: 100% 100%;
-}
-// .top11_line,
-// .top12_line,
-// .top13_line {
-//   float: left;
-// }
-// .top11_line,
-// .top13_line {
-//   width: 10%;
-//   height: 10px;
-// }
-.top12_line {
-  width: 100%;
-  height: 10px;
-  position: relative;
-  overflow: hidden;
-}
-.top12_line_son {
-  position: absolute;
-  left: -100%;
-  top: 0;
-  width: 100%;
-  height: 10px;
-  background: url('../assets/newimg/newhome/光.png') no-repeat;
-  background-size: 100% 100%;
-  animation: myfirst 5s linear normal;
-  animation-iteration-count: infinite;
-}
-@keyframes myfirst {
-  0% {
-    left: -80%;
-    top: 0px;
-  }
-  10% {
-    left: -60%;
-    top: 0px;
-  }
-  20% {
-    left: -40%;
-    top: 0px;
-  }
-  30% {
-    left: -20%;
-    top: 0px;
-  }
-  40% {
-    left: 0%;
-    top: 0px;
-  }
-  50% {
-    left: 20%;
-    top: 0px;
-  }
-  60% {
-    left: 40%;
-    top: 0px;
-  }
-  70% {
-    left: 60%;
-    top: 0px;
-  }
-  80% {
-    left: 80%;
-    top: 0px;
-  }
-  90% {
-    left: 90%;
-    top: 0px;
-  }
-  100% {
-    left: 100%;
-    top: 0px;
-  }
 }
 
 .dialogInfo /deep/ .el-dialog {

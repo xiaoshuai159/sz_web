@@ -1,63 +1,21 @@
 <template>
-  <div>
     <div class="nav">
-      <!-- <div class="menu_xuanzhong" v-if="this.daohang.length != 2">
-        <img src="../assets/img/shouye/选中.png" alt="" />
-      </div> -->
-      <!-- 内容——头部导航 -->
-      <!-- <div class="dianl" @click="low">
-        <img src="../assets/img/shouye/左.png" alt="" />
-      </div>
-      <div class="dianr" @click="up">
-        <img src="../assets/img/shouye/右.png" alt="" />
-      </div> -->
       <div class="nav_li">
-        <!-- v-if="this.daohang.length >= 3" -->
         <ul class="daohang3">
           <li
             v-for="(item, index) in daohang"
             :key="index"
-            :class="
-              item.name == '验证' || item.name == '处置'
-                ? 'jinzhi1'
-                : item.name == namenav
-                ? 'five'
-                : 'six'
-            "
           >
             <span>
               <router-link
-                :to="{ path: item.path, query: { name: item.name } }"
-                :class="
-                  item.name == '验证' || item.name == '处置'
-                    ? 'jinzhi1'
-                    : item.name == namenav
-                    ? 'five'
-                    : 'six'
-                "
+                :to="{ path: item.path, query: { name: item.name } }" class="classA"
                 >{{ item.name }}</router-link
               >
             </span>
           </li>
         </ul>
-        <!-- <ul v-if="this.daohang.length == 2" class="daohang2">
-          <li v-for="(item, index) in daohang" :key="index">
-            <router-link :to="item.path" class="three">{{
-              item.name
-            }}</router-link>
-          </li>
-        </ul>
-        <ul v-if="this.daohang.length == 1" class="daohang1">
-          <li v-for="(item, index) in daohang" :key="index">
-            <router-link :to="item.path" class="three">{{
-              item.name
-            }}</router-link>
-           
-          </li>
-        </ul> -->
       </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -73,71 +31,22 @@ export default {
           name: '发现',
           path: '/gitDiscoverca',
         },{
-          name: '预警',
+          name: '处置',
+          path: '/disposePage',
+        },{
+          name: '警情',
           path:'/getWarningfourg'
+        },{
+          name: '特办',
+          path: '/specialPage'
+        },{
+          name: '关联',
+          path: '/relevancePage'
         },
         {
-          name: '系统管理',
-          path: '/findUser',
+          name: '管理',
+          path: '/findRole',
         }],
-      daohang1: [
-        {
-          name: '首页',
-          path: '/shouye',
-        },{
-          name: '发现',
-          path: '/gitDiscoverca',
-        },{
-          name: '预警',
-          path:'/getWarningfourg'
-        },
-        {
-          name: '系统管理',
-          path: '/findUser',
-        },
-        // {
-        //   name: '处置',
-        //   path: '',
-        // },
-
-        // {
-        //   name: '验证',
-        //   path: '',
-        // },
-      ],
-      daohang2: [
-      {
-          name: '首页',
-          path: '/shouye',
-        },
-            {
-          name: '预警',
-          // path: '/getWarning',
-          path:'/getWarningfourg'
-        },
-        {
-          name: '发现',
-          path: '/gitDiscoverca',
-        },
-    
-        // {
-        //   name: '统计',
-        //   path: '/Statisticsht',
-        // },
-        // {
-        //   name: '系统管理',
-        //   path: '/findUser',
-        // },
-        // {
-        //   name: '处置',
-        //   path: '',
-        // },
-
-        // {
-        //   name: '验证',
-        //   path: '',
-        // },
-      ],
       namenav: '',
       navnumlist: [],
     }
@@ -263,25 +172,45 @@ export default {
 <style scoped lang='less'>
 .nav {
   width: 1027px;
-  height: 40px;
+  height: 3.2%;
   margin: 0 auto;
-  // border: 1px solid red;
-  // background: url('../assets/newimg/newhome/形状 6.png') no-repeat;
-  background-size: 100% 100%;
   position: relative;
 }
 .nav_li {
-  // width: 830px;
-  height: 54%;
-  // border: 1px solid blue;
-  //  margin-left: 60px;
-  // padding-top: 10px;
+  height: 100%;
   box-sizing: border-box;
-  // overflow: hidden;
-  // margin-left: 10px;
+  float: left;
   position: relative;
   left: 50%;
+
+}
+.nav_li .daohang3 li {
+  font-family: '黑体';
   float: left;
+  list-style-type: none;
+  text-align: center;
+  height: 40px;
+  line-height: 40px;
+  width: 100px;
+  margin-right: 8px;
+  background: url(../assets/img/newbg/btnbg.png);
+  background-size: cover;
+  color:#00fff3
+}
+.nav_li .daohang3 li span{
+  color:#00fff3
+}
+
+.nav_li .daohang3 li:hover {
+  color: #fff;
+  border-bottom-color: #07e7e6;
+}
+.classA{
+  color:rgba(0, 255, 243, 0.75);
+  font-size: 20px 
+}
+.classA:hover{
+  color: rgba(0, 255, 243);
 }
 .dianl {
   position: absolute;
@@ -318,61 +247,7 @@ export default {
   width: 100%;
   height: 100%;
 }
-.nav_li .daohang3 li {
-  font-family: '黑体';
-  float: left;
-  list-style-type: none;
-  text-align: center;
-  height: 30px;
-  line-height: 30px;
-  width: 100px;
-  border: 3px solid #0d6fd8;
-  margin-right: 8px;
-  box-shadow: 0 0 10px #1768be inset, 0 0 0px #b5c5d4;
-  transform: skewX(45deg);
-}
-.nav_li .daohang3 li span {
-  display: inline-block;
-  transform: skewX(-45deg);
-}
-.nav_li .daohang2 li {
-  float: left;
-  list-style-type: none;
-  text-align: center;
-  // font-size: 1.25rem /* 20/16 */;
-  // color: #fff;
-  font-weight: 400;
 
-  // padding: 0  ;
-  // padding-top: 5px;
-  // padding-right: 1.1rem;
-  // padding-left: 1.4rem;
-  // box-sizing: border-box;
-  // width: 5.6rem /* 71/16 */ /* 44.5/16 */;
-  width: 212px;
-  height: 50px;
-  // padding-left: 0.7rem;
-  // box-sizing: border-box;
-}
-.nav_li .daohang1 li {
-  float: left;
-  list-style-type: none;
-  text-align: center;
-  // font-size: 1.25rem /* 20/16 */;
-  // color: #fff;
-  font-weight: 400;
-  // padding: 0  ;
-  // padding-top: 5px;
-  // padding-right: 1.1rem;
-  // padding-left: 1.4rem;
-  // box-sizing: border-box;
-  // width: 5.6rem /* 71/16 */ /* 44.5/16 */;
-  width: 100%;
-  height: 50px;
-  line-height: 50px;
-  // padding-left: 0.7rem;
-  // box-sizing: border-box;
-}
 .three {
   font-size: 22px /* 20/16 */ /* 18/16 */;
   color: #dfe0f7;
@@ -424,10 +299,6 @@ export default {
 .six:hover {
   color: #fff;
   border-bottom-color: #07e7e6 !important;
-}
-.nav_li .daohang3 li:hover {
-  color: #fff;
-  border-bottom-color: #07e7e6;
 }
 .daohang3 {
   position: relative;

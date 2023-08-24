@@ -53,12 +53,12 @@
       </template>
     </div>
     <el-table
-          :row-class-name="tableRowClassName"
+      :row-class-name="tableRowClassName"
       ref="multipleTable"
       :data="tableData"
       style="width: 100%"
-         :height="heights"
-               id="onetable"
+      :height="heights"
+      id="onetable"
       size="mini"
       class="tableStyle"
     >

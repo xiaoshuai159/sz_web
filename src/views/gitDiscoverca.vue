@@ -38,17 +38,22 @@
               </el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="目的IP">
+            <el-input v-model.trim="newdomainSimpleVo.destIP" placeholder="IP">
+              
+            </el-input>
+          </el-form-item>
 
           <el-form-item>
             <el-button
               type="primary"
-              class="el-button-chaxun"
+              class="el-button-daochu"
               size="mini"
               @click.native.stop="searchTabData"
               >查询</el-button
             >
             <el-button
-              class="el-button-chongzhi"
+              class="el-button-daochu"
               type="primary"
               size="mini"
               @click.native="resetFun"
@@ -100,6 +105,7 @@
         </template>
       </el-table-column>
       <el-table-column label="域名" prop="domain"> </el-table-column>
+      <el-table-column label="目的IP" prop="destIP"> </el-table-column>
       <el-table-column label="访问量" prop="visits"> </el-table-column>
     </el-table>
 
@@ -402,6 +408,7 @@ export default {
         type: null, //诈骗大类
         typesmall: null, //诈骗小类
         typebig: null,
+        destIP:null
       },
 
       domainFeedbackVo: {

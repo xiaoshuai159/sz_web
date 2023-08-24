@@ -42,11 +42,11 @@
             </el-form>
           </div></el-col
         >
-        <!-- <el-col :span="12"   // 7.4 测试关闭
+        <el-col :span="12"
           ><div class="grid-content bg-purple-light">
             <el-button
               style="margin-right: 20px"
-              v-if="getRole1('saveUser')"
+              
               class="el-button-chaxun left"
               type="primary"
               size="mini"
@@ -54,7 +54,7 @@
               >添加用户</el-button
             >
           </div></el-col
-        > -->
+        >
       </el-row>
 
       <!-- <el-row >

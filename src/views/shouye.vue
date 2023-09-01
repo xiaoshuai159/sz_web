@@ -152,12 +152,6 @@
             placeholder="请输入新密码"
           ></el-input>
         </el-form-item>
-        <el-form-item label="确认密码" prop="xinpwd2">
-          <el-input
-            v-model="newdomainSimpleVo.xinpwd2"
-            placeholder="请再次输入新密码"
-          ></el-input>
-        </el-form-item>
       </el-form>
       <span slot="footer" class="dialog-footer">
         <el-button
@@ -198,15 +192,6 @@ export default {
         callback()
       }
     }
-    var validatePass2 = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请再次输入密码'))
-      } else if (value !== this.newdomainSimpleVo.xinpwd) {
-        callback(new Error('两次密码不一致!'))
-      } else {
-        callback()
-      }
-    }
     return {
       curDate: dayjs().format("YYYY年MM月DD日"),
       rules: {
@@ -227,27 +212,9 @@ export default {
             required: true,
             message: '密码不能为空',
             trigger: 'blur',
-          },
-          { min: 8, max: 12, message: '密码长度为8到12位', trigger: 'blur' },
-          {
-            pattern: /^(?![0-9]+$)(?![a-zA-Z]+$)[0-9A-Za-z]{8,16}$/,
-            message: '格式不正确，请输入数字与字母组合',
-            trigger: 'blur',
-          },
+          }
         ],
 
-        xinpwd2: [
-          {
-            required: true,
-            message: '确认密码不能为空',
-            trigger: 'change',
-          },
-          {
-            validator: validatePass2,
-            trigger: 'blur',
-            required: true,
-          },
-        ],
       },
       //居中导航
       daohang: [
@@ -288,8 +255,7 @@ export default {
       dialog: false,
       newdomainSimpleVo: {
         oldpwd: '',
-        xinpwd: '',
-        xinpwd2: '',
+        xinpwd: ''
       },
       yinc: false,
       // loading1: false,
@@ -334,7 +300,7 @@ export default {
       }
     },
     async tuichusession() {
-      const { data: res } = await this.$http.post('/pagelogout')
+      await this.$http.post('/user/logout')
     },
     submitForm(formName) {
       let that = this
@@ -353,9 +319,8 @@ export default {
     },
     async up() {
       let list = {
-        oldPassword: this.newdomainSimpleVo.oldpwd,
-        newPassword: this.newdomainSimpleVo.xinpwd,
-        newPassword1: this.newdomainSimpleVo.xinpwd2,
+        oldPwd: this.newdomainSimpleVo.oldpwd,
+        newPwd: this.newdomainSimpleVo.xinpwd
       }
       const { data: res } = await this.$http.post('/user/modifyPwd', list)
       if (res.code == 200) {
@@ -370,7 +335,6 @@ export default {
     err() {
       this.newdomainSimpleVo.oldpwd = ''
       this.newdomainSimpleVo.xinpwd = ''
-      this.newdomainSimpleVo.xinpwd2 = ''
       let that = this
       this.$nextTick(() => {
         that.$refs['newdomainSimpleVo'].clearValidate()

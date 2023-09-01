@@ -35,12 +35,12 @@
               type="primary"
               size="mini"
               @click.native.stop="searchTabData"
-              class="el-button-chaxun"
+              class="el-button-daochu"
               v-preventReClick
               >查询</el-button
             >
             <el-button
-              class="el-button-chongzhi"
+              class="el-button-daochu"
               type="primary"
               size="mini"
               @click.native="resetFun"

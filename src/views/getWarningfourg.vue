@@ -22,7 +22,7 @@
             <el-date-picker
               v-model="newdomainSimpleVo.dateRange"
               type="daterange"
-              :change="dataCreate_change(newdomainSimpleVo.dateRange)"
+              :clearable="false"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
@@ -34,7 +34,7 @@
           <el-form-item label="诈骗类型">
             <el-select v-model.trim="newdomainSimpleVo.fraudType" clearable placeholder="诈骗类型" style="width: 120px;">
               <el-option
-                v-for="item in options"
+                v-for="item in fraudTypeOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -44,7 +44,7 @@
           <el-form-item label="协议">
             <el-select v-model.trim="newdomainSimpleVo.protocol" clearable placeholder="协议" class="el-input-width">
               <el-option
-                v-for="item in options"
+                v-for="item in protocolOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -116,19 +116,11 @@
       <el-table-column
         type="selection"
         width="55"
-        
       ></el-table-column>
-      <!-- :reserve-selection="true" -->
-      <el-table-column label="域名" prop="domain">
-        <!-- min-width="10%" -->
-      </el-table-column>
-      <el-table-column label="诈骗类型" prop="type">
-        <template slot-scope="scope">
-          {{ scope.row.fraudType }}
-        </template>
-      </el-table-column>
+      <el-table-column label="域名" prop="domain"></el-table-column>
+      <el-table-column label="诈骗类型" prop="fraudType"></el-table-column>
       <el-table-column label="协议" prop="protocol"> </el-table-column>
-      <el-table-column label="上传人" prop="person"> </el-table-column>
+      <el-table-column label="上传人" prop="uploader"> </el-table-column>
       <el-table-column label="备注" prop="remark"> </el-table-column>
     </el-table>
 
@@ -179,9 +171,19 @@ import Err from '@/components/err.vue'
 import dayjs from 'dayjs'
 export default {
   // inject: ["reload"],
-  components: {},
   data() {
     return {
+      newdomainSimpleVo: {
+        uploader:null,
+        dateRange:[dayjs().subtract(1, 'month').format('YYYY-MM-DD'),dayjs().format('YYYY-MM-DD')],
+        //发现日期
+        fraudType: null,
+        protocol:null
+      },
+      mypageable: {
+        pageNum: 1,
+        pageSize: 10,
+      },
       heights: undefined,
       errFlag: false,
       errFlagTimer: undefined,
@@ -211,39 +213,13 @@ export default {
         user: '',
         region: '',
       },
-      newdomainSimpleVo: {
-        uploader:null,
-        dateRange:[dayjs().subtract(1, 'month').format('YYYY-MM-DD'),dayjs().format('YYYY-MM-DD')],
-        dateValue_find: [
-          dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
-            ' ' +
-            '00:' +
-            '00:' +
-            '00',
-          dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
-        ],
-        //发现日期
-        url: null, //URL
-        source: '中卫', //来源
-        fraudType: null, //诈骗大类
-        typebig: null,
-        destIP:null
-      },
-
+      
       domainFeedbackVo: {
         accessSystemType: null,
         feedbackStatus: null,
       },
 
-      mypageable: {
-        pageNum: 1,
-        pageSize: 10,
-      },
-      mypageable1: {
-        pageNum1: 1,
-        pageSize1: 10,
-      },
-      total1: 1,
+      
       total: 1,
       totalPages: '',
       totalPages1: '',
@@ -254,48 +230,8 @@ export default {
       clicktitle: '点击查看图片',
       xinshi: false,
         // 改之后：单级别下拉框
-        options:[
-          {
-              value: 'DK',
-              label: '贷款',
-            },
-            {
-              value: 'SD',
-              label: '刷单返利类',
-            },
-            {
-              value: 'GJF',
-              label: '冒充公检法类',
-            },
-            {
-              value: 'LC',
-              label: '理财',
-            },
-            {
-              value: 'SZP',
-              label: '杀猪盘',
-            },
-            {
-              value: 'KF',
-              label: '冒充客服类',
-            },
-            {
-              value: 'DS',
-              label: '电商类诈骗',
-            },
-            {
-              value: 'JY',
-              label: '网络婚恋、交友类',
-            },
-            {
-              value: 'ZX',
-              label: '虚假征信类',
-            },
-            {
-              value: 'YX',
-              label: '网络游戏产品虚假交易类',
-            },
-        ],
+      fraudTypeOptions:[],
+      protocolOptions:[],
       selectData: {
         sourceTypeData: [
           // { value: 'CA', label: '长安' },
@@ -341,30 +277,72 @@ export default {
   },
 
   computed: {},
-  // created() {  // 7.4 测试暂时关闭接口
-  //   this.getTabData()
-  // },
+  created() {  
+  //   this.getTabData() // 7.4 测试暂时关闭接口
+      this.getOptionsData()
+  },
   mounted() {
-    this.yangshi()  // 
-    // setInterval(function () {
-    // document
-    //   .querySelectorAll('.el-cascader-panel .el-radio ')
-    //   .forEach((val) => {
-    //     val.style.display = 'none'
-    //   })
-    // }, 10)
-
-    // console.log();
-    //层级下拉框
-    // setInterval(function () {
-    //   document.querySelectorAll('.el-cascader-node__label').forEach((el) => {
-    //     el.onclick = function () {
-    //       if (this.previousElementSibling) this.previousElementSibling.click()
-    //     }
-    //   })
-    // }, 1000)
+    this.yangshi()
   },
   methods: {
+    // 初始化下拉框数据
+    async getOptionsData(){
+      const promiseArr = Promise.all([await this.$http.get('/dict/protocol'),await this.$http.get('/dict/fraudType')])
+      promiseArr.then((successArr)=>{
+        successArr.forEach(successData=>{
+          if(successData.config.url=='/dict/protocol'){
+            const protocolArr = successData.data.data
+            protocolArr!=null && protocolArr.forEach(protocol=>this.protocolOptions.push({key:protocol, value:protocol}))
+          }else if(successData.config.url=='/dict/fraudType'){
+            const fraudTypeArr = successData.data.data
+            fraudTypeArr!=null && fraudTypeArr.forEach(fraudType=>this.fraudTypeOptions.push({key:fraudType, value:fraudType}))
+          }
+        })
+      })
+      .catch(function(e){console.log(e)})
+    },
+    //初始化获取数据
+    async getTabData() {
+      // if (this.newdomainSimpleVo.protocol == '') { this.newdomainSimpleVo.protocol = null }
+      // if (this.newdomainSimpleVo.fraudType == '') { this.newdomainSimpleVo.fraudType = null }
+      let getlist = {
+        startDay: this.newdomainSimpleVo.dateRange[0],
+        endDay:this.newdomainSimpleVo.dateRange[1],
+        uploader:this.newdomainSimpleVo.uploader,
+        protocol:this.newdomainSimpleVo.protocol,
+        page: this.mypageable.pageNum,
+        pageSize: this.mypageable.pageSize,
+        fraudType: this.newdomainSimpleVo.fraudType
+      }
+      const { data: res } = await this.$http.get(
+        '/alarm/list',
+        {params:getlist}
+      )
+      if (res.code == 200) {
+        // if(res.data.content.length>0){
+        this.tableData = res.dataList
+        let tableDataLength = this.tableData.length
+        let timer = null
+        timer ? clearTimeout(timer) : ''
+        if (this.tableData.length < 10) {
+          for (var i = this.tableData.length; i < 10; i++) {
+            this.tableData.push({})
+          }
+        }
+        if (tableDataLength < 10) {
+          timer = setTimeout(() => {
+            for (var i = tableDataLength; i < 10; i++) {
+              document.querySelectorAll('#onetable tbody .el-checkbox')[
+                i
+              ].style.display = 'none'
+            }
+          })
+        }
+        this.total = res.totalSum
+        this.totalPages = res.totalPage // }else{ //   this.$message('无数据') // }
+      }
+    },
+
     yangshi() {
       this.heights =
         window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 270
@@ -408,113 +386,24 @@ export default {
     newkanjietuclose() {
       this.newkanjietu = false
     },
-    //层级下拉框
-    handleChange(val) {
-      //  //地区选择之后将下拉框界面收起
-      if (this.newdomainSimpleVo.fraudType != null) {
-        this.$refs.cascader.toggleDropDownVisible()
-        if (this.newdomainSimpleVo.fraudType.length > 1) {
-          this.newdomainSimpleVo.typebig = null
-        } else {
-          this.newdomainSimpleVo.typebig = this.newdomainSimpleVo.fraudType[0]
-        }
-      }
-    },
     getRole1(data) {
       return getRole(data)
       // console.log( getRole(data));
     },
-    //初始化获取数据
-    async getTabData() {
-      if (this.newdomainSimpleVo.fraudType == '') {
-        this.newdomainSimpleVo.fraudType = null
-      }
-      let getlist = {
-        startDay: this.newdomainSimpleVo.dateRange[0],
-        endDay:this.newdomainSimpleVo.dateRange[1],
-        uploader:this.newdomainSimpleVo.uploader,
-        protocol:this.newdomainSimpleVo.protocol,
-        page: this.mypageable.pageNum,
-        pageSize: this.mypageable.pageSize,
-        fraudType: this.newdomainSimpleVo.fraudType
-      }
-      console.log(getlist);
-      const { data: res } = await this.$http.get(
-        '/alarm/list',
-        getlist
-      )
-      // console.log(res);
-      if (res.code == 200) {
-        // if(res.data.content.length>0){
-        this.tableData = res.dataList
-        let tableDataLength = this.tableData.ledngth
-        let timer = null
-        timer ? clearTimeout(timer) : ''
-        if (this.tableData.length < 10) {
-          for (var i = this.tableData.length; i < 10; i++) {
-            this.tableData.push({})
-          }
-        }
-        if (tableDataLength < 10) {
-          timer = setTimeout(() => {
-            for (var i = tableDataLength; i < 10; i++) {
-              document.querySelectorAll('#onetable tbody .el-checkbox')[
-                i
-              ].style.display = 'none'
-            }
-          })
-        }
-        this.total = res.totalSum
-        this.totalPages = res.totalPage // }else{ //   this.$message('无数据') // }
-      }
-    },
+    
     //查询
     async searchTabData() {
       this.mypageable.pageNum = 1
       this.getTabData()
-      // this.getTabData()
-      // this.resetFun()
-      // let getlist = {
-      //   startDiscoverDate: this.whiteSearchList.startCreateTime,
-      //   endDiscoverDate: this.whiteSearchList.endCreateTime,
-      //   mypageable: this.mypageable,
-      //   // url: this.newdomainSimpleVo.domain,
-      //   type: this.newdomainSimpleVo.domain,
-      //   visits: this.newdomainSimpleVo.visits,
-      // }
-      // const { data: res } = await this.$http.post(
-      //   '/discover/getDiscover',
-      //   getlist
-      // )
-      // // console.log(res);
-      // if (res.code == 200) {
-      //   this.mypageable.pageNum = 1
-      //   this.tableData = res.data.content
-      //   this.total = res.data.totalElements
-      //   this.totalPages = res.data.totalPages
-      // } else {
-      //   this.$message('无数据')
-      //   this.mypageable.pageNum = 1
-      //   this.mypageable.pageSize = 10
-      //   this.getTabData()
-      //   this.resetFun()
-      // }
     },
 
     //重置方法
     resetFun() {
-      // this.newdomainSimpleVo.dateValue_find = null
-      // this.newdomainSimpleVo = {
-      //   domain: null, //域名
-      //   dateValue_find: null, //时间
-      // }
       this.newdomainSimpleVo.fraudType = null
-      this.newdomainSimpleVo.url = null
-      this.newdomainSimpleVo.dateValue_find = null
-      (this.whiteSearchList = {
-        startCreateTime: null,
-        endCreateTime: null,
-      }),
+      this.newdomainSimpleVo.protocol = null
+      this.newdomainSimpleVo.uploader = null
+      this.newdomainSimpleVo.dateRange[0] = dayjs().subtract(1, ' month').format('YYYY-MM-DD')
+      this.newdomainSimpleVo.dateRange[1] = dayjs().format('YYYY-MM-DD')
         this.getTabData()
     },
     handleSelectionChange(val) {

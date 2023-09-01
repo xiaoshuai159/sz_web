@@ -24,14 +24,14 @@
               <el-form-item>
                 <el-button
                   style="margin-left: 10px"
-                  class="el-button-chaxun"
+                  class="el-button-daochu"
                   type="primary"
                   @click.native.stop="search"
                 >
                   搜索</el-button
                 >
                 <el-button
-                  class="el-button-chongzhi"
+                  class="el-button-daochu"
                   style="margin-left: 10px"
                   type="primary"
                   @click.native.stop="clear"
@@ -47,7 +47,7 @@
             <el-button
               style="margin-right: 20px"
               
-              class="el-button-chaxun left"
+              class="el-button-daochu left"
               type="primary"
               size="mini"
               @click="add"

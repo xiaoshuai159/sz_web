@@ -34,7 +34,7 @@
           <el-form-item label="诈骗类型">
             <el-select v-model.trim="newdomainSimpleVo.fraudType" clearable placeholder="诈骗类型" style="width: 120px;">
               <el-option
-                v-for="item in fraudTypeOptions"
+                v-for="item in newdomainSimpleVo.fraudTypeOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -44,7 +44,7 @@
           <el-form-item label="协议">
             <el-select v-model.trim="newdomainSimpleVo.protocol" clearable placeholder="协议" class="el-input-width">
               <el-option
-                v-for="item in protocolOptions"
+                v-for="item in newdomainSimpleVo.protocolOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -70,7 +70,6 @@
               class="el-button-daochu"
               type="primary"
               size="mini"
-              @click.native="put"
               >模板下载</el-button
             >
 
@@ -175,6 +174,8 @@ export default {
     return {
       newdomainSimpleVo: {
         uploader:null,
+        fraudTypeOptions:[],
+        protocolOptions:[],
         dateRange:[dayjs().subtract(1, 'month').format('YYYY-MM-DD'),dayjs().format('YYYY-MM-DD')],
         //发现日期
         fraudType: null,
@@ -230,8 +231,8 @@ export default {
       clicktitle: '点击查看图片',
       xinshi: false,
         // 改之后：单级别下拉框
-      fraudTypeOptions:[],
-      protocolOptions:[],
+      
+      
       selectData: {
         sourceTypeData: [
           // { value: 'CA', label: '长安' },
@@ -292,10 +293,10 @@ export default {
         successArr.forEach(successData=>{
           if(successData.config.url=='/dict/protocol'){
             const protocolArr = successData.data.data
-            protocolArr!=null && protocolArr.forEach(protocol=>this.protocolOptions.push({key:protocol, value:protocol}))
+            protocolArr!=null && protocolArr.forEach(protocol=>this.newdomainSimpleVo.protocolOptions.push({key:protocol, value:protocol}))
           }else if(successData.config.url=='/dict/fraudType'){
             const fraudTypeArr = successData.data.data
-            fraudTypeArr!=null && fraudTypeArr.forEach(fraudType=>this.fraudTypeOptions.push({key:fraudType, value:fraudType}))
+            fraudTypeArr!=null && fraudTypeArr.forEach(fraudType=>this.newdomainSimpleVo.fraudTypeOptions.push({key:fraudType, value:fraudType}))
           }
         })
       })
@@ -402,8 +403,7 @@ export default {
       this.newdomainSimpleVo.fraudType = null
       this.newdomainSimpleVo.protocol = null
       this.newdomainSimpleVo.uploader = null
-      this.newdomainSimpleVo.dateRange[0] = dayjs().subtract(1, ' month').format('YYYY-MM-DD')
-      this.newdomainSimpleVo.dateRange[1] = dayjs().format('YYYY-MM-DD')
+      this.newdomainSimpleVo.dateRange = [dayjs().subtract(1, 'month').format('YYYY-MM-DD'),dayjs().format('YYYY-MM-DD')]
         this.getTabData()
     },
     handleSelectionChange(val) {
@@ -447,9 +447,7 @@ export default {
           startTime: this.whiteSearchList.startCreateTime,
           endTime: this.whiteSearchList.endCreateTime,
         },
-
         pageable: this.mypageable,
-        // sourceEnum: this.newdomainSimpleVo.source,
         fraudType: this.newdomainSimpleVo.fraudType,
         url: this.newdomainSimpleVo.url,
       }
@@ -463,55 +461,34 @@ export default {
         data: getlist,
       })
         .then((res) => {
-          // const blob = new Blob([res.data], {
-          //   type: 'application/vnd.ms-excel',
-          // })
-          //        const url = window.URL.createObjectURL(blob)
-          // window.open(url, '_blank')
-
-          // console.log(title);
           let that = this
           let blob = res.data
           if (blob.type == 'application/json') {
             const reader = new FileReader()
-
             reader.onload = function () {
-              // const { msg } = JSON.parse(reader.result) //此处的msg就是后端返回的msg内容
-
               that.$message('下载文件失败')
               that.loadingbuttext = '导出'
               that.loadingbut = false
             }
             reader.readAsText(blob)
           } else {
-            let title = dayjs().format('YYYYMMDD') + '发现导出.xlsx'
-
+            // let title = dayjs().format('YYYYMMDD') + '发现导出.xlsx'
             let binaryData = []
             binaryData.push(blob)
             let url = window.URL.createObjectURL(new Blob(binaryData), {
               type: 'application/vnd.ms-excel',
             })
-
-            // 创建一个下载标签<a>
             const aLink = document.createElement('a')
             aLink.href = url
-
-            // 2.直接使用自定义文件名,设置下载文件名称
-            aLink.setAttribute('download', title)
+            aLink.setAttribute('download')
             document.body.appendChild(aLink)
-
-            // 模拟点击下载
             aLink.click()
-
             this.loadingbuttext = '导出'
             this.loadingbut = false
-
-            // 移除改下载标签
             document.body.removeChild(aLink)
           }
         })
         .catch((err) => {
-          // console.log(err)
           this.$message.error('文件下载失败！')
           this.loadingbuttext = '导出'
           this.loadingbut = false

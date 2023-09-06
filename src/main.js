@@ -21,7 +21,6 @@ import './lib/lib-flexible'
 
 
 Vue.prototype.$echarts = echarts
-
 // Vue.prototype.$echartsGL = echartsGL // 引入组件
 Vue.prototype.$http = axios
 Vue.prototype.formatDate = formatDate

@@ -36,8 +36,7 @@
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              :default-time="['00:00:00', '23:59:59']"
+              value-format="yyyy-MM-dd"
             >
             </el-date-picker>
           </el-form-item>
@@ -408,12 +407,8 @@
         newdomainSimpleVo: {
           photo: null, //手机号
           dateValue_find: [
-            dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
-              ' ' +
-              '00:' +
-              '00:' +
-              '00',
-            dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
+            dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
+            dayjs().format('YYYY-MM-DD')
           ], //诈骗时间
           unit: null, //推送单位
           sourceType: null, //数据来源
@@ -535,18 +530,16 @@
         this.loadingbuttext = '...加载中'
         this.loadingbut = true
         let getTabDataList = {
-          earlyGrade: this.newdomainSimpleVo.Status,
-          endFraudTime: this.whiteSearchList.endCreateTime,
-  
+          treatDateStart: this.newdomainSimpleVo.dateValue_find[0],
+          treatDateEnd: this.newdomainSimpleVo.dateValue_find[1],
+          
           fraudType: this.newdomainSimpleVo.fraud,
-          newPage: this.mypageable,
-          phoneNum: this.newdomainSimpleVo.photo,
-          startFraudTime: this.whiteSearchList.startCreateTime,
+          // 待补充
         }
   
         this.$http({
-          method: 'POST',
-          url: '/warning_ca/downloadCAWarning',
+          method: 'GET',
+          url: '/block/export',
           responseType: 'blob',
           data: getTabDataList,
         })
@@ -570,7 +563,7 @@
               }
               reader.readAsText(blob)
             } else {
-              let title = dayjs().format('YYYYMMDD') + '-预警导出.xlsx'
+              let title = dayjs().format('YYYYMMDD') + '-处置导出.xlsx'
   
               let binaryData = []
               binaryData.push(blob)

@@ -31,7 +31,7 @@
           <el-form-item label="诈骗类型">
             <el-select v-model.trim="newdomainSimpleVo.type" clearable placeholder="诈骗类型">
               <el-option
-                v-for="item in options"
+                v-for="item in newdomainSimpleVo.fraudTypeOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -64,9 +64,7 @@
               type="primary"
               size="mini"
               @click.native="put"
-              :loading="loadingbut"
-              
-              
+              :loading="loadingbut"              
               >{{ loadingbuttext }}</el-button
             >
             <!-- v-if="getRole1('downloadRaw')" :disabled="this.tableData.length == 0"  7.4 测试 -->
@@ -160,201 +158,6 @@ export default {
   components: {},
   data() {
     return {
-      testoptions:[{
-          value: 'zhinan',
-          label: '指南',
-          children: [{
-            value: 'shejiyuanze',
-            label: '设计原则',
-            children: [{
-              value: 'yizhi',
-              label: '一致'
-            }, {
-              value: 'fankui',
-              label: '反馈'
-            }, {
-              value: 'xiaolv',
-              label: '效率'
-            }, {
-              value: 'kekong',
-              label: '可控'
-            }]
-          }, {
-            value: 'daohang',
-            label: '导航',
-            children: [{
-              value: 'cexiangdaohang',
-              label: '侧向导航'
-            }, {
-              value: 'dingbudaohang',
-              label: '顶部导航'
-            }]
-          }]
-        }, {
-          value: 'zujian',
-          label: '组件',
-          children: [{
-            value: 'basic',
-            label: 'Basic',
-            children: [{
-              value: 'layout',
-              label: 'Layout 布局'
-            }, {
-              value: 'color',
-              label: 'Color 色彩'
-            }, {
-              value: 'typography',
-              label: 'Typography 字体'
-            }, {
-              value: 'icon',
-              label: 'Icon 图标'
-            }, {
-              value: 'button',
-              label: 'Button 按钮'
-            }]
-          }, {
-            value: 'form',
-            label: 'Form',
-            children: [{
-              value: 'radio',
-              label: 'Radio 单选框'
-            }, {
-              value: 'checkbox',
-              label: 'Checkbox 多选框'
-            }, {
-              value: 'input',
-              label: 'Input 输入框'
-            }, {
-              value: 'input-number',
-              label: 'InputNumber 计数器'
-            }, {
-              value: 'select',
-              label: 'Select 选择器'
-            }, {
-              value: 'cascader',
-              label: 'Cascader 级联选择器'
-            }, {
-              value: 'switch',
-              label: 'Switch 开关'
-            }, {
-              value: 'slider',
-              label: 'Slider 滑块'
-            }, {
-              value: 'time-picker',
-              label: 'TimePicker 时间选择器'
-            }, {
-              value: 'date-picker',
-              label: 'DatePicker 日期选择器'
-            }, {
-              value: 'datetime-picker',
-              label: 'DateTimePicker 日期时间选择器'
-            }, {
-              value: 'upload',
-              label: 'Upload 上传'
-            }, {
-              value: 'rate',
-              label: 'Rate 评分'
-            }, {
-              value: 'form',
-              label: 'Form 表单'
-            }]
-          }, {
-            value: 'data',
-            label: 'Data',
-            children: [{
-              value: 'table',
-              label: 'Table 表格'
-            }, {
-              value: 'tag',
-              label: 'Tag 标签'
-            }, {
-              value: 'progress',
-              label: 'Progress 进度条'
-            }, {
-              value: 'tree',
-              label: 'Tree 树形控件'
-            }, {
-              value: 'pagination',
-              label: 'Pagination 分页'
-            }, {
-              value: 'badge',
-              label: 'Badge 标记'
-            }]
-          }, {
-            value: 'notice',
-            label: 'Notice',
-            children: [{
-              value: 'alert',
-              label: 'Alert 警告'
-            }, {
-              value: 'loading',
-              label: 'Loading 加载'
-            }, {
-              value: 'message',
-              label: 'Message 消息提示'
-            }, {
-              value: 'message-box',
-              label: 'MessageBox 弹框'
-            }, {
-              value: 'notification',
-              label: 'Notification 通知'
-            }]
-          }, {
-            value: 'navigation',
-            label: 'Navigation',
-            children: [{
-              value: 'menu',
-              label: 'NavMenu 导航菜单'
-            }, {
-              value: 'tabs',
-              label: 'Tabs 标签页'
-            }, {
-              value: 'breadcrumb',
-              label: 'Breadcrumb 面包屑'
-            }, {
-              value: 'dropdown',
-              label: 'Dropdown 下拉菜单'
-            }, {
-              value: 'steps',
-              label: 'Steps 步骤条'
-            }]
-          }, {
-            value: 'others',
-            label: 'Others',
-            children: [{
-              value: 'dialog',
-              label: 'Dialog 对话框'
-            }, {
-              value: 'tooltip',
-              label: 'Tooltip 文字提示'
-            }, {
-              value: 'popover',
-              label: 'Popover 弹出框'
-            }, {
-              value: 'card',
-              label: 'Card 卡片'
-            }, {
-              value: 'carousel',
-              label: 'Carousel 走马灯'
-            }, {
-              value: 'collapse',
-              label: 'Collapse 折叠面板'
-            }]
-          }]
-        }, {
-          value: 'ziyuan',
-          label: '资源',
-          children: [{
-            value: 'axure',
-            label: 'Axure Components'
-          }, {
-            value: 'sketch',
-            label: 'Sketch Templates'
-          }, {
-            value: 'jiaohu',
-            label: '组件交互文档'
-          }]
-        }],
       heights: undefined,
       errFlag: false,
       xianshi: false,
@@ -386,6 +189,9 @@ export default {
         region: '',
       },
       newdomainSimpleVo: {
+        fraudTypeOptions:[],
+        dateRange:[dayjs().subtract(1, 'month').format('YYYY-MM-DD'),dayjs().format('YYYY-MM-DD')],
+        fraudType:null,
         dateValue_find: [
           dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
             ' ' +
@@ -434,266 +240,6 @@ export default {
       xianshititle: '暂无图片',
       clicktitle: '点击查看图片',
       xinshi: false,
-      //下拉框的选项数据  改之前：层级下拉框
-      // options: [
-      //   {
-      //     value: 'KF',
-      //     label: '冒充客服类',
-      //     children: [
-      //       {
-      //         value: 'kf_ds',
-      //         label: '冒充电商客服',
-      //       },
-      //       {
-      //         value: 'kf_wl',
-      //         label: '冒充物流客服',
-      //       },
-      //       {
-      //         value: 'kf_other',
-      //         label: '冒充其他客服类',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'GJF',
-      //     label: '冒充公检法类',
-      //     children: [
-      //       {
-      //         value: 'gjf_mc',
-      //         label: '冒充公检法',
-      //       },
-      //       {
-      //         value: 'gjf_gs',
-      //         label: '工商平台类',
-      //       },
-      //       {
-      //         value: 'gjf_etc',
-      //         label: 'ETC通行卡',
-      //       },
-      //       {
-      //         value: 'gjf_other',
-      //         label: '其他政府机关或单位组织',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'SD',
-      //     label: '刷单返利类',
-      //     children: [
-      //       {
-      //         value: 'sd_cz',
-      //         label: '充值（红包）返利',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'DK',
-      //     label: '贷款代办信用卡类',
-      //     children: [
-      //       {
-      //         value: 'dk_xyk',
-      //         label: '虚假代办信用卡',
-      //       },
-      //       {
-      //         value: 'dk_te',
-      //         label: '虚假提额套现',
-      //       },
-      //       {
-      //         value: 'dk_dk',
-      //         label: '虚假贷款',
-      //       },
-      //       {
-      //         value: 'dk_other',
-      //         label: '其他贷款类',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'JJGW',
-      //     label: '冒充军警购物诈骗',
-      //     children: [
-      //       {
-      //         value: 'JJGW',
-      //         label: '冒充军警购物诈骗',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'SZP',
-      //     label: '杀猪盘',
-      //     children: [
-      //       {
-      //         value: 'szp_lc',
-      //         label: '虚假投资理财类',
-      //       },
-      //       {
-      //         value: 'szp_dubo',
-      //         label: '博彩彩票',
-      //       },
-      //       {
-      //         value: 'szp_ty',
-      //         label: '体育直播，比分竞猜',
-      //       },
-      //       {
-      //         value: 'szp_yx',
-      //         label: '棋牌游戏',
-      //       },
-      //     ],
-      //   },
-
-      //   {
-      //     value: 'JY',
-      //     label: '网络婚恋、交友类',
-      //     children: [
-      //       {
-      //         value: 'jy_jr',
-      //         label: '冒充外国军人',
-      //       },
-      //       {
-      //         value: 'jy_hl',
-      //         label: '网络婚恋',
-      //       },
-      //       {
-      //         value: 'jy_jy',
-      //         label: '网络交友，聊天交友',
-      //       },
-      //       {
-      //         value: 'jy_other',
-      //         label: '其他交友类',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'ZX',
-      //     label: '虚假征信类',
-      //     children: [
-      //       {
-      //         value: 'zx_xyd',
-      //         label: '消除校园贷记录',
-      //       },
-      //       {
-      //         value: 'zx_bljl',
-      //         label: '消除不良记录',
-      //       },
-      //       {
-      //         value: 'zx_other',
-      //         label: '其他征信',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'MC',
-      //     label: '冒充领导、熟人类',
-      //     children: [
-      //       {
-      //         value: 'mc_ld',
-      //         label: '冒充领导',
-      //       },
-      //       {
-      //         value: 'mc_sr',
-      //         label: '冒充熟人',
-      //       },
-      //       {
-      //         value: 'mc_gz',
-      //         label: '冒充公众人物',
-      //       },
-      //       {
-      //         value: 'mc_other',
-      //         label: '冒充其他身份类',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'YX',
-      //     label: '网络游戏产品虚假交易类',
-      //     children: [
-      //       {
-      //         value: 'yx_card',
-      //         label: '游戏币、游戏点卡诈骗',
-      //       },
-      //       {
-      //         value: 'yx_zhzb',
-      //         label: '游戏账号、游戏装备诈骗',
-      //       },
-      //       {
-      //         value: 'yx_other',
-      //         label: '其他游戏产品虚假交易类',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'OTHER',
-      //     label: '其他类型诈骗',
-      //     children: [
-      //       {
-      //         value: 'other_zj',
-      //         label: '虚假中奖诈骗',
-      //       },
-      //       {
-      //         value: 'other_zp',
-      //         label: '虚假招聘',
-      //       },
-      //       {
-      //         value: 'other_tp',
-      //         label: 'ps图片诈骗',
-      //       },
-      //       {
-      //         value: 'other_jp',
-      //         label: '机票退改签诈骗',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'APP',
-      //     label: '分发平台',
-      //     children: [
-      //       {
-      //         value: 'app_ff',
-      //         label: '分发平台',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'XZYM',
-      //     label: '下载页面',
-      //     children: [
-      //       {
-      //         value: 'xzym',
-      //         label: '下载页面',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'HC',
-      //     label: '灰产',
-      //     children: [
-      //       {
-      //         value: 'hc_fw',
-      //         label: '灰产服务',
-      //       },
-      //       {
-      //         value: 'hc_other',
-      //         label: '灰产其他',
-      //       },
-      //       {
-      //         value: 'hc',
-      //         label: '灰产',
-      //       },
-      //       // {
-      //       //   value: 'hc_gw',
-      //       //   label: '虚假购物',
-      //       // },
-      //       // {
-      //       //   value: 'hc_fw',
-      //       //   label: '虚假服务',
-      //       // },
-      //       // {
-      //       //   value: 'hc_other',
-      //       //   label: '其他电商类',
-      //       // },
-      //     ],
-      //   },
-      // ],
         // 改之后：单级别下拉框
         options:[
           {
@@ -805,7 +351,20 @@ export default {
     //   })
     // }, 1000)
   },
+  created(){
+    this.getOptionsData()
+  },
   methods: {
+    async getOptionsData(){
+      const {data:res} = await this.$http.get('/dict/fraudType')
+      if(res.code == 200){
+        const fraudTypeArr = res.data
+        // console.log(fraudTypeArr);
+        fraudTypeArr!=null && fraudTypeArr.forEach(fraudType=>this.newdomainSimpleVo.fraudTypeOptions.push({key:fraudType, value:fraudType}))
+      }else{
+        this.$message(res.data)
+      }
+    },
     yangshi() {
       this.heights =
         window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 270
@@ -990,52 +549,26 @@ export default {
     // },
     //下载   //文件流
     async put() {
-      // console.log(this.tableDatalist)
-      // if (this.tableDatalist.length > 0) {
-      // let arr = []
-      // this.tableDatalist.forEach((item) => {
-      //   arr.push(item.id)
-      // })
-      if (this.newdomainSimpleVo.type == '') {
-        this.newdomainSimpleVo.type = null
-      }
       let getlist = {
-        discoverTimeDTO: {
-          startTime: this.whiteSearchList.startCreateTime,
-          endTime: this.whiteSearchList.endCreateTime,
-        },
-
-        pageable: this.mypageable,
-        // sourceEnum: this.newdomainSimpleVo.source,
-        type: this.newdomainSimpleVo.type,
-        url: this.newdomainSimpleVo.url,
-        // category: this.newdomainSimpleVo.type,
+        discoverDateStart: this.newdomainSimpleVo.dateRange[0],
+        discoverDateEnd: this.newdomainSimpleVo.dateRange[1],
+        fraudType: this.newdomainSimpleVo.fraudType,
+        dstIP:this.newdomainSimpleVo.destIP
       }
-      console.log(getlist);
       this.loadingbuttext = '...加载中'
       this.loadingbut = true
       this.$http({
-        method: 'POST',
-        url: '/discover/downloadDiscover',
+        method: 'GET',
+        url: '/discover/export',
         responseType: 'blob',
-        data: getlist,
+        params: getlist,
       })
         .then((res) => {
-          // const blob = new Blob([res.data], {
-          //   type: 'application/vnd.ms-excel',
-          // })
-          //        const url = window.URL.createObjectURL(blob)
-          // window.open(url, '_blank')
-
-          // console.log(title);
           let that = this
           let blob = res.data
           if (blob.type == 'application/json') {
             const reader = new FileReader()
-
             reader.onload = function () {
-              // const { msg } = JSON.parse(reader.result) //此处的msg就是后端返回的msg内容
-
               that.$message('下载文件失败')
               that.loadingbuttext = '导出'
               that.loadingbut = false
@@ -1043,33 +576,22 @@ export default {
             reader.readAsText(blob)
           } else {
             let title = dayjs().format('YYYYMMDD') + '发现导出.xlsx'
-
             let binaryData = []
             binaryData.push(blob)
             let url = window.URL.createObjectURL(new Blob(binaryData), {
               type: 'application/vnd.ms-excel',
             })
-
-            // 创建一个下载标签<a>
             const aLink = document.createElement('a')
             aLink.href = url
-
-            // 2.直接使用自定义文件名,设置下载文件名称
             aLink.setAttribute('download', title)
             document.body.appendChild(aLink)
-
-            // 模拟点击下载
             aLink.click()
-
             this.loadingbuttext = '导出'
             this.loadingbut = false
-
-            // 移除改下载标签
             document.body.removeChild(aLink)
           }
         })
         .catch((err) => {
-          // console.log(err)
           this.$message.error('文件下载失败！')
           this.loadingbuttext = '导出'
           this.loadingbut = false
@@ -1521,22 +1043,6 @@ export default {
 </script>
 
 <style  scoped lang='less'>
-// 按钮hover
-.right_main_under /deep/ .el-button-chaxun:focus,
-.right_main_under /deep/ .el-button-chaxun:hover {
-  background: url(../assets/img/shouye/查询按钮.png) no-repeat;
-  background-size: 100% 100%;
-}
-.right_main_under /deep/ .el-button-chongzhi:focus,
-.right_main_under /deep/ .el-button-chongzhi:hover {
-  background: url(../assets/img/shouye/重置按钮.png) no-repeat;
-  background-size: 100% 100%;
-}
-.right_main_under /deep/ .el-button-daochu:focus,
-.right_main_under /deep/ .el-button-daochu:hover {
-  background: url(../assets/img/shouye/下载按钮.png) no-repeat;
-  background-size: 100% 100%;
-}
 
 /deep/ .el-table__fixed-right::before,
 .el-table__fixed::before {

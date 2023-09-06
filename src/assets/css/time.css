@@ -76,7 +76,6 @@
   background-color: transparent;
 }
 input::-webkit-input-placeholder {
-  /*WebKit browsers*/
   letter-spacing: 1px;
 }
 .el-popover {

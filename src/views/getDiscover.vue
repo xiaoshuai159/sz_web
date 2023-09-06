@@ -276,11 +276,9 @@ export default {
         region: '',
       },
       newdomainSimpleVo: {
-                dateValue_find: [ dayjs().format('YYYY-MM-DD') +' '+ '00:' +
-            '00:' +
-            '00'
+                dateValue_find: [ dayjs().format('YYYY-MM-DD') 
       ,
-          dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
+          dayjs().format('YYYY-MM-DD') 
         ],
           //  dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
           //   ' ' +
@@ -292,6 +290,8 @@ export default {
         visits: null, //部署
         ip: null, //源IP
         url: null, //url
+        fraudType:'',
+        dstIp:''
       },
 
       domainFeedbackVo: {
@@ -407,24 +407,32 @@ export default {
     //初始化获取数据
     async getTabData() {
       let getlist = {
-        discoverTimeDTO: {
-          startTime: this.whiteSearchList.startCreateTime,
-          endTime: this.whiteSearchList.endCreateTime,
-        },
 
-        customPageable: this.mypageable,
-        ip: this.newdomainSimpleVo.ip,
-        phone: this.newdomainSimpleVo.domain,
-        domain: this.newdomainSimpleVo.url,
+        discoverDateStart:this.newdomainSimpleVo.dateValue_find[0],
+        discoverDateEnd:this.newdomainSimpleVo.dateValue_find[1],
+        fraudType:this.newdomainSimpleVo.fraudType,
+        dstIp:this.newdomainSimpleVo.dstIp,
+        page:this.mypageable.pageNum,
+        pageSize:this.mypageable.pageSize
+        
+        // discoverTimeDTO: {
+        //   startTime: this.whiteSearchList.startCreateTime,
+        //   endTime: this.whiteSearchList.endCreateTime,
+        // },
+
+        // customPageable: this.mypageable,
+        // ip: this.newdomainSimpleVo.ip,
+        // phone: this.newdomainSimpleVo.domain,
+        // domain: this.newdomainSimpleVo.url,
       }
-      const { data: res } = await this.$http.post(
-        '/discover/getRawPage',
-        getlist
+      const { data: res } = await this.$http.get(
+        '/discover/list',
+        {params:getTabDataList}
       )
       // console.log(res);
       if (res.code == 200) {
          
-        this.tableData = res.data.content
+        this.tableData = res.dataList
         // console.log(    this.tableData);
         let tableDataLength = this.tableData.length
    
@@ -446,8 +454,8 @@ export default {
         //   })
         // }
           
-        this.total = res.data.totalElements
-        this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
+        this.total = res.dataList
+        this.totalPages = res.dataList // }else{ //   this.$message('无数据') // }
         
    }
     },
@@ -691,8 +699,6 @@ export default {
     //   }
     // },
   async  handleCurrentChange(val) {
-  
-
       this.mypageable.pageNum = val
 
       let getlist = {

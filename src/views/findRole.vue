@@ -123,7 +123,7 @@
         <el-form-item label="id:">
           <el-input v-model="domainSimpleVo1.id1" disabled></el-input>
         </el-form-item>
-        <el-form-item label="角色名称:" prop="jsmc1">
+        <el-form-item label="角色名称:" prop="name">
           <el-input
             v-model.trim="domainSimpleVo1.jsmc1"
             placeholder="请输入角色名称"
@@ -147,7 +147,7 @@
             placeholder="请输入角色标识"
           ></el-input> -->
         </el-form-item>
-        <el-form-item label="角色描述:" prop="pass1">
+        <el-form-item label="角色描述:" prop="desc">
           <el-input
             :rows="4"
             resize="none"
@@ -508,7 +508,7 @@ export default {
         descr: this.newdomainSimpleVo.pass,
         remark: this.newdomainSimpleVo.yhm,
       }
-      const { data: res } = await this.$http.post('/role/saveRole', list)
+      const { data: res } = await this.$http.get('/role/saveRole', {params:list})
       if (res.code == 200) {
         this.$message(res.message)
         this.getTabData()

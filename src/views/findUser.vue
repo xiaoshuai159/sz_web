@@ -88,7 +88,7 @@
       <el-table-column label="密码" prop="password" v-if="isLoading">
       </el-table-column>
       <el-table-column label="用户名" prop="username"> </el-table-column>
-      <el-table-column label="角色" prop="role_name">
+      <el-table-column label="角色" prop="role">
         <!-- <template slot-scope="scope">
              
                 {{ juese(scope.row.role_name) }}
@@ -97,12 +97,12 @@
       <el-table-column label="电话号码" prop="phone"> </el-table-column>
       <!-- <el-table-column label="部门" prop="dept_name"> </el-table-column> -->
       <el-table-column label="状态">
-        <template slot-scope="scope">
-          {{ state(scope.row.state) }}
+        <template slot-scope="status">
+          {{ state(scope.row.status) }}
         </template>
       </el-table-column>
-      <el-table-column label="创建时间" prop="create_time"> </el-table-column>
-      <el-table-column label="更新时间" prop="update_time"> </el-table-column>
+      <el-table-column label="创建时间" prop="createTime"> </el-table-column>
+      <el-table-column label="更新时间" prop="lastUpdateTime"> </el-table-column>
       <el-table-column label="备注" prop="remark" show-overflow-tooltip>
       </el-table-column>
       <!-- v-if="getRole1('updateUser' && 'delUser')" v-if="getRole1('updateUser')" v-if="getRole1('delUser')"  7.4 测试关闭 -->
@@ -162,7 +162,7 @@
         class="demo-form-inline search_select_form"
       >
         <!-- 用户名 -->
-        <el-form-item label="用户名" prop="user">
+        <el-form-item label="用户名" prop="username">
           <el-input
             v-model="newdomainSimpleVo.user"
             placeholder="请输入用户名"
@@ -182,7 +182,7 @@
             placeholder="请输入手机号"
           ></el-input>
         </el-form-item>
-        <el-form-item label="角色:" prop="state">
+        <el-form-item label="角色:" prop="role">
           <el-select v-model="newdomainSimpleVo.state" placeholder="请选择角色">
             <el-option
               v-for="(item, index) in this.roleList"
@@ -283,7 +283,7 @@
         <el-form-item label="id:" v-if="isLoading">
           <el-input v-model="domainSimpleVo.id"></el-input>
         </el-form-item>
-        <el-form-item label="用户名:" prop="yhm">
+        <el-form-item label="用户名:" prop="username">
           <el-input v-model="domainSimpleVo.yhm" disabled></el-input>
         </el-form-item>
         <el-form-item label="密码:" prop="pass">
@@ -299,7 +299,7 @@
             placeholder="请输入手机号"
           ></el-input>
         </el-form-item>
-        <el-form-item label="角色:" prop="xinrole">
+        <el-form-item label="角色:" prop="role">
           <el-select v-model="domainSimpleVo.xinrole" placeholder="请选择角色">
             <el-option
               v-for="(item, index) in this.roleList"
@@ -420,9 +420,11 @@ export default {
         children: 'children',
         label: 'deptName',
       },
+
       usernamelist: {
-        name: null,
+        name: null,        //用户名
       },
+
       isLoading: false,
       dialog: false,
       dialogVisible: false,
@@ -681,16 +683,23 @@ export default {
     //初始化数据
     async getTabData() {
       let list = {
-        customPageable: {
-          pageNum: this.customPageable.pageNum,
-          pageSize: this.customPageable.pageSize,
-        },
-        username: this.usernamelist.name,
+
+        username:this.usernamelist.name,
+        page:this.customPageable.pageNum,
+        pageSize:this.customPageable.pageSize
+
+        // customPageable: {
+        //   pageNum: this.customPageable.pageNum,
+        //   pageSize: this.customPageable.pageSize,
+        // },
+        // username: this.usernamelist.name,
       }
-      const { data: res } = await this.$http.post('/user/findUser', list)
+      const { data: res } = await this.$http.get('/admin/user/list',
+      {params:list}
+      )
 
       if (res.code == 200) {
-        this.tableData = res.data.content
+        this.tableData = res.dataList
         let tableDataLength = this.tableData.length
         let timer = null
         timer ? clearTimeout(timer) : ''

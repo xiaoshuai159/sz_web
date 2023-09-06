@@ -16,22 +16,22 @@
           <!-- 发现日期 -->
           <el-form-item label="发现日期">
             <el-date-picker
-              v-model="newdomainSimpleVo.dateValue_find"
+              v-model="newdomainSimpleVo.dateRange"
               type="daterange"
-              :change="dataCreate_change(newdomainSimpleVo.dateValue_find)"
+              :clearable="false"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              :default-time="['00:00:00', '23:59:59']"
+              value-format="yyyy-MM-dd"
             >
             </el-date-picker>
           </el-form-item>
           <!-- 诈骗大类 -->
           <el-form-item label="诈骗类型">
-            <el-select v-model.trim="newdomainSimpleVo.type" clearable placeholder="诈骗类型">
+            <el-select v-model.trim="newdomainSimpleVo.fraudType" clearable placeholder="诈骗类型">
               <el-option
-                v-for="item in newdomainSimpleVo.fraudTypeOptions"
+
+                v-for="item in fraudTypeOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -97,13 +97,10 @@
       <el-table-column label="发现日期" prop="discoverDate">
         <!-- min-width="10%" -->
       </el-table-column>
-      <el-table-column label="诈骗类型" prop="type">
-        <template slot-scope="scope">
-          {{ scope.row.type }}
-        </template>
+      <el-table-column label="诈骗类型" prop="fraudType">
       </el-table-column>
-      <el-table-column label="域名" prop="domain"> </el-table-column>
-      <el-table-column label="目的IP" prop="destIP"> </el-table-column>
+      <el-table-column label="域名" prop="url"> </el-table-column>
+      <el-table-column label="目的IP" prop="dstIp"> </el-table-column>
       <el-table-column label="访问量" prop="visits"> </el-table-column>
     </el-table>
 
@@ -158,6 +155,7 @@ export default {
   components: {},
   data() {
     return {
+
       heights: undefined,
       errFlag: false,
       xianshi: false,
@@ -172,13 +170,9 @@ export default {
       ],
       whiteSearchList: {
         startCreateTime:
-          dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
-          ' ' +
-          '00:' +
-          '00:' +
-          '00',
+          dayjs().subtract(1, 'month').format('YYYY-MM-DD') ,
         endCreateTime:
-          dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
+          dayjs().format('YYYY-MM-DD')
       },
       isLoading: false,
 
@@ -188,34 +182,7 @@ export default {
         user: '',
         region: '',
       },
-      newdomainSimpleVo: {
-        fraudTypeOptions:[],
-        dateRange:[dayjs().subtract(1, 'month').format('YYYY-MM-DD'),dayjs().format('YYYY-MM-DD')],
-        fraudType:null,
-        dateValue_find: [
-          dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
-            ' ' +
-            '00:' +
-            '00:' +
-            '00',
-          dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
-        ],
-        // [
-        //   dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
-        //     ' ' +
-        //     '00:' +
-        //     '00:' +
-        //     '00',
-        //   dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
-        // ],
-        //发现日期
-        url: null, //URL
-        source: '中卫', //来源
-        type: null, //诈骗大类
-        typesmall: null, //诈骗小类
-        typebig: null,
-        destIP:null
-      },
+
 
       domainFeedbackVo: {
         accessSystemType: null,
@@ -240,6 +207,7 @@ export default {
       xianshititle: '暂无图片',
       clicktitle: '点击查看图片',
       xinshi: false,
+
         // 改之后：单级别下拉框
         options:[
           {
@@ -309,12 +277,7 @@ export default {
           { value: 'XZYM', label: '下载页面' },
         ],
       },
-      tableData: [
-        // {
-        //   url: "www.baidu.com11",
-        //   visits: "100",
-        // },
-      ],
+      
       tableDatalist: [],
 
       newurl: '',
@@ -428,30 +391,21 @@ export default {
     },
     //初始化获取数据
     async getTabData() {
-      if (this.newdomainSimpleVo.type == '') {
-        this.newdomainSimpleVo.type = null
-      }
-      let getlist = {
-        discoverTimeDTO: {
-          startTime: this.whiteSearchList.startCreateTime,
-          endTime: this.whiteSearchList.endCreateTime,
-        },
-
-        pageable: this.mypageable,
-        // sourceEnum: this.newdomainSimpleVo.source,
-        type: this.newdomainSimpleVo.type,
-        url: this.newdomainSimpleVo.url,
-        // category: this.newdomainSimpleVo.type,
-      }
-      console.log(getlist);
-      const { data: res } = await this.$http.post(
-        '/discover/getDiscoverPage',
-        getlist
-      )
-      // console.log(res);
-      if (res.code == 200) {
-        // if(res.data.content.length>0){
-        this.tableData = res.data.content
+      // get 请求第一个参数是接口地址'/discover/list'，第二个参数是 请求体{ params：data }
+      // post 请求第一个参数是接口地址'/discover/list'，第二个参数是 请求体 data
+      const { data: res } = await this.$http.get('/discover/list', {
+        params:{
+          discoverDateStart:this.newdomainSimpleVo.dateRange[0],
+          discoverDateEnd:this.newdomainSimpleVo.dateRange[1],
+          fraudType:this.newdomainSimpleVo.fraudType,
+          dstIp:this.newdomainSimpleVo.destIP,
+          page:this.mypageable.pageNum,
+          pageSize:this.mypageable.pageSize
+        }
+      })
+      if(res.code == 200){
+        console.log(res.dataList);
+        this.tableData = res.dataList
         let tableDataLength = this.tableData.length
         let timer = null
         timer ? clearTimeout(timer) : ''
@@ -469,9 +423,45 @@ export default {
             }
           })
         }
-        this.total = res.data.totalElements
-        this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
+        this.total = res.totalSum
+        this.totalPages = res.totalPage // }else{ //   this.$message('无数据') // }
+      
       }
+      // 请求体内容
+      // let getlist = {
+      //   discoverDateStart:this.newdomainSimpleVo.dateRange[0],
+      //   discoverDateEnd:this.newdomainSimpleVo.dateRange[1],
+      //   fraudType:this.newdomainSimpleVo.fraudType,
+      //   page,
+      //   pageSize
+      // }
+      // console.log(getlist);
+      // const { data: res } = await this.$http.get(
+      //   '/discover/list',
+      //   {params:getlist}
+      // )
+      // if (res.code == 200) {
+      //   this.tableData = res.dataList
+      //   let tableDataLength = this.tableData.length
+      //   let timer = null
+      //   timer ? clearTimeout(timer) : ''
+      //   if (this.tableData.length < 10) {
+      //     for (var i = this.tableData.length; i < 10; i++) {
+      //       this.tableData.push({})
+      //     }
+      //   }
+      //   if (tableDataLength < 10) {
+      //     timer = setTimeout(() => {
+      //       for (var i = tableDataLength; i < 10; i++) {
+      //         document.querySelectorAll('#onetable tbody .el-checkbox')[
+      //           i
+      //         ].style.display = 'none'
+      //       }
+      //     })
+      //   }
+      //   this.total = res.data.totalElements
+      //   this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
+      // }
     },
     //查询
     async searchTabData() {
@@ -508,19 +498,10 @@ export default {
 
     //重置方法
     resetFun() {
-      // this.newdomainSimpleVo.dateValue_find = null
-      // this.newdomainSimpleVo = {
-      //   domain: null, //域名
-      //   dateValue_find: null, //时间
-      // }
-      this.newdomainSimpleVo.type = null
-      this.newdomainSimpleVo.url = null
-      this.newdomainSimpleVo.dateValue_find = null
-      ;(this.whiteSearchList = {
-        startCreateTime: null,
-        endCreateTime: null,
-      }),
-        this.getTabData()
+      this.newdomainSimpleVo.dateRange=[ dayjs().subtract(1, 'month').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
+      this.newdomainSimpleVo.fraudType=null,
+      this.newdomainSimpleVo.destIP=null,
+      this.getTabData()
     },
     handleSelectionChange(val) {
       this.tableDatalist = val
@@ -550,10 +531,21 @@ export default {
     //下载   //文件流
     async put() {
       let getlist = {
-        discoverDateStart: this.newdomainSimpleVo.dateRange[0],
-        discoverDateEnd: this.newdomainSimpleVo.dateRange[1],
-        fraudType: this.newdomainSimpleVo.fraudType,
-        dstIP:this.newdomainSimpleVo.destIP
+
+        discoverDateStart :this.newdomainSimpleVo.dateRange[0],
+        discoverDateEnd:this.newdomainSimpleVo.dateRange[1],
+        fraudType:this.newdomainSimpleVo.fraudType,
+        dstIp:this.newdomainSimpleVo.destIP
+        // discoverTimeDTO: {
+        //   startTime: this.whiteSearchList.startCreateTime,
+        //   endTime: this.whiteSearchList.endCreateTime,
+        // },
+
+        // pageable: this.mypageable,
+        // // sourceEnum: this.newdomainSimpleVo.source,
+        // type: this.newdomainSimpleVo.type,
+        // url: this.newdomainSimpleVo.url,
+        // // category: this.newdomainSimpleVo.type,
       }
       this.loadingbuttext = '...加载中'
       this.loadingbut = true

@@ -43,11 +43,11 @@
           <!-- 诈骗类型 -->
           <el-form-item label="诈骗类型">
             <el-select
-              v-model.trim="newdomainSimpleVo.fraud"
+              v-model.trim="newdomainSimpleVo.fraudType"
               placeholder="诈骗类型"
               clearable
               style="width: 120px;"
-              @clear="fraudType_clearFun(newdomainSimpleVo.fraud)"
+              @clear="fraudType_clearFun(newdomainSimpleVo.fraudType)"
             >
               <el-option
                 v-for="item in selectData.fraudypeData"
@@ -61,10 +61,10 @@
           <el-form-item label="处置状态">
             <el-select
               class="el-input-width"
-              v-model.trim="newdomainSimpleVo.Status"
+              v-model.trim="newdomainSimpleVo.treatStatus"
               placeholder="状态"
               clearable
-              @clear="WarningType_clearFun(newdomainSimpleVo.Status)"
+              @clear="WarningType_clearFun(newdomainSimpleVo.treatStatus)"
             >
               <el-option
                 v-for="item in selectData.Status"
@@ -78,10 +78,10 @@
           <el-form-item label="协议">
             <el-select
               class="el-input-width"
-              v-model.trim="newdomainSimpleVo.Protocol"
+              v-model.trim="newdomainSimpleVo.protocol"
               placeholder="协议"
               clearable
-              @clear="WarningType_clearFun(newdomainSimpleVo.Protocol)"
+              @clear="WarningType_clearFun(newdomainSimpleVo.protocol)"
             >
               <el-option
                 v-for="item in selectData.Protocol"
@@ -95,10 +95,10 @@
           <el-form-item label="未处置原因">
             <el-select
               class="el-input-width"
-              v-model.trim="newdomainSimpleVo.Reason"
+              v-model.trim="newdomainSimpleVo.rejectReason"
               placeholder="原因"
               clearable
-              @clear="WarningType_clearFun(newdomainSimpleVo.Reason)"
+              @clear="WarningType_clearFun(newdomainSimpleVo.rejectReason)"
             >
               <el-option
                 v-for="item in selectData.Reason"
@@ -156,7 +156,7 @@
   
         <el-table-column type="selection" :reserve-selection="true" width="55">
         </el-table-column>
-        <el-table-column label="处置时间" prop="fraudTime" show-overflow-tooltip>
+        <el-table-column label="处置时间" prop="blockTime" show-overflow-tooltip>
         </el-table-column>
         <el-table-column label="诈骗类型" show-overflow-tooltip width="150">
           <template slot-scope="scope">
@@ -169,20 +169,20 @@
           width="200"
           show-overflow-tooltip
           label="域名"
-          prop="domainName"
+          prop="dstIp"
         ></el-table-column>
-        <el-table-column label="处置状态" prop="Status" width="100">
+        <el-table-column label="处置状态" prop="blockStatus" width="100">
         </el-table-column>
-        <el-table-column label="协议" prop="Protocol"> </el-table-column>
+        <el-table-column label="协议" prop="protocol"> </el-table-column>
         <el-table-column
           label="数据来源"
-          prop="dataSource"
+          prop="source"
           show-overflow-tooltip
         >
         </el-table-column>
         <el-table-column
           label="未处置原因"
-          prop="Reason"
+          prop="rejectReason"
           show-overflow-tooltip
         >
         </el-table-column>
@@ -404,17 +404,24 @@
         },
         xiangqing: false,
         isLoading: false,
+
+
         newdomainSimpleVo: {
-          photo: null, //手机号
+
+          sourceType: null, //数据来源
+          fraudType: null, //诈骗类型
+          protocol:null,  //协议
+          rejectReason:null,//未处置原因
+          treatStatus:null, //处置状态
           dateValue_find: [
             dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
-            dayjs().format('YYYY-MM-DD')
+            dayjs().format('YYYY-MM-DD'),
           ], //诈骗时间
-          unit: null, //推送单位
-          sourceType: null, //数据来源
-          Status: null,
-          fraud: null, //诈骗类型
+
+
+          photo: null, //手机号
           dateValue_find1: null, //图表时间
+          unit: null, //推送单位
           Reason:null
         },
         whiteSearchList1: {
@@ -423,13 +430,9 @@
         },
         whiteSearchList: {
           startCreateTime:
-            dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
-            ' ' +
-            '00:' +
-            '00:' +
-            '00',
+            dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
           endCreateTime:
-            dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
+            dayjs().format('YYYY-MM-DD')
         },
         formInline: {
           user: '',
@@ -530,11 +533,22 @@
         this.loadingbuttext = '...加载中'
         this.loadingbut = true
         let getTabDataList = {
-          treatDateStart: this.newdomainSimpleVo.dateValue_find[0],
-          treatDateEnd: this.newdomainSimpleVo.dateValue_find[1],
-          
-          fraudType: this.newdomainSimpleVo.fraud,
-          // 待补充
+
+          source:this.newdomainSimpleVo.sourceType,
+          treatDateStart:this.newdomainSimpleVo.dateValue_find[0],
+          treatDateEnd:this.newdomainSimpleVo.dateValue_find[1],
+          fraudType:this.newdomainSimpleVo.fraudType,
+          protocol:this.newdomainSimpleVo.protocol,
+          rejectReason:this.newdomainSimpleVo.rejectReason,
+          treatStatus:this.newdomainSimpleVo.treatStatus
+          // earlyGrade: this.newdomainSimpleVo.Status,
+          // endFraudTime: this.whiteSearchList.endCreateTime,
+  
+          // fraudType: this.newdomainSimpleVo.fraud,
+          // newPage: this.mypageable,
+          // phoneNum: this.newdomainSimpleVo.photo,
+          // startFraudTime: this.whiteSearchList.startCreateTime,
+
         }
   
         this.$http({
@@ -778,20 +792,30 @@
       // 初始化数据
       async getTabData() {
         let getTabDataList = {
-          earlyGrade: this.newdomainSimpleVo.Status,
-          endFraudTime: this.whiteSearchList.endCreateTime,
-  
-          fraudType: this.newdomainSimpleVo.fraud,
-          newPage: this.mypageable,
-          phoneNum: this.newdomainSimpleVo.photo,
-          startFraudTime: this.whiteSearchList.startCreateTime,
+
+          source:this.newdomainSimpleVo.sourceType,
+          treatDateStart:this.newdomainSimpleVo.dateValue_find[0],
+          treatDateEnd:this.newdomainSimpleVo.dateValue_find[1],
+          fraudType:this.newdomainSimpleVo.fraudType,
+          treatStatus:this.newdomainSimpleVo.treatStatus,
+          page:this.mypageable.pageNo,
+          pageSize:this.mypageable.pageSize
+
+
+          // earlyGrade: this.newdomainSimpleVo.Status,
+          // endFraudTime: this.whiteSearchList.endCreateTime,
+          // fraudType: this.newdomainSimpleVo.fraud,
+          // newPage: this.mypageable,
+          // phoneNum: this.newdomainSimpleVo.photo,
+          // startFraudTime: this.whiteSearchList.startCreateTime,
+          
         }
-        const { data: res } = await this.$http.post(
-          '/warning_ca/getWarningCAPage',
-          getTabDataList
+        const { data: res } = await this.$http.get(
+          '/block/list',
+          {params:getTabDataList}
         )
         if (res.code == 200) {
-          this.tableData = res.data.content
+          this.tableData = res.dataList
           let tableDataLength = this.tableData.length
           let timer = null
           timer ? clearTimeout(timer) : ''
@@ -809,8 +833,8 @@
               }
             })
           }
-          this.total = res.data.totalElements
-          this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
+          this.total = res.dataList
+          this.totalPages = res.dataList // }else{ //   this.$message('无数据') // }
         }
       },
   
@@ -906,21 +930,29 @@
       },
       //重置方法
       resetFun() {
-        this.newdomainSimpleVo = {
-          photo: null,
-          dateValue_find: null,
-          sourceType: null,
-          // sourceType: null,
-          fraud: null,
-          unit: null,
-          Status: null,
-        }
-        this.whiteSearchList = {
-          startCreateTime: null,
-          endCreateTime: null,
-        }
-        this.mypageable.pageNo = 1
+
+        this.newdomainSimpleVo.dateValue_find=[ dayjs().subtract(1, 'month').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
+        this.newdomainSimpleVo.fraudType=null,
+        this.newdomainSimpleVo.sourceType=null,
+        this.newdomainSimpleVo.protocol=null,
+        this.newdomainSimpleVo.rejectReason=null,
+        this.newdomainSimpleVo.treatStatus=null,
         this.getTabData()
+        // this.newdomainSimpleVo = {
+        //   photo: null,
+        //   dateValue_find: null,
+        //   sourceType: null,
+        //   // sourceType: null,
+        //   fraud: null,
+        //   unit: null,
+        //   Status: null,
+        // }
+        // this.whiteSearchList = {
+        //   startCreateTime: null,
+        //   endCreateTime: null,
+        // }
+        // this.mypageable.pageNo = 1
+        // this.getTabData()
       },
       // 分页
       handleSizeChange(val) {

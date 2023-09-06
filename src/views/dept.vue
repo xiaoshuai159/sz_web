@@ -62,8 +62,8 @@
       size="mini"
       class="tableStyle"
     >
-      <el-table-column label="用户名" prop="userName"> </el-table-column>
-      <el-table-column label="操作时间" prop="createTime"> </el-table-column>
+      <el-table-column label="用户名" prop="username"> </el-table-column>
+      <el-table-column label="操作时间" prop="execTime"> </el-table-column>
       <el-table-column label="操作" prop="remark"> </el-table-column>
     </el-table>
    <!-- //分页 -->
@@ -94,9 +94,12 @@ export default {
   data() {
     return {
       newdomainSimpleVo: {
+
+        
         dateValue_find: null,
-        username: "",
-        project: null,
+        username: null,   //用户名 
+        project: null,  //内容
+
       },
       whiteSearchList: {
         // startCreateTime:
@@ -267,21 +270,25 @@ export default {
     //初次渲染
     async getdata() {
       let list = {
-        pageable: this.mypageable,
-        systemTimeDTO: {
-          endTime: this.whiteSearchList.endCreateTime,
-          startTime: this.whiteSearchList.startCreateTime,
-        },
-        params: '',
-        remark: this.newdomainSimpleVo.project,
-        result: '',
-        userName: this.newdomainSimpleVo.username,
+        username:this.newdomainSimpleVo.username,
+        content:this.newdomainSimpleVo.project,
+        page:this.mypageable.pageNum,
+        pageSize:this.mypageable.pageSize
+        // pageable: this.mypageable,
+        // systemTimeDTO: {
+        //   endTime: this.whiteSearchList.endCreateTime,
+        //   startTime: this.whiteSearchList.startCreateTime,
+        // },
+        // params: '',
+        // remark: this.newdomainSimpleVo.project,
+        // result: '',
+        // userName: this.newdomainSimpleVo.username,
       }
-      const { data: res } = await this.$http.post('/log/getLogPage', list)
+      const { data: res } = await this.$http.get('/log/list', {params:list})
 
            if (res.code == 200) {
         // if(res.data.content.length>0){
-        this.tableData = res.data.content
+        this.tableData =res.dataList
         let tableDataLength = this.tableData.length
         let timer = null
         timer ? clearTimeout(timer) : ''
@@ -299,8 +306,8 @@ export default {
             }
           })
         }
-        this.total = res.data.totalElements
-        this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
+        this.total = res.dataList
+        this.totalPages = res.dataList // }else{ //   this.$message('无数据') // }
       }
     },
     searchTabData() {
@@ -308,11 +315,11 @@ export default {
       this.getdata()
     },
     resetFun() {
-      this.whiteSearchList.endCreateTime = null
-      this.whiteSearchList.startCreateTime = null
-      this.newdomainSimpleVo.project=""
-       this.newdomainSimpleVo.username=""
-      this.mypageable.pageNum = 1
+      // this.whiteSearchList.endCreateTime = null
+      // this.whiteSearchList.startCreateTime = null
+      this.newdomainSimpleVo.project=null
+       this.newdomainSimpleVo.username=null
+      // this.mypageable.pageNum = 1
       this.getdata()
     },
     //删除

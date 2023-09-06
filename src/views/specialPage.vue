@@ -18,23 +18,22 @@
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              :default-time="['00:00:00', '23:59:59']"
+              value-format="yyyy-MM-dd"
             >
             </el-date-picker>
           </el-form-item>
           <!-- 诈骗类型 -->
           <el-form-item label="域名">
             <el-input
-              v-model.trim="newdomainSimpleVo.domain"
+              v-model.trim="newdomainSimpleVo.url"
               placeholder="输入查询域名"
             >
             </el-input>
           </el-form-item>
           <el-form-item label="诈骗类型">
-            <el-select v-model.trim="newdomainSimpleVo.type" clearable placeholder="诈骗类型" style="width: 120px;">
+            <el-select v-model.trim="newdomainSimpleVo.fraudType" clearable placeholder="诈骗类型" style="width: 120px;">
               <el-option
-                v-for="item in options"
+                v-for="item in newdomainSimpleVo.fraudTypeOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -95,14 +94,14 @@
   
         <el-table-column type="selection" :reserve-selection="true" width="55">
         </el-table-column>
-        <el-table-column label="日期" prop="fraudTime" show-overflow-tooltip>
+        <el-table-column label="日期" prop="createTime" show-overflow-tooltip>
         </el-table-column>
 
         <el-table-column
           width="200"
           show-overflow-tooltip
           label="域名"
-          prop="domainName"
+          prop="url"
         ></el-table-column>
         <el-table-column label="类型" show-overflow-tooltip width="150">
           <template slot-scope="scope">
@@ -113,13 +112,13 @@
         </el-table-column>
         <el-table-column
           label="原因"
-          prop="dataSource"
+          prop="reason"
           show-overflow-tooltip
         >
         </el-table-column>
         <el-table-column
           label="备注"
-          prop="Reason"
+          prop="remark"
           show-overflow-tooltip
         >
         </el-table-column>
@@ -325,14 +324,26 @@
         xintableData: {
           fraudTime: '', //诈骗时间
           domainName: '', //诈骗网站域名
+
+
+
           fraudType: '', //诈骗类型
+
+
+
           earlyGrade: '', //预警等级：
           userIp: '', //受害人IP：
           userPort: '', //受害人端口：
           userIpAscription: '', //受害人IP归属地：
           phone: '', //手机号
           phoneAddress: '', //手机号归属地
+
+
+
           fraudIp: '', //诈骗网站IP
+
+
+
           fraudPort: '', //诈骗网站端口
           fraudIpAscription: '', //诈骗网站IP归属地
           idCard: '', //身份证：
@@ -341,16 +352,20 @@
         },
         xiangqing: false,
         isLoading: false,
+
+
         newdomainSimpleVo: {
-          photo: null, //手机号
+          fraudType: null,
+          url:null,
           dateValue_find: [
-            dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
-              ' ' +
-              '00:' +
-              '00:' +
-              '00',
-            dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
+            dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
+            dayjs().format('YYYY-MM-DD') 
           ], //诈骗时间
+
+
+
+          fraudTypeOptions:[],
+          photo: null, //手机号
           unit: null, //推送单位
           sourceType: null, //数据来源
           Status: null,
@@ -471,18 +486,22 @@
         this.loadingbuttext = '...加载中'
         this.loadingbut = true
         let getTabDataList = {
-          earlyGrade: this.newdomainSimpleVo.Status,
-          endFraudTime: this.whiteSearchList.endCreateTime,
+          startDay:this.newdomainSimpleVo.dateValue_find[0],
+          endDay:this.newdomainSimpleVo.dateValue_find[1],
+          fraudType:this.newdomainSimpleVo.fraudType,
+          url:this.newdomainSimpleVo.url
+          // earlyGrade: this.newdomainSimpleVo.Status,
+          // endFraudTime: this.whiteSearchList.endCreateTime,
   
-          fraudType: this.newdomainSimpleVo.fraud,
-          newPage: this.mypageable,
-          phoneNum: this.newdomainSimpleVo.photo,
-          startFraudTime: this.whiteSearchList.startCreateTime,
+          // fraudType: this.newdomainSimpleVo.fraud,
+          // newPage: this.mypageable,
+          // phoneNum: this.newdomainSimpleVo.photo,
+          // startFraudTime: this.whiteSearchList.startCreateTime,
         }
   
         this.$http({
-          method: 'POST',
-          url: '/warning_ca/downloadCAWarning',
+          method: 'GET',
+          url: '/special/export',
           responseType: 'blob',
           data: getTabDataList,
         })
@@ -506,7 +525,7 @@
               }
               reader.readAsText(blob)
             } else {
-              let title = dayjs().format('YYYYMMDD') + '-预警导出.xlsx'
+              let title = dayjs().format('YYYYMMDD') + '-特办导出.xlsx'
   
               let binaryData = []
               binaryData.push(blob)
@@ -721,20 +740,28 @@
       // 初始化数据
       async getTabData() {
         let getTabDataList = {
-          earlyGrade: this.newdomainSimpleVo.Status,
-          endFraudTime: this.whiteSearchList.endCreateTime,
+
+          startDay:this.newdomainSimpleVo.dateValue_find[0],
+          endDay:this.newdomainSimpleVo.dateValue_find[1],
+          fraudType: this.newdomainSimpleVo.fraudType,
+          url:this.newdomainSimpleVo.url,
+          page:this.mypageable.pageNo,
+          pageSize:this.mypageable.pageSize
+
+
+          // earlyGrade: this.newdomainSimpleVo.Status,
+          // endFraudTime: this.whiteSearchList.endCreateTime,
   
-          fraudType: this.newdomainSimpleVo.fraud,
-          newPage: this.mypageable,
-          phoneNum: this.newdomainSimpleVo.photo,
-          startFraudTime: this.whiteSearchList.startCreateTime,
+          // newPage: this.mypageable,
+          // phoneNum: this.newdomainSimpleVo.photo,
+          // startFraudTime: this.whiteSearchList.startCreateTime,
         }
-        const { data: res } = await this.$http.post(
-          '/warning_ca/getWarningCAPage',
-          getTabDataList
+        const { data: res } = await this.$http.get(
+          '/special/list',
+          {params:getTabDataList}
         )
         if (res.code == 200) {
-          this.tableData = res.data.content
+          this.tableData = res.dataList
           let tableDataLength = this.tableData.length
           let timer = null
           timer ? clearTimeout(timer) : ''
@@ -752,8 +779,8 @@
               }
             })
           }
-          this.total = res.data.totalElements
-          this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
+          this.total = res.dataList
+          this.totalPages = res.dataList // }else{ //   this.$message('无数据') // }
         }
       },
   
@@ -849,21 +876,30 @@
       },
       //重置方法
       resetFun() {
-        this.newdomainSimpleVo = {
-          photo: null,
-          dateValue_find: null,
-          sourceType: null,
-          // sourceType: null,
-          fraud: null,
-          unit: null,
-          Status: null,
-        }
-        this.whiteSearchList = {
-          startCreateTime: null,
-          endCreateTime: null,
-        }
-        this.mypageable.pageNo = 1
+
+        this.newdomainSimpleVo.dateValue_find=[ dayjs().subtract(1, 'month').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
+        this.newdomainSimpleVo.fraudType=null,
+        this.newdomainSimpleVo.url=null,
         this.getTabData()
+
+
+
+        // this.newdomainSimpleVo = {
+
+        // //   photo: null,
+        // //   dateValue_find: null,
+        // //   sourceType: null,
+        // //   // sourceType: null,
+        // //   fraud: null,
+        // //   unit: null,
+        // //   Status: null,
+        // // }
+        // // this.whiteSearchList = {
+        // //   startCreateTime: null,
+        // //   endCreateTime: null,
+        // // }
+        // // this.mypageable.pageNo = 1
+      
       },
       // 分页
       handleSizeChange(val) {

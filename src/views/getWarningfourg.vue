@@ -117,7 +117,7 @@
         type="selection"
         width="55"
       ></el-table-column>
-      <el-table-column label="域名" prop="domain"></el-table-column>
+      <el-table-column label="域名" prop="url"></el-table-column>
       <el-table-column label="诈骗类型" prop="fraudType"></el-table-column>
       <el-table-column label="协议" prop="protocol"> </el-table-column>
       <el-table-column label="上传人" prop="uploader"> </el-table-column>
@@ -174,11 +174,13 @@ export default {
   data() {
     return {
       newdomainSimpleVo: {
-        uploader:null,
+
+        uploader:null,  //上传人
         dateRange:[dayjs().subtract(1, 'month').format('YYYY-MM-DD'),dayjs().format('YYYY-MM-DD')],
         //发现日期
-        fraudType: null,
-        protocol:null
+        fraudType: null,   //涉诈类型
+        protocol:null,   //协议
+
       },
       mypageable: {
         pageNum: 1,
@@ -197,11 +199,7 @@ export default {
       ],
       whiteSearchList: {
         startCreateTime:
-          dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
-          ' ' +
-          '00:' +
-          '00:' +
-          '00',
+          dayjs().subtract(1, 'month').format('YYYY-MM-DD') ,
         endCreateTime:
           dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
       },
@@ -303,8 +301,7 @@ export default {
     },
     //初始化获取数据
     async getTabData() {
-      // if (this.newdomainSimpleVo.protocol == '') { this.newdomainSimpleVo.protocol = null }
-      // if (this.newdomainSimpleVo.fraudType == '') { this.newdomainSimpleVo.fraudType = null }
+
       let getlist = {
         startDay: this.newdomainSimpleVo.dateRange[0],
         endDay:this.newdomainSimpleVo.dateRange[1],
@@ -402,8 +399,7 @@ export default {
       this.newdomainSimpleVo.fraudType = null
       this.newdomainSimpleVo.protocol = null
       this.newdomainSimpleVo.uploader = null
-      this.newdomainSimpleVo.dateRange[0] = dayjs().subtract(1, ' month').format('YYYY-MM-DD')
-      this.newdomainSimpleVo.dateRange[1] = dayjs().format('YYYY-MM-DD')
+      this.newdomainSimpleVo.dateRange = [dayjs().subtract(1, 'month').format('YYYY-MM-DD'),dayjs().format('YYYY-MM-DD')]
         this.getTabData()
     },
     handleSelectionChange(val) {
@@ -443,22 +439,27 @@ export default {
         this.newdomainSimpleVo.fraudType = null
       }
       let getlist = {
-        discoverTimeDTO: {
-          startTime: this.whiteSearchList.startCreateTime,
-          endTime: this.whiteSearchList.endCreateTime,
-        },
+        uploader:this.newdomainSimpleVo.uploader,
+        fraudType:this.newdomainSimpleVo.fraudType,
+        protocol:this.newdomainSimpleVo.protocol,
+        startDay:this.newdomainSimpleVo.dateRange[0],
+        endDay:this.newdomainSimpleVo.dateRange[1],
+        // discoverTimeDTO: {
+        //   startTime: this.whiteSearchList.startCreateTime,
+        //   endTime: this.whiteSearchList.endCreateTime,
+        // },
 
-        pageable: this.mypageable,
-        // sourceEnum: this.newdomainSimpleVo.source,
-        fraudType: this.newdomainSimpleVo.fraudType,
-        url: this.newdomainSimpleVo.url,
+        // pageable: this.mypageable,
+        // // sourceEnum: this.newdomainSimpleVo.source,
+        // fraudType: this.newdomainSimpleVo.fraudType,
+        // url: this.newdomainSimpleVo.url,
       }
       console.log(getlist);
       this.loadingbuttext = '...加载中'
       this.loadingbut = true
       this.$http({
-        method: 'POST',
-        url: '/discover/downloadDiscover',
+        method: 'GET',
+        url: '/alarm/export',
         responseType: 'blob',
         data: getlist,
       })
@@ -484,7 +485,7 @@ export default {
             }
             reader.readAsText(blob)
           } else {
-            let title = dayjs().format('YYYYMMDD') + '发现导出.xlsx'
+            let title = dayjs().format('YYYYMMDD') + '警情导出.xlsx'
 
             let binaryData = []
             binaryData.push(blob)

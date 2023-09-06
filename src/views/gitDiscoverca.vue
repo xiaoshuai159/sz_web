@@ -16,22 +16,21 @@
           <!-- 发现日期 -->
           <el-form-item label="发现日期">
             <el-date-picker
-              v-model="newdomainSimpleVo.dateValue_find"
+              v-model="newdomainSimpleVo.dateRange"
               type="daterange"
-              :change="dataCreate_change(newdomainSimpleVo.dateValue_find)"
+              :clearable="false"
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              :default-time="['00:00:00', '23:59:59']"
+              value-format="yyyy-MM-dd"
             >
             </el-date-picker>
           </el-form-item>
           <!-- 诈骗大类 -->
           <el-form-item label="诈骗类型">
-            <el-select v-model.trim="newdomainSimpleVo.type" clearable placeholder="诈骗类型">
+            <el-select v-model.trim="newdomainSimpleVo.fraudType" clearable placeholder="诈骗类型">
               <el-option
-                v-for="item in options"
+                v-for="item in fraudTypeOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -99,13 +98,10 @@
       <el-table-column label="发现日期" prop="discoverDate">
         <!-- min-width="10%" -->
       </el-table-column>
-      <el-table-column label="诈骗类型" prop="type">
-        <template slot-scope="scope">
-          {{ scope.row.type }}
-        </template>
+      <el-table-column label="诈骗类型" prop="fraudType">
       </el-table-column>
-      <el-table-column label="域名" prop="domain"> </el-table-column>
-      <el-table-column label="目的IP" prop="destIP"> </el-table-column>
+      <el-table-column label="域名" prop="url"> </el-table-column>
+      <el-table-column label="目的IP" prop="dstIp"> </el-table-column>
       <el-table-column label="访问量" prop="visits"> </el-table-column>
     </el-table>
 
@@ -160,201 +156,17 @@ export default {
   components: {},
   data() {
     return {
-      testoptions:[{
-          value: 'zhinan',
-          label: '指南',
-          children: [{
-            value: 'shejiyuanze',
-            label: '设计原则',
-            children: [{
-              value: 'yizhi',
-              label: '一致'
-            }, {
-              value: 'fankui',
-              label: '反馈'
-            }, {
-              value: 'xiaolv',
-              label: '效率'
-            }, {
-              value: 'kekong',
-              label: '可控'
-            }]
-          }, {
-            value: 'daohang',
-            label: '导航',
-            children: [{
-              value: 'cexiangdaohang',
-              label: '侧向导航'
-            }, {
-              value: 'dingbudaohang',
-              label: '顶部导航'
-            }]
-          }]
-        }, {
-          value: 'zujian',
-          label: '组件',
-          children: [{
-            value: 'basic',
-            label: 'Basic',
-            children: [{
-              value: 'layout',
-              label: 'Layout 布局'
-            }, {
-              value: 'color',
-              label: 'Color 色彩'
-            }, {
-              value: 'typography',
-              label: 'Typography 字体'
-            }, {
-              value: 'icon',
-              label: 'Icon 图标'
-            }, {
-              value: 'button',
-              label: 'Button 按钮'
-            }]
-          }, {
-            value: 'form',
-            label: 'Form',
-            children: [{
-              value: 'radio',
-              label: 'Radio 单选框'
-            }, {
-              value: 'checkbox',
-              label: 'Checkbox 多选框'
-            }, {
-              value: 'input',
-              label: 'Input 输入框'
-            }, {
-              value: 'input-number',
-              label: 'InputNumber 计数器'
-            }, {
-              value: 'select',
-              label: 'Select 选择器'
-            }, {
-              value: 'cascader',
-              label: 'Cascader 级联选择器'
-            }, {
-              value: 'switch',
-              label: 'Switch 开关'
-            }, {
-              value: 'slider',
-              label: 'Slider 滑块'
-            }, {
-              value: 'time-picker',
-              label: 'TimePicker 时间选择器'
-            }, {
-              value: 'date-picker',
-              label: 'DatePicker 日期选择器'
-            }, {
-              value: 'datetime-picker',
-              label: 'DateTimePicker 日期时间选择器'
-            }, {
-              value: 'upload',
-              label: 'Upload 上传'
-            }, {
-              value: 'rate',
-              label: 'Rate 评分'
-            }, {
-              value: 'form',
-              label: 'Form 表单'
-            }]
-          }, {
-            value: 'data',
-            label: 'Data',
-            children: [{
-              value: 'table',
-              label: 'Table 表格'
-            }, {
-              value: 'tag',
-              label: 'Tag 标签'
-            }, {
-              value: 'progress',
-              label: 'Progress 进度条'
-            }, {
-              value: 'tree',
-              label: 'Tree 树形控件'
-            }, {
-              value: 'pagination',
-              label: 'Pagination 分页'
-            }, {
-              value: 'badge',
-              label: 'Badge 标记'
-            }]
-          }, {
-            value: 'notice',
-            label: 'Notice',
-            children: [{
-              value: 'alert',
-              label: 'Alert 警告'
-            }, {
-              value: 'loading',
-              label: 'Loading 加载'
-            }, {
-              value: 'message',
-              label: 'Message 消息提示'
-            }, {
-              value: 'message-box',
-              label: 'MessageBox 弹框'
-            }, {
-              value: 'notification',
-              label: 'Notification 通知'
-            }]
-          }, {
-            value: 'navigation',
-            label: 'Navigation',
-            children: [{
-              value: 'menu',
-              label: 'NavMenu 导航菜单'
-            }, {
-              value: 'tabs',
-              label: 'Tabs 标签页'
-            }, {
-              value: 'breadcrumb',
-              label: 'Breadcrumb 面包屑'
-            }, {
-              value: 'dropdown',
-              label: 'Dropdown 下拉菜单'
-            }, {
-              value: 'steps',
-              label: 'Steps 步骤条'
-            }]
-          }, {
-            value: 'others',
-            label: 'Others',
-            children: [{
-              value: 'dialog',
-              label: 'Dialog 对话框'
-            }, {
-              value: 'tooltip',
-              label: 'Tooltip 文字提示'
-            }, {
-              value: 'popover',
-              label: 'Popover 弹出框'
-            }, {
-              value: 'card',
-              label: 'Card 卡片'
-            }, {
-              value: 'carousel',
-              label: 'Carousel 走马灯'
-            }, {
-              value: 'collapse',
-              label: 'Collapse 折叠面板'
-            }]
-          }]
-        }, {
-          value: 'ziyuan',
-          label: '资源',
-          children: [{
-            value: 'axure',
-            label: 'Axure Components'
-          }, {
-            value: 'sketch',
-            label: 'Sketch Templates'
-          }, {
-            value: 'jiaohu',
-            label: '组件交互文档'
-          }]
-        }],
+      tableData: [
+      ],
+      fraudTypeOptions:[],
+
+      newdomainSimpleVo: {
+        dateRange:[ dayjs().subtract(1, 'month').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
+        //发现日期
+        fraudType:null,  //涉诈类型
+        destIP:null  //目的IP
+      },
+
       heights: undefined,
       errFlag: false,
       xianshi: false,
@@ -369,13 +181,9 @@ export default {
       ],
       whiteSearchList: {
         startCreateTime:
-          dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
-          ' ' +
-          '00:' +
-          '00:' +
-          '00',
+          dayjs().subtract(1, 'month').format('YYYY-MM-DD') ,
         endCreateTime:
-          dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
+          dayjs().format('YYYY-MM-DD')
       },
       isLoading: false,
 
@@ -385,31 +193,7 @@ export default {
         user: '',
         region: '',
       },
-      newdomainSimpleVo: {
-        dateValue_find: [
-          dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
-            ' ' +
-            '00:' +
-            '00:' +
-            '00',
-          dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
-        ],
-        // [
-        //   dayjs().subtract(1, 'month').format('YYYY-MM-DD') +
-        //     ' ' +
-        //     '00:' +
-        //     '00:' +
-        //     '00',
-        //   dayjs().format('YYYY-MM-DD') + ' ' + '23:' + '59:' + '59',
-        // ],
-        //发现日期
-        url: null, //URL
-        source: '中卫', //来源
-        type: null, //诈骗大类
-        typesmall: null, //诈骗小类
-        typebig: null,
-        destIP:null
-      },
+      
 
       domainFeedbackVo: {
         accessSystemType: null,
@@ -434,266 +218,7 @@ export default {
       xianshititle: '暂无图片',
       clicktitle: '点击查看图片',
       xinshi: false,
-      //下拉框的选项数据  改之前：层级下拉框
-      // options: [
-      //   {
-      //     value: 'KF',
-      //     label: '冒充客服类',
-      //     children: [
-      //       {
-      //         value: 'kf_ds',
-      //         label: '冒充电商客服',
-      //       },
-      //       {
-      //         value: 'kf_wl',
-      //         label: '冒充物流客服',
-      //       },
-      //       {
-      //         value: 'kf_other',
-      //         label: '冒充其他客服类',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'GJF',
-      //     label: '冒充公检法类',
-      //     children: [
-      //       {
-      //         value: 'gjf_mc',
-      //         label: '冒充公检法',
-      //       },
-      //       {
-      //         value: 'gjf_gs',
-      //         label: '工商平台类',
-      //       },
-      //       {
-      //         value: 'gjf_etc',
-      //         label: 'ETC通行卡',
-      //       },
-      //       {
-      //         value: 'gjf_other',
-      //         label: '其他政府机关或单位组织',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'SD',
-      //     label: '刷单返利类',
-      //     children: [
-      //       {
-      //         value: 'sd_cz',
-      //         label: '充值（红包）返利',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'DK',
-      //     label: '贷款代办信用卡类',
-      //     children: [
-      //       {
-      //         value: 'dk_xyk',
-      //         label: '虚假代办信用卡',
-      //       },
-      //       {
-      //         value: 'dk_te',
-      //         label: '虚假提额套现',
-      //       },
-      //       {
-      //         value: 'dk_dk',
-      //         label: '虚假贷款',
-      //       },
-      //       {
-      //         value: 'dk_other',
-      //         label: '其他贷款类',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'JJGW',
-      //     label: '冒充军警购物诈骗',
-      //     children: [
-      //       {
-      //         value: 'JJGW',
-      //         label: '冒充军警购物诈骗',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'SZP',
-      //     label: '杀猪盘',
-      //     children: [
-      //       {
-      //         value: 'szp_lc',
-      //         label: '虚假投资理财类',
-      //       },
-      //       {
-      //         value: 'szp_dubo',
-      //         label: '博彩彩票',
-      //       },
-      //       {
-      //         value: 'szp_ty',
-      //         label: '体育直播，比分竞猜',
-      //       },
-      //       {
-      //         value: 'szp_yx',
-      //         label: '棋牌游戏',
-      //       },
-      //     ],
-      //   },
-
-      //   {
-      //     value: 'JY',
-      //     label: '网络婚恋、交友类',
-      //     children: [
-      //       {
-      //         value: 'jy_jr',
-      //         label: '冒充外国军人',
-      //       },
-      //       {
-      //         value: 'jy_hl',
-      //         label: '网络婚恋',
-      //       },
-      //       {
-      //         value: 'jy_jy',
-      //         label: '网络交友，聊天交友',
-      //       },
-      //       {
-      //         value: 'jy_other',
-      //         label: '其他交友类',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'ZX',
-      //     label: '虚假征信类',
-      //     children: [
-      //       {
-      //         value: 'zx_xyd',
-      //         label: '消除校园贷记录',
-      //       },
-      //       {
-      //         value: 'zx_bljl',
-      //         label: '消除不良记录',
-      //       },
-      //       {
-      //         value: 'zx_other',
-      //         label: '其他征信',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'MC',
-      //     label: '冒充领导、熟人类',
-      //     children: [
-      //       {
-      //         value: 'mc_ld',
-      //         label: '冒充领导',
-      //       },
-      //       {
-      //         value: 'mc_sr',
-      //         label: '冒充熟人',
-      //       },
-      //       {
-      //         value: 'mc_gz',
-      //         label: '冒充公众人物',
-      //       },
-      //       {
-      //         value: 'mc_other',
-      //         label: '冒充其他身份类',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'YX',
-      //     label: '网络游戏产品虚假交易类',
-      //     children: [
-      //       {
-      //         value: 'yx_card',
-      //         label: '游戏币、游戏点卡诈骗',
-      //       },
-      //       {
-      //         value: 'yx_zhzb',
-      //         label: '游戏账号、游戏装备诈骗',
-      //       },
-      //       {
-      //         value: 'yx_other',
-      //         label: '其他游戏产品虚假交易类',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'OTHER',
-      //     label: '其他类型诈骗',
-      //     children: [
-      //       {
-      //         value: 'other_zj',
-      //         label: '虚假中奖诈骗',
-      //       },
-      //       {
-      //         value: 'other_zp',
-      //         label: '虚假招聘',
-      //       },
-      //       {
-      //         value: 'other_tp',
-      //         label: 'ps图片诈骗',
-      //       },
-      //       {
-      //         value: 'other_jp',
-      //         label: '机票退改签诈骗',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'APP',
-      //     label: '分发平台',
-      //     children: [
-      //       {
-      //         value: 'app_ff',
-      //         label: '分发平台',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'XZYM',
-      //     label: '下载页面',
-      //     children: [
-      //       {
-      //         value: 'xzym',
-      //         label: '下载页面',
-      //       },
-      //     ],
-      //   },
-      //   {
-      //     value: 'HC',
-      //     label: '灰产',
-      //     children: [
-      //       {
-      //         value: 'hc_fw',
-      //         label: '灰产服务',
-      //       },
-      //       {
-      //         value: 'hc_other',
-      //         label: '灰产其他',
-      //       },
-      //       {
-      //         value: 'hc',
-      //         label: '灰产',
-      //       },
-      //       // {
-      //       //   value: 'hc_gw',
-      //       //   label: '虚假购物',
-      //       // },
-      //       // {
-      //       //   value: 'hc_fw',
-      //       //   label: '虚假服务',
-      //       // },
-      //       // {
-      //       //   value: 'hc_other',
-      //       //   label: '其他电商类',
-      //       // },
-      //     ],
-      //   },
-      // ],
+     
         // 改之后：单级别下拉框
         options:[
           {
@@ -763,12 +288,7 @@ export default {
           { value: 'XZYM', label: '下载页面' },
         ],
       },
-      tableData: [
-        // {
-        //   url: "www.baidu.com11",
-        //   visits: "100",
-        // },
-      ],
+      
       tableDatalist: [],
 
       newurl: '',
@@ -869,30 +389,21 @@ export default {
     },
     //初始化获取数据
     async getTabData() {
-      if (this.newdomainSimpleVo.type == '') {
-        this.newdomainSimpleVo.type = null
-      }
-      let getlist = {
-        discoverTimeDTO: {
-          startTime: this.whiteSearchList.startCreateTime,
-          endTime: this.whiteSearchList.endCreateTime,
-        },
-
-        pageable: this.mypageable,
-        // sourceEnum: this.newdomainSimpleVo.source,
-        type: this.newdomainSimpleVo.type,
-        url: this.newdomainSimpleVo.url,
-        // category: this.newdomainSimpleVo.type,
-      }
-      console.log(getlist);
-      const { data: res } = await this.$http.post(
-        '/discover/getDiscoverPage',
-        getlist
-      )
-      // console.log(res);
-      if (res.code == 200) {
-        // if(res.data.content.length>0){
-        this.tableData = res.data.content
+      // get 请求第一个参数是接口地址'/discover/list'，第二个参数是 请求体{ params：data }
+      // post 请求第一个参数是接口地址'/discover/list'，第二个参数是 请求体 data
+      const { data: res } = await this.$http.get('/discover/list', {
+        params:{
+          discoverDateStart:this.newdomainSimpleVo.dateRange[0],
+          discoverDateEnd:this.newdomainSimpleVo.dateRange[1],
+          fraudType:this.newdomainSimpleVo.fraudType,
+          dstIp:this.newdomainSimpleVo.destIP,
+          page:this.mypageable.pageNum,
+          pageSize:this.mypageable.pageSize
+        }
+      })
+      if(res.code == 200){
+        console.log(res.dataList);
+        this.tableData = res.dataList
         let tableDataLength = this.tableData.length
         let timer = null
         timer ? clearTimeout(timer) : ''
@@ -910,9 +421,45 @@ export default {
             }
           })
         }
-        this.total = res.data.totalElements
-        this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
+        this.total = res.totalSum
+        this.totalPages = res.totalPage // }else{ //   this.$message('无数据') // }
+      
       }
+      // 请求体内容
+      // let getlist = {
+      //   discoverDateStart:this.newdomainSimpleVo.dateRange[0],
+      //   discoverDateEnd:this.newdomainSimpleVo.dateRange[1],
+      //   fraudType:this.newdomainSimpleVo.fraudType,
+      //   page,
+      //   pageSize
+      // }
+      // console.log(getlist);
+      // const { data: res } = await this.$http.get(
+      //   '/discover/list',
+      //   {params:getlist}
+      // )
+      // if (res.code == 200) {
+      //   this.tableData = res.dataList
+      //   let tableDataLength = this.tableData.length
+      //   let timer = null
+      //   timer ? clearTimeout(timer) : ''
+      //   if (this.tableData.length < 10) {
+      //     for (var i = this.tableData.length; i < 10; i++) {
+      //       this.tableData.push({})
+      //     }
+      //   }
+      //   if (tableDataLength < 10) {
+      //     timer = setTimeout(() => {
+      //       for (var i = tableDataLength; i < 10; i++) {
+      //         document.querySelectorAll('#onetable tbody .el-checkbox')[
+      //           i
+      //         ].style.display = 'none'
+      //       }
+      //     })
+      //   }
+      //   this.total = res.data.totalElements
+      //   this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
+      // }
     },
     //查询
     async searchTabData() {
@@ -949,19 +496,10 @@ export default {
 
     //重置方法
     resetFun() {
-      // this.newdomainSimpleVo.dateValue_find = null
-      // this.newdomainSimpleVo = {
-      //   domain: null, //域名
-      //   dateValue_find: null, //时间
-      // }
-      this.newdomainSimpleVo.type = null
-      this.newdomainSimpleVo.url = null
-      this.newdomainSimpleVo.dateValue_find = null
-      ;(this.whiteSearchList = {
-        startCreateTime: null,
-        endCreateTime: null,
-      }),
-        this.getTabData()
+      this.newdomainSimpleVo.dateRange=[ dayjs().subtract(1, 'month').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
+      this.newdomainSimpleVo.fraudType=null,
+      this.newdomainSimpleVo.destIP=null,
+      this.getTabData()
     },
     handleSelectionChange(val) {
       this.tableDatalist = val
@@ -1000,23 +538,27 @@ export default {
         this.newdomainSimpleVo.type = null
       }
       let getlist = {
-        discoverTimeDTO: {
-          startTime: this.whiteSearchList.startCreateTime,
-          endTime: this.whiteSearchList.endCreateTime,
-        },
+        discoverDateStart :this.newdomainSimpleVo.dateRange[0],
+        discoverDateEnd:this.newdomainSimpleVo.dateRange[1],
+        fraudType:this.newdomainSimpleVo.fraudType,
+        dstIp:this.newdomainSimpleVo.destIP
+        // discoverTimeDTO: {
+        //   startTime: this.whiteSearchList.startCreateTime,
+        //   endTime: this.whiteSearchList.endCreateTime,
+        // },
 
-        pageable: this.mypageable,
-        // sourceEnum: this.newdomainSimpleVo.source,
-        type: this.newdomainSimpleVo.type,
-        url: this.newdomainSimpleVo.url,
-        // category: this.newdomainSimpleVo.type,
+        // pageable: this.mypageable,
+        // // sourceEnum: this.newdomainSimpleVo.source,
+        // type: this.newdomainSimpleVo.type,
+        // url: this.newdomainSimpleVo.url,
+        // // category: this.newdomainSimpleVo.type,
       }
       console.log(getlist);
       this.loadingbuttext = '...加载中'
       this.loadingbut = true
       this.$http({
-        method: 'POST',
-        url: '/discover/downloadDiscover',
+        method: 'GET',
+        url: '/discover/export',
         responseType: 'blob',
         data: getlist,
       })

@@ -169,7 +169,7 @@
           width="200"
           show-overflow-tooltip
           label="域名"
-          prop="dstIp"
+          prop="url"
         ></el-table-column>
         <el-table-column label="处置状态" prop="blockStatus" width="100">
         </el-table-column>
@@ -186,7 +186,7 @@
           show-overflow-tooltip
         >
         </el-table-column>
-        <!-- <el-table-column label="操作" width="100">
+        <el-table-column label="截图" width="100">
           <template slot-scope="scope">
             <div>
               <el-button
@@ -195,11 +195,11 @@
                 size="mini"
                 @click="ckxq(scope.row.id)"
               >
-                查看详情
+                查看
               </el-button>
             </div>
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </el-table>
       <!-- //分页 -->
       <div class="bottom">
@@ -447,34 +447,18 @@
           pageNo: 1,
           pageSize: 10,
         },
-        total: 1,
+        total: 0,
         totalPages: '',
         selectData: {
           Reason:[],
           Status:[],
           Protocol:[],
-          sourceTypeData: [{ value: '长安通信', label: '长安通信' }],
+          sourceTypeData: [],
           WarningTypeData: [
-            { value: '高危', label: '高危' },
-            { value: '中危', label: '中危' },
-            { value: '低危', label: '低危' },
           ],
           unitTypeData: [
-            {
-              value: '四川省成都市公安局刑警支队',
-              label: '四川省成都市公安局刑警支队',
-            },
           ],
           fraudypeData: [
-            { value: '贷款', label: '贷款' },
-            { value: '理财', label: '理财' },
-            { value: '冒充客服', label: '冒充客服' },
-            { value: '杀猪盘', label: '杀猪盘' },
-            // { value: '冒充公检法', label: '冒充公检法' },
-            { value: '冒充公检法', label: '冒充公检法' },
-            { value: '刷单', label: '刷单' },
-            { value: '虚假购物', label: '虚假购物' },
-                 { value: '其他类型诈骗', label: '其他类型诈骗' },
           ],
         },
         newqutest: [],
@@ -497,8 +481,51 @@
     },
     mounted() {
       this.yangshi()
+      this.getTabData()
+    },
+    created(){
+      this.getOptionsData()
     },
     methods: {
+      async getOptionsData(){
+        const promiseArr = Promise.all([await this.$http.get('/dict/protocol'),await this.$http.get('/dict/fraudType'),await this.$http.get('/dict/rejectReason'),await this.$http.get('/dict/datasource'),await this.$http.get('/dict/blockStatus'),])
+        promiseArr.then((successArr)=>{
+          successArr.forEach(successData=>{
+            if(successData.config.url=='/dict/protocol'){
+              const protocolArr = successData.data.data
+              protocolArr!=null && protocolArr.forEach(protocol=>this.selectData.Protocol.push({key:protocol, value:protocol}))
+            }else if(successData.config.url=='/dict/fraudType'){
+              const fraudTypeArr = successData.data.data
+              // console.log(fraudTypeArr);
+              fraudTypeArr!=null && fraudTypeArr.forEach(fraudType=>this.selectData.fraudypeData.push({key:fraudType, value:fraudType}))
+            }else if(successData.config.url=='/dict/rejectReason'){
+              const rejectReasonArr = successData.data.data
+              // console.log(rejectReasonArr);
+              if(rejectReasonArr!=null){
+                for(let i in rejectReasonArr){
+                  this.selectData.Reason.push({value:i, label:rejectReasonArr[i]})
+                }
+              }
+              // console.log(this.selectData.Reason);
+              // rejectReasonArr!=null && rejectReasonArr.forEach(item=>this.selectData.Reason.push({key:item, value:item}))
+            }else if(successData.config.url=='/dict/datasource'){
+              const itemArr = successData.data.data
+              itemArr!=null && itemArr.forEach(item=>this.selectData.sourceTypeData.push({key:item, value:item}))
+            }else if(successData.config.url=='/dict/blockStatus'){
+              const itemArr = successData.data.data
+              // console.log(itemArr);
+              if(itemArr!=null){
+                for(let i in itemArr){
+                  this.selectData.Status.push({value:i, label:itemArr[i]})
+                }
+              }
+              // console.log(this.selectData.Status);
+              // itemArr!=null && itemArr.forEach(item=>this.selectData.Status.push({key:item, value:item}))
+            }
+          })
+        })
+        .catch(function(e){console.log(e)})
+      },
       yangshi() {
         this.heights =
           window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 270
@@ -555,7 +582,7 @@
           method: 'GET',
           url: '/block/export',
           responseType: 'blob',
-          data: getTabDataList,
+          params: getTabDataList,
         })
           .then((res) => {
             // const blob = new Blob([res.data], {
@@ -605,7 +632,7 @@
             // console.log(title);
           })
           .catch((err) => {
-            // console.log(err)
+            console.log(err)
             this.$message.error('文件下载失败！')
             this.loadingbuttext = '导出'
             this.loadingbut = false
@@ -798,6 +825,8 @@
           treatDateEnd:this.newdomainSimpleVo.dateValue_find[1],
           fraudType:this.newdomainSimpleVo.fraudType,
           treatStatus:this.newdomainSimpleVo.treatStatus,
+          protocol:this.newdomainSimpleVo.protocol,
+          rejectReason:this.newdomainSimpleVo.rejectReason,
           page:this.mypageable.pageNo,
           pageSize:this.mypageable.pageSize
 
@@ -815,6 +844,7 @@
           {params:getTabDataList}
         )
         if (res.code == 200) {
+          
           this.tableData = res.dataList
           let tableDataLength = this.tableData.length
           let timer = null
@@ -833,8 +863,8 @@
               }
             })
           }
-          this.total = res.dataList
-          this.totalPages = res.dataList // }else{ //   this.$message('无数据') // }
+          this.total = res.totalSum
+          this.totalPages = res.totalPage // }else{ //   this.$message('无数据') // }
         }
       },
   
@@ -937,6 +967,8 @@
         this.newdomainSimpleVo.protocol=null,
         this.newdomainSimpleVo.rejectReason=null,
         this.newdomainSimpleVo.treatStatus=null,
+        this.mypageable.pageNum = 1,
+        this.mypageable.pageSize = 10
         this.getTabData()
         // this.newdomainSimpleVo = {
         //   photo: null,
@@ -1024,18 +1056,18 @@
       },
       async ckxq(val) {
         // console.log(val);
-  
-        const { data: res } = await this.$http.get('/warning_ca/tailDetail', {
+        const { data: res } = await this.$http.get('/block/snapshot', {
           params: {
-            id: val.toString(),
+            id: val,
           },
         })
-        if (res.code == 200) {
-          this.xintableData = res.data
+        console.log(res);
+        // if (res.code == 200) {
+        //   this.xintableData = res.data
   
-          // console.log(this.xintableData);
-          this.xiangqing = true
-        }
+        //   // console.log(this.xintableData);
+        //   this.xiangqing = true
+        // }
       },
       handleClose1() {
         this.xiangqing = false

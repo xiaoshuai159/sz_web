@@ -155,7 +155,13 @@ export default {
   components: {},
   data() {
     return {
-
+      tableData:[],
+      newdomainSimpleVo:{
+        dateRange:[ dayjs().subtract(1, 'month').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
+        fraudType:null,
+        destIP:null,
+      },
+      fraudTypeOptions:[],
       heights: undefined,
       errFlag: false,
       xianshi: false,
@@ -198,7 +204,7 @@ export default {
         pageSize1: 10,
       },
       total1: 1,
-      total: 1,
+      total: 0,
       totalPages: '',
       totalPages1: '',
       newkanjietu: false,
@@ -291,11 +297,9 @@ export default {
   },
 
   computed: {},
-  // created() {  // 7.4 测试暂时关闭接口
-  //   this.getTabData()
-  // },
   mounted() {
-    this.yangshi()  // 
+    this.yangshi()
+    this.getTabData()
     // setInterval(function () {
     // document
     //   .querySelectorAll('.el-cascader-panel .el-radio ')
@@ -322,8 +326,7 @@ export default {
       const {data:res} = await this.$http.get('/dict/fraudType')
       if(res.code == 200){
         const fraudTypeArr = res.data
-        // console.log(fraudTypeArr);
-        fraudTypeArr!=null && fraudTypeArr.forEach(fraudType=>this.newdomainSimpleVo.fraudTypeOptions.push({key:fraudType, value:fraudType}))
+        fraudTypeArr!=null && fraudTypeArr.forEach(fraudType=>this.fraudTypeOptions.push({key:fraudType, value:fraudType}))
       }else{
         this.$message(res.data)
       }
@@ -404,7 +407,6 @@ export default {
         }
       })
       if(res.code == 200){
-        console.log(res.dataList);
         this.tableData = res.dataList
         let tableDataLength = this.tableData.length
         let timer = null
@@ -501,6 +503,8 @@ export default {
       this.newdomainSimpleVo.dateRange=[ dayjs().subtract(1, 'month').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
       this.newdomainSimpleVo.fraudType=null,
       this.newdomainSimpleVo.destIP=null,
+      this.mypageable.pageNum = 1
+      this.mypageable.pageSize = 10
       this.getTabData()
     },
     handleSelectionChange(val) {
@@ -1035,7 +1039,21 @@ export default {
 </script>
 
 <style  scoped lang='less'>
-
+.right_main_under /deep/ .el-button-chaxun:focus,
+.right_main_under /deep/ .el-button-chaxun:hover {
+  background: url(../assets/img/shouye/查询按钮.png) no-repeat;
+  background-size: 100% 100%;
+}
+.right_main_under /deep/ .el-button-chongzhi:focus,
+.right_main_under /deep/ .el-button-chongzhi:hover {
+  background: url(../assets/img/shouye/重置按钮.png) no-repeat;
+  background-size: 100% 100%;
+}
+.right_main_under /deep/ .el-button-daochu:focus,
+.right_main_under /deep/ .el-button-daochu:hover {
+  background: url(../assets/img/shouye/下载按钮.png) no-repeat;
+  background-size: 100% 100%;
+}
 /deep/ .el-table__fixed-right::before,
 .el-table__fixed::before {
   background-color: #192d45;

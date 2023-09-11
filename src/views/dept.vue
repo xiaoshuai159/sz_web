@@ -13,8 +13,7 @@
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              :default-time="['00:00:00', '23:59:59']"
+              value-format="yyyy-MM-dd"
             >
             </el-date-picker>
           </el-form-item>
@@ -96,7 +95,10 @@ export default {
       newdomainSimpleVo: {
 
         
-        dateValue_find: null,
+        dateValue_find: [
+            dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
+            dayjs().format('YYYY-MM-DD') 
+          ],
         username: null,   //用户名 
         project: null,  //内容
 
@@ -241,12 +243,12 @@ export default {
   components: {
     Navlist: Navlist, //将别名demo 变成 组件 Demo
   },
-  // created() {  4.5 测试关闭
-  //   this.getdata()
-  // },
-  //   mounted() {
-  //   this.yangshi()
-  // },
+   created() {  //4.5 测试关闭
+    this.getdata()
+  },
+    mounted() {
+    this.yangshi()
+  },
   methods: {
 
 
@@ -306,8 +308,8 @@ export default {
             }
           })
         }
-        this.total = res.dataList
-        this.totalPages = res.dataList // }else{ //   this.$message('无数据') // }
+        this.total = res.totalSum
+        this.totalPages = res.totalPage // }else{ //   this.$message('无数据') // }
       }
     },
     searchTabData() {
@@ -317,9 +319,13 @@ export default {
     resetFun() {
       // this.whiteSearchList.endCreateTime = null
       // this.whiteSearchList.startCreateTime = null
+      this.newdomainSimpleVo.dateValue_find = [
+            dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
+            dayjs().format('YYYY-MM-DD') 
+          ]
       this.newdomainSimpleVo.project=null
        this.newdomainSimpleVo.username=null
-      // this.mypageable.pageNum = 1
+      this.mypageable.pageNum = 1
       this.getdata()
     },
     //删除

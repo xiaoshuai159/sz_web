@@ -18,22 +18,21 @@
               range-separator="至"
               start-placeholder="开始日期"
               end-placeholder="结束日期"
-              value-format="yyyy-MM-dd HH:mm:ss"
-              :default-time="['00:00:00', '23:59:59']"
+              value-format="yyyy-MM-dd"
             >
             </el-date-picker>
           </el-form-item>
           <!-- 诈骗类型 -->
           <el-form-item>
             <el-select
-              v-model.trim="newdomainSimpleVo.tpOption"
-              placeholder="域名查询"
-              clearable
+              v-model.trim="tpOption"
+              placeholder="查询类型"
+              :clearable="false"
               style="width: 120px;"
-              @clear="fraudType_clearFun(newdomainSimpleVo.tpOption)"
+              @clear="fraudType_clearFun(tpOption)"
             >
               <el-option
-                v-for="item in selectData.fraudypeData"
+                v-for="item in newdomainSimpleVo.tpOption"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -120,20 +119,7 @@
           show-overflow-tooltip
         >
         </el-table-column>
-        <!-- <el-table-column label="操作" width="100">
-          <template slot-scope="scope">
-            <div>
-              <el-button
-                type="text"
-                v-if="Object.keys(scope.row).length > 0"
-                size="mini"
-                @click="ckxq(scope.row.id)"
-              >
-                查看详情
-              </el-button>
-            </div>
-          </template>
-        </el-table-column> -->
+       
       </el-table>
       <!-- //分页 -->
       <div class="bottom">
@@ -340,7 +326,7 @@
         isLoading: false,
 
         
-
+        tpOption:'domain',
         newdomainSimpleVo: {
           photo: null, //手机号
           dateValue_find: [
@@ -359,11 +345,11 @@
 
 
           tpOption:[
-          { value:'domain', label:'域名' },
-          { value:'ip', label:'IP' },
-          { value:'feature', label:'特征号' },
+          { value:'domain', label:'域名查询' },
+          { value:'ip', label:'IP查询' },
+          { value:'feature', label:'同源查询' },
           ],
-          kwOption:''
+          kwOption:null
 
 
         },
@@ -390,7 +376,7 @@
           pageNo: 1,
           pageSize: 10,
         },
-        total: 1,
+        total: 0,
         totalPages: '',
         selectData: {
           Reason:[],
@@ -478,7 +464,7 @@
         let getTabDataList = {
           startDay :this.newdomainSimpleVo.dateValue_find[0],
           endDay :this.newdomainSimpleVo.dateValue_find[1],
-          tp:this.newdomainSimpleVo.tpOption,
+          tp:this.tpOption,
           kw :this.newdomainSimpleVo.kwOption
           // earlyGrade: this.newdomainSimpleVo.Status,
           // endFraudTime: this.whiteSearchList.endCreateTime,
@@ -494,7 +480,7 @@
           method: 'GET',
           url: '/relation/export',
           responseType: 'blob',
-          data: getTabDataList,
+          params: getTabDataList,
         })
           .then((res) => {
             // const blob = new Blob([res.data], {
@@ -550,183 +536,7 @@
             this.loadingbut = false
           })
       },
-      // async put123() {
-      //   this.loadingbuttext = '...加载中'
-      //   this.loadingbut = true
-      //   let arr = []
-      //   this.tableDatalist.forEach((item) => {
-      //     arr.push(item.id)
-      //   })
-      //   let putlist = {
-      //     warningSimpleVo: {
-      //       // pushUnit: this.newdomainSimpleVo.unit,
-      //       dataSource: this.newdomainSimpleVo.sourceType,
-      //       earlyGrade: this.newdomainSimpleVo.Warning,
-      //       fraudType: this.newdomainSimpleVo.fraud,
-      //     },
-      //     warningTimeVo: {
-      //       startFraudTime: this.whiteSearchList.startCreateTime,
-      //       endFraudTime: this.whiteSearchList.endCreateTime,
-      //     },
-      //     idList: arr,
-      //   }
-  
-      //   const { data: res } = await this.$http.post(
-      //     '/warning/downloadWarning',
-      //     putlist
-      //   )
-      //   if (res.code == 200) {
-      //     this.loadingbuttext = '导出'
-      //     this.loadingbut = false
-      //     let newurl = res.expandData.url
-      //     let eleLink = document.createElement('a')
-      //     eleLink.download = name
-      //     // const down = window.location.origin
-      //     // eleLink.href = "http://172.31.1.61:8080" + newurl;
-      //     // const down = window.location.origin
-      //     eleLink.href = newurl
-  
-      //     // console.log(eleLink);
-      //     eleLink.click()
-      //     eleLink.remove()
-      //     if (this.tableDatalist.length > 0) {
-      //       this.$refs.multipleTable.clearSelection()
-      //     }
-      //   } else {
-      //     this.$message(res.message)
-      //   }
-      // },
-  
-      //曲线图++++++++++++++++++++++++++++++++++++1111
-      // drawLine() {
-      //   // eslint-disable-next-line camelcase
-      //   var bar_qx = this.$refs.chart
-      //   let myChart = this.$echarts.init(bar_qx)
-      //   myChart.setOption(this.setOption1())
-      // },
-      // setOption1() {
-      //   let option = {
-      //     feature: {
-      //       saveAsImage: {
-      //         show: false,
-      //       },
-      //     },
-      //     title: {},
-      //     tooltip: {
-      //       trigger: 'axis',
-      //       axisPointer: {
-      //         lineStyle: {
-      //           color: '#66B3FF',
-      //         },
-      //       },
-      //     },
-      //     color: ['#fac858', '#EE6666', '#91cc75'], //绿色  橙色
-      //     legend: {
-      //       data: [
-      //         {
-      //           name: '高',
-      //           textStyle: {
-      //             color: ['#fac858'],
-      //           },
-      //         },
-      //         {
-      //           name: '中',
-      //           textStyle: {
-      //             color: ['#EE6666'],
-      //           },
-      //           //  ["处置域名数", "域名访问量"]
-      //         },
-      //         {
-      //           name: '低',
-      //           textStyle: {
-      //             color: ['#91cc75'],
-      //           },
-      //           //  ["处置域名数", "域名访问量"]
-      //         },
-      //       ],
-      //     },
-      //     grid: {
-      //       y2: 140,
-      //     },
-  
-      //     xAxis: {
-      //       type: 'category',
-      //       boundaryGap: false,
-      //       data: this.newqutest,
-  
-      //       axisLabel: {
-      //         // rotate: -20,
-      //         //  让x轴文字方向为竖向
-      //         // interval: 0,
-      //       },
-      //       axisLine: {
-      //         lineStyle: {
-      //           color: '#fff',
-      //           width: 1,
-      //         },
-      //       },
-      //     },
-  
-      //     yAxis: {
-      //       type: 'value',
-      //       splitLine: {
-      //         lineStyle: {
-      //           color: ['#fff'],
-      //         },
-      //       },
-      //       nameTextStyle: {
-      //         color: ['#fff'],
-      //       },
-      //       axisLine: {
-      //         lineStyle: {
-      //           color: '#fff',
-      //           width: 1,
-      //         },
-      //       },
-      //     },
-      //     series: [
-      //       {
-      //         name: '高',
-      //         type: 'line',
-  
-      //         data: this.newqutest1,
-      //         smooth: true,
-      //       },
-      //       {
-      //         name: '中',
-      //         type: 'line',
-  
-      //         data: this.newqutest2,
-      //         smooth: true,
-      //       },
-      //       {
-      //         name: '低',
-      //         type: 'line',
-  
-      //         data: this.newqutest3,
-      //         smooth: true,
-      //       },
-      //     ],
-      //     dataZoom: [
-      //       {
-      //         id: 'dataZoomX',
-      //         type: 'inside',
-      //         xAxisIndex: [0],
-      //         filterMode: 'none',
-      //         start: 0,
-      //         end: 200,
-      //       },
-      //     ],
-      //     grid: {
-      //       x: 60,
-      //       y: 40,
-      //       x2: 40,
-      //       y2: 40,
-      //       borderWidth: 1,
-      //     },
-      //   }
-      //   return option
-      // },
+
   
       // 初始化数据
       async getTabData() {
@@ -740,7 +550,7 @@
           // startFraudTime: this.whiteSearchList.startCreateTime,
           startDay:this.newdomainSimpleVo.dateValue_find[0],
           endDay:this.newdomainSimpleVo.dateValue_find[1],
-          tp:this.newdomainSimpleVo.tpOption,
+          tp:this.tpOption,
           kw:this.newdomainSimpleVo.kwOption,
           page:this.mypageable.pageNo,
           pageSize:this.mypageable.pageSize
@@ -770,8 +580,8 @@
               }
             })
           }
-          this.total = res.dataList
-          this.totalPages = res.dataList // }else{ //   this.$message('无数据') // }
+          this.total = res.totalSum
+          this.totalPages = res.totalPage // }else{ //   this.$message('无数据') // }
         }
       },
   
@@ -868,8 +678,8 @@
       //重置方法
       resetFun() {
         this.newdomainSimpleVo.dateValue_find=[ dayjs().subtract(1, 'month').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
-        this.kwOption=null,
-        this.tpOption='',
+        this.newdomainSimpleVo.kwOption=null,
+        this.tpOption='domain',
         this.getTabData()
       //   this.newdomainSimpleVo = {
       //     photo: null,

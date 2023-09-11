@@ -2,8 +2,8 @@
   <div class="right_main_under">
     <Navlist></Navlist>
     <!-- v-if="getRole1('saveRole')" 4.5 测试关闭 -->
-    <el-row style="margin-bottom: 20px" >
-      <el-col :span="24">
+    <el-row style="margin-bottom: 30px" >
+      <!-- <el-col :span="24">
         <el-button
           class="el-button-daochu left top"
           type="primary"
@@ -11,7 +11,7 @@
           @click="add"
           >添加</el-button
         >
-      </el-col>
+      </el-col> -->
     </el-row>
 
     <el-table
@@ -26,8 +26,8 @@
       id="onetable"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column label="序号" prop="id" v-if="loadings">
-      </el-table-column>
+      <!-- <el-table-column label="序号" prop="id" v-if="loadings">
+      </el-table-column> -->
       <el-table-column prop="ID" label="序号" type="index" width="150">
         <template slot-scope="scope">
           <div v-if="Object.keys(scope.row).length > 0">
@@ -35,9 +35,9 @@
           </div>
         </template>
       </el-table-column>
-      <el-table-column label="角色名称" prop="roleName">
+      <el-table-column label="角色名称" prop="name">
       </el-table-column>
-      <el-table-column label="角色描述" prop="descr"> </el-table-column>
+      <el-table-column label="角色描述" prop="desc"> </el-table-column>
 
     </el-table>
     <!-- //分页 -->
@@ -399,17 +399,44 @@ export default {
       heights: undefined,
     }
   },
-  // mounted() {
-  //   this.yangshi()
-  // },
-  // created() {  // 7.4 暂时关闭接口
-  //   this.getTabData()
-  //   this.quan()
-  // },
+  mounted() {
+    this.yangshi()
+  },
+  created() {  // 7.4 暂时关闭接口
+    this.getTabData()
+    // this.quan()
+  },
   components: {
     Navlist: Navlist, //将别名demo 变成 组件 Demo
   },
   methods: {
+    //初始化列表
+    async getTabData() {
+      const { data: res } = await this.$http.get('/admin/role/list')
+      // console.log(res);
+      if (res.code == 200) {
+        this.tableData = res.data
+        let tableDataLength = this.tableData.length
+        let timer = null
+        timer ? clearTimeout(timer) : ''
+        if (this.tableData.length < 10) {
+          for (var i = this.tableData.length; i < 10; i++) {
+            this.tableData.push({})
+          }
+        }
+        if (tableDataLength < 10) {
+          timer = setTimeout(() => {
+            for (var i = tableDataLength; i < 10; i++) {
+              document.querySelectorAll('#onetable tbody .el-checkbox')[
+                i
+              ].style.display = 'none'
+            }
+          })
+        }
+        // this.total = res.data.totalElements
+        // this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
+      }
+    },
     yangshi() {
       this.heights =
         window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 270
@@ -470,37 +497,7 @@ export default {
       })
       this.dialog = false
     },
-    //初始化列表
-    async getTabData() {
-      let list = {
-        pageSize: this.mypageable.pageSize,
-        pageNum: this.mypageable.pageNum,
-      }
-      const { data: res } = await this.$http.post('/role/findAllRole', list)
-      // console.log(res);
-      if (res.code == 200) {
-        this.tableData = res.data.content
-        let tableDataLength = this.tableData.length
-        let timer = null
-        timer ? clearTimeout(timer) : ''
-        if (this.tableData.length < 10) {
-          for (var i = this.tableData.length; i < 10; i++) {
-            this.tableData.push({})
-          }
-        }
-        if (tableDataLength < 10) {
-          timer = setTimeout(() => {
-            for (var i = tableDataLength; i < 10; i++) {
-              document.querySelectorAll('#onetable tbody .el-checkbox')[
-                i
-              ].style.display = 'none'
-            }
-          })
-        }
-        this.total = res.data.totalElements
-        this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
-      }
-    },
+    
     //添加
     async tianjia() {
       let list = {

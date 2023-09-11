@@ -70,14 +70,18 @@
               class="el-button-daochu"
               type="primary"
               size="mini"
-              >模板下载</el-button
+              @click.native="download_temp"
+              :loading="loadingbut"
+              >{{ loadingbuttext }}</el-button
             >
-
+            <input type="file" @change="handleFileChange" style="display: none">
             <el-button
               class="el-button-daochu"
               type="primary"
               size="mini"
-              >批量导入</el-button
+              @click.native="little_input"
+              :loading="loadingbut2"
+              >{{ loadingbuttext2 }}</el-button
             >
             <el-button
               class="el-button-daochu"
@@ -89,6 +93,7 @@
               class="el-button-daochu"
               type="primary"
               size="mini"
+              @click.native="addDialog"
               >新增</el-button
             >
             <!-- v-if="getRole1('downloadRaw')" :disabled="this.tableData.length == 0"  7.4 测试 -->
@@ -142,7 +147,66 @@
     <!-- </div> -->
 
     <!-- 截图 -->
-
+    <el-dialog
+        :close-on-click-modal="false"
+        title="新 增"
+        :visible.sync="dialog"
+        width="35%"
+        class="dialogInfo"
+        
+      >
+      <el-form
+        :rules="rules"
+        ref="dialogInfo"
+        label-width="90px"
+        :inline="true"
+        :model="dialogInfo"
+        class="demo-form-inline search_select_form"
+        size="mini"
+      >
+        <el-form-item label="域名:" prop="dialog_domain">
+          <el-input
+            v-model.trim="dialogInfo.dialog_domain"
+            placeholder="例：https://www.****.com"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="诈骗类型:" prop="dialog_fraudType">
+          <el-select
+            v-model="dialogInfo.dialog_fraudType"
+            placeholder="诈骗类型"
+          >
+            <el-option
+              v-for="item in newdomainSimpleVo.fraudTypeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="备注:" prop="dialog_Remark">
+          <el-input
+            v-model.trim="dialogInfo.dialog_Remark"
+            placeholder="请输入备注"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          @click="submitForm('dialogInfo')"
+          type="primary"
+          size="mini"
+          class="el-button-xitongerr"
+          >添 加</el-button
+        >
+        <el-button
+          class="el-button-xitongup"
+          type="primary"
+          @click="quxiao2"
+          size="mini"
+          >取 消</el-button
+        >
+      </span>
+      </el-dialog>
     <el-dialog
       :title="jietutitle"
       :visible.sync="newkanjietu"
@@ -172,9 +236,20 @@ export default {
   // inject: ["reload"],
   data() {
     return {
+      dialog:false,
+      dialogInfo:{
+          dialog_domain:null,
+          dialog_fraudType:null,
+          dialog_Remark:null
+        },
+        rules:{
+          dialog_domain:[{ required: true, message: '请输入域名', trigger: 'blur' }],
+          dialog_fraudType:[{ required: true, message: '请选择诈骗类型', trigger: 'blur' }],
+          dialog_Remark:[{ required: true, message: '请输入备注', trigger: 'blur' }],
+        },
       newdomainSimpleVo: {
-
-
+        protocolOptions:[],
+        fraudTypeOptions:[],
         uploader:null,  //上传人
         dateRange:[dayjs().subtract(1, 'month').format('YYYY-MM-DD'),dayjs().format('YYYY-MM-DD')],
         //发现日期
@@ -189,8 +264,10 @@ export default {
       heights: undefined,
       errFlag: false,
       errFlagTimer: undefined,
-      loadingbuttext: '导出',
+      loadingbuttext: '模板下载',
       loadingbut: false,
+      loadingbuttext2: '批量导入',
+      loadingbut2: false,
       loading: true,
       gridData: [
         // {
@@ -281,23 +358,73 @@ export default {
   },
   mounted() {
     this.yangshi()
+    this.getTabData()
   },
-  methods: {
+  methods: { 
+    
+    addDialog(){
+      this.dialog = true
+      this.dialogInfo.dialog_domain = null
+        this.dialogInfo.dialog_fraudType = null
+        this.dialogInfo.dialog_Remark = null
+     },
+    submitForm(formName) {
+        let that = this
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.tianjia()
+
+            this.dialogVisible = false
+            this.$nextTick(() => {
+              that.$refs['dialogInfo'].clearValidate()
+            })
+          } else {
+            // console.log('error submit!!');
+            return false
+          }
+      })
+    },
+    async tianjia() {
+      let list = {
+        url: this.dialogInfo.dialog_domain,
+        fraudType: this.dialogInfo.dialog_fraudType,
+        remark:this.dialogInfo.dialog_Remark
+      }
+      const { data: res } = await this.$http.post('/alarm/add', list)
+      if (res.code == 200) {
+        this.$message(res.message)
+        this.getTabData()
+        this.dialog = false
+      } else {
+        this.$message(res.message)
+        this.dialog = false
+      }
+    },
+    quxiao2() {
+      let that = this
+      this.$nextTick(() => {
+        that.$refs['dialogInfo'].clearValidate()
+      })
+      this.dialog = false
+    },
     // 初始化下拉框数据
     async getOptionsData(){
       const promiseArr = Promise.all([await this.$http.get('/dict/protocol'),await this.$http.get('/dict/fraudType')])
       promiseArr.then((successArr)=>{
+        
         successArr.forEach(successData=>{
           if(successData.config.url=='/dict/protocol'){
             const protocolArr = successData.data.data
+            // console.log(protocolArr);
             protocolArr!=null && protocolArr.forEach(protocol=>this.newdomainSimpleVo.protocolOptions.push({key:protocol, value:protocol}))
           }else if(successData.config.url=='/dict/fraudType'){
             const fraudTypeArr = successData.data.data
+            // console.log(fraudTypeArr);
             fraudTypeArr!=null && fraudTypeArr.forEach(fraudType=>this.newdomainSimpleVo.fraudTypeOptions.push({key:fraudType, value:fraudType}))
           }
         })
       })
-      .catch(function(e){console.log(e)})
+      // .catch(function(e){console.log(e)})
     },
     //初始化获取数据
     async getTabData() {
@@ -427,42 +554,43 @@ export default {
     //     this.put()
     //   }
     // },
+    handleFileChange(event) {
+      // 获取选中的文件
+      const file = event.target.files[0];
+      this.loadingbuttext2 = '...导入中'
+      this.loadingbut2 = true
+      // 执行上传的逻辑
+      const formData = new FormData();
+      formData.append('file', file);
+
+      this.$http.post('/alarm/import', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(() => {
+        this.$message('上传成功');
+        this.loadingbuttext2 = '批量导入'
+        this.loadingbut2 = false
+      })
+      .catch((error) => {
+        this.$message('上传失败：', error);
+        this.loadingbuttext2 = '批量导入'
+        this.loadingbut2 = false
+      });
+    },
+    little_input(){
+      this.$el.querySelector('input[type=file]').click();
+    },
     //下载   //文件流
-    async put() {
-      // console.log(this.tableDatalist)
-      // if (this.tableDatalist.length > 0) {
-      // let arr = []
-      // this.tableDatalist.forEach((item) => {
-      //   arr.push(item.id)
-      // })
-      if (this.newdomainSimpleVo.fraudType == '') {
-        this.newdomainSimpleVo.fraudType = null
-      }
-      let getlist = {
+    async download_temp() {
 
-        uploader:this.newdomainSimpleVo.uploader,
-        fraudType:this.newdomainSimpleVo.fraudType,
-        protocol:this.newdomainSimpleVo.protocol,
-        startDay:this.newdomainSimpleVo.dateRange[0],
-        endDay:this.newdomainSimpleVo.dateRange[1],
-        // discoverTimeDTO: {
-        //   startTime: this.whiteSearchList.startCreateTime,
-        //   endTime: this.whiteSearchList.endCreateTime,
-        // },
-
-        // pageable: this.mypageable,
-        // // sourceEnum: this.newdomainSimpleVo.source,
-        // fraudType: this.newdomainSimpleVo.fraudType,
-        // url: this.newdomainSimpleVo.url,
-      }
-      console.log(getlist);
-      this.loadingbuttext = '...加载中'
+      this.loadingbuttext = '...下载中'
       this.loadingbut = true
       this.$http({
         method: 'GET',
-        url: '/alarm/export',
-        responseType: 'blob',
-        data: getlist,
+        url: '/alarm/template',
+        responseType: 'blob'
       })
         .then((res) => {
           let that = this
@@ -471,13 +599,13 @@ export default {
             const reader = new FileReader()
             reader.onload = function () {
               that.$message('下载文件失败')
-              that.loadingbuttext = '导出'
+              that.loadingbuttext = '模板下载'
               that.loadingbut = false
             }
             reader.readAsText(blob)
           } else {
 
-            let title = dayjs().format('YYYYMMDD') + '警情导出.xlsx'
+            let title = dayjs().format('YYYYMMDD') + '警情模板.xlsx'
 
             let binaryData = []
             binaryData.push(blob)
@@ -486,17 +614,18 @@ export default {
             })
             const aLink = document.createElement('a')
             aLink.href = url
-            aLink.setAttribute('download')
+            aLink.setAttribute('download', title)
             document.body.appendChild(aLink)
             aLink.click()
-            this.loadingbuttext = '导出'
+            this.loadingbuttext = '模板下载'
             this.loadingbut = false
             document.body.removeChild(aLink)
+            this.$message.success('模板下载成功！')
           }
         })
         .catch((err) => {
           this.$message.error('文件下载失败！')
-          this.loadingbuttext = '导出'
+          this.loadingbuttext = '模板下载'
           this.loadingbut = false
         })
 
@@ -962,7 +1091,19 @@ export default {
   background: url(../assets/img/shouye/下载按钮.png) no-repeat;
   background-size: 100% 100%;
 }
-
+.right_main_under /deep/ .el-button-xitongerr:focus,
+.right_main_under /deep/ .el-button-xitongerr:hover {
+  background: url(../assets/img/shouye/确定按钮.png) no-repeat;
+  background-size: cover;
+  border: none;
+  color: #25c0fd;
+}
+.right_main_under /deep/ .el-button-xitongup:focus,
+.right_main_under /deep/ .el-button-xitongup:hover {
+  background: url(../assets/img/shouye/取消按钮.png) no-repeat;
+  background-size: cover;
+  border: none;
+}
 /deep/ .el-table__fixed-right::before,
 .el-table__fixed::before {
   background-color: #192d45;
@@ -979,6 +1120,35 @@ export default {
 .el-pagination {
   text-align: right;
 }
+.dialogInfo /deep/ .el-dialog {
+    background: #021c2d url(../assets/img/shouye/背景框.png) no-repeat;
+    background-size: 100% 100%;
+    padding: 10px;
+    opacity: 0.9;
+    box-sizing: border-box;
+    .el-dialog__headerbtn {
+      top: 5px !important;
+      right: 10px !important;
+      .el-dialog__close {
+        color: #fff;
+        font-size: 14px;
+      }
+    }
+    .el-dialog__header {
+      margin: 20px 20px 0px 20px;
+      background: url(../assets/img/shouye/标题矩形.png) no-repeat;
+      background-size: 100% 100%;
+    }
+    .el-dialog__title,
+    .gailan h3,
+    .gailan1 h3 {
+      color: #2fbcfc;
+    }
+    .gailan h3,
+    .gailan1 h3 {
+      padding-left: 10px;
+    }
+  }
 .bottom {
   width: 100%;
   height: 40px /* 60/16 */ /* 40/16 */;

@@ -83,10 +83,6 @@
     >
       <!-- :row-style="{ height: 0 }" -->
       <!-- :cell-style="{ padding: 0 }" -->
-      <el-table-column label="序号" prop="id" v-if="isLoading">
-      </el-table-column>
-      <el-table-column label="密码" prop="password" v-if="isLoading">
-      </el-table-column>
       <el-table-column label="用户名" prop="username"> </el-table-column>
       <el-table-column label="角色" prop="role">
         <!-- <template slot-scope="scope">
@@ -94,12 +90,9 @@
                 {{ juese(scope.row.role_name) }}
               </template> -->
       </el-table-column>
-      <el-table-column label="电话号码" prop="phone"> </el-table-column>
+      <!-- <el-table-column label="电话号码" prop="phone"> </el-table-column> -->
       <!-- <el-table-column label="部门" prop="dept_name"> </el-table-column> -->
-      <el-table-column label="状态">
-        <template slot-scope="status">
-          {{ state(scope.row.status) }}
-        </template>
+      <el-table-column label="状态" prop="status">
       </el-table-column>
       <el-table-column label="创建时间" prop="createTime"> </el-table-column>
       <el-table-column label="更新时间" prop="lastUpdateTime"> </el-table-column>
@@ -176,16 +169,16 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="手机号" prop="photo">
+        <!-- <el-form-item label="手机号" prop="photo">
           <el-input
             v-model="newdomainSimpleVo.photo"
             placeholder="请输入手机号"
           ></el-input>
-        </el-form-item>
-        <el-form-item label="角色:" prop="role">
+        </el-form-item> -->
+        <el-form-item label="角色:" prop="state">
           <el-select v-model="newdomainSimpleVo.state" placeholder="请选择角色">
             <el-option
-              v-for="(item, index) in this.roleList"
+              v-for="(item, index) in roleList"
               :value="item.id"
               :label="item.roleName"
               :key="index"
@@ -194,50 +187,7 @@
             <el-option label="管理员" value="3"></el-option> -->
           </el-select>
         </el-form-item>
-        <el-form-item label="警号" prop="jh">
-          <el-input
-            v-model="newdomainSimpleVo.jh"
-            placeholder="请输入警号"
-          ></el-input>
-        </el-form-item>
-        <!-- <el-form-item label="部门" prop="bm">
-          <el-select
-            v-model="newdomainSimpleVo.bm"
-            placeholder="请输入部门"
-            ref="selecttreeadd"
-          >
-            <el-option
-              hidden
-              :value="xiugaixialid"
-              :label="newdomainSimpleVo.bm"
-            >
-            </el-option>
-          
-            <el-tree
-              ref="tree"
-              :data="treedata"
-              default-expand-all
-              node-key="id"
-              :props="defaultProps"
-              :expand-on-click-node="false"
-              :check-on-click-node="true"
-              @node-click="handleNodeClick"
-              style="height: auto; max-width: 400px"
-              class="tree_bg"
-            >
-              <span class="span-ellipsis" slot-scope="{ node }">
-                <span :title="node.label">{{ node.label }}</span>
-              </span>
-            </el-tree>
-         
-          </el-select>
-        </el-form-item> -->
-        <el-form-item label="备注" prop="bz">
-          <el-input
-            v-model="newdomainSimpleVo.bz"
-            placeholder="请输入备注"
-          ></el-input>
-        </el-form-item>
+
         <br />
         <el-form-item label="状态">
           <el-radio v-model="newdomainSimpleVo.radio" label="1">有效</el-radio>
@@ -293,65 +243,15 @@
           ></el-input>
         </el-form-item>
 
-        <el-form-item label="手机号:" prop="xinphoto">
-          <el-input
-            v-model="domainSimpleVo.xinphoto"
-            placeholder="请输入手机号"
-          ></el-input>
-        </el-form-item>
         <el-form-item label="角色:" prop="role">
           <el-select v-model="domainSimpleVo.xinrole" placeholder="请选择角色">
             <el-option
-              v-for="(item, index) in this.roleList"
+              v-for="(item, index) in roleList"
               :value="item.id"
               :label="item.roleName"
               :key="index"
             ></el-option>
-
-            <!-- <el-option label="操作员" value="operation"></el-option>
-            <el-option label="管理员" value="admin"></el-option>
-            <el-option label="超级管理员" value="superAdmin"></el-option> -->
           </el-select>
-        </el-form-item>
-        <el-form-item label="警号:" prop="xinjh">
-          <el-input
-            v-model="domainSimpleVo.xinjh"
-            placeholder="请输入警号"
-          ></el-input>
-        </el-form-item>
-
-        <!-- <el-form-item label="所属部门:" prop="ssbm">
-          <el-select
-            ref="selecttree"
-            v-model="domainSimpleVo.ssbm"
-            placeholder="请输入所属部门"
-          >
-            <el-option
-              :value="treeDataValue1"
-              style="height: auto; max-width: 500px"
-            >
-              <el-tree
-                ref="tree1"
-                :data="treedata1"
-                default-expand-all
-                node-key="id"
-                :props="defaultProps"
-                :expand-on-click-node="false"
-                :check-on-click-node="true"
-                @node-click="handleNodeClick1"
-              >
-                <span class="span-ellipsis" slot-scope="{ node }">
-                  <span :title="node.label">{{ node.label }}</span>
-                </span>
-              </el-tree>
-            </el-option>
-          </el-select>
-        </el-form-item> -->
-        <el-form-item label="备注:" prop="xinbz">
-          <el-input
-            v-model="domainSimpleVo.xinbz"
-            placeholder="请输入备注"
-          ></el-input>
         </el-form-item>
         <el-form-item label="状态:">
           <el-radio v-model="domainSimpleVo.state" label="1">有效</el-radio>
@@ -519,20 +419,7 @@ export default {
         //     trigger: 'blur',
         //   },
         // ],
-        photo: [
-          {
-            required: true,
-            message: '请输入手机号',
-            trigger: 'blur',
-          },
-
-          {
-            pattern: /^1[3456789]\d{9}$/,
-            message: '手机号码格式不正确',
-            trigger: 'blur',
-          },
-        ],
-        role: [{ required: true, message: '请选择角色', trigger: 'change' }],
+        // role: [{ required: true, message: '请选择角色', trigger: 'change' }],
         state: [
           {
             required: true,
@@ -623,11 +510,11 @@ export default {
     Navlist: Navlist, //将别名demo 变成 组件 Demo
   },
 
-  // created() {  // 7.4 测试暂时关闭
-  //   this.getTabData()
-  //   // this.getdata()
-  //   this.getTabrole()
-  // },
+  created() {  // 7.4 测试暂时关闭
+    // this.getTabData()
+    // this.getdata()
+    this.getTabrole()
+  },
   watch: {
     'domainSimpleVo.ssbm'() {
       let _this = this
@@ -642,9 +529,10 @@ export default {
       }, 50)
     },
   },
-  // mounted() {
-  //   this.yangshi()
-  // },
+  mounted() {
+    // this.yangshi()
+    this.getTabData()
+  },
   methods: {
     yangshi() {
       this.heights =
@@ -699,6 +587,7 @@ export default {
       )
 
       if (res.code == 200) {
+        console.log(res);
         this.tableData = res.dataList
         let tableDataLength = this.tableData.length
         let timer = null
@@ -717,21 +606,25 @@ export default {
             }
           })
         }
-        this.total = res.data.totalElements
-        this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
+        this.total = res.totalSum
+        this.totalPages = res.totalPage // }else{ //   this.$message('无数据') // }
       } else {
         this.$message('无数据')
       }
     },
     // 添加 ——角色
     async getTabrole() {
+      let list = {
+        page:this.customPageable.pageNum,
+        pageSize:this.customPageable.pageSize
+      }
       const { data: res } = await this.$http.get(
-        '/userRoleRef/queryUserRoleList'
+        '/admin/userRole/list',{params:list}
       )
       if (res.code == 200) {
         // console.log(res.data)
-        this.roleList = res.data
-        // console.log(this.roleList);
+        this.roleList = res.dataList
+        console.log(this.roleList);
       }
     },
     //tree
@@ -814,31 +707,20 @@ export default {
       //   this.$message('请选择部门')
       //   return
       // } else {
+        let tempStatus = this.domainSimpleVo.state == '0'?"Disabled" :"Enabled"
       let list = {
-        userVo: {
-          password: this.domainSimpleVo.pass,
-          id: this.domainSimpleVo.ids,
-          phone: this.domainSimpleVo.xinphoto,
-          policeNum: this.domainSimpleVo.xinjh,
-          username: this.domainSimpleVo.yhm,
-          remark: this.domainSimpleVo.xinbz,
-          state: this.domainSimpleVo.state,
-        },
-        roleVo: {
-          // roleName: this.domainSimpleVo.xinrole,
-          id: this.domainSimpleVo.xinrole,
-        },
-        deptVo: {
-          id: this.xiugaixialid1,
-          // id: this.xiugaixialid1,
-        },
+        id:this.domainSimpleVo.id,
+        username: this.domainSimpleVo.yhm,
+        password: this.domainSimpleVo.pass,
+        rid: this.domainSimpleVo.ids,
+        status: tempStatus,
       }
-
-      const { data: res } = await this.$http.post('/user/updateUser', list)
+      console.log(list);
+      const { data: res } = await this.$http.post('/admin/user/edit', list)
 
       if (res.code == 200) {
         this.dialog = false
-        this.$message(res.data)
+        this.$message('修改成功')
         this.getTabData()
         this.domainSimpleVo.ssbm = ''
       } else {
@@ -938,26 +820,18 @@ export default {
     },
 
     async tianjia() {
+      let tempStatus = this.newdomainSimpleVo.radio == '0'?"Disabled" :"Enabled"
       let list = {
-        userVo: {
-          password: this.newdomainSimpleVo.pwd,
-          phone: this.newdomainSimpleVo.photo,
-          policeNum: this.newdomainSimpleVo.jh,
           username: this.newdomainSimpleVo.user,
-          state: this.newdomainSimpleVo.radio,
-          remark: this.newdomainSimpleVo.bz,
-        },
-        roleVo: {
-          id: this.newdomainSimpleVo.state,
-        },
-        deptVo: {
-          id: this.xiugaixialid,
-        },
+          password: this.newdomainSimpleVo.pwd,         
+          status: tempStatus,
+          rid: this.newdomainSimpleVo.state
       }
-      const { data: res } = await this.$http.post('/user/saveUser', list)
+      console.log(list);
+      const { data: res } = await this.$http.post('/admin/user/add', list)
       if (res.code == 200) {
         this.dialogVisible = false
-        this.$message(res.data)
+        this.$message('添加成功')
         this.getTabData()
       } else {
         this.$message(res.message)
@@ -992,22 +866,20 @@ export default {
     // 编辑
     bj(val) {
       console.log(val)
+      let rid,curState
+      this.roleList.map(item=>{
+        if(item.roleName==val.role){
+          rid = item.id
+        }
+      })
+      curState = val.status == 'Disabled' ? '0' : '1'
       // console.log(val);
       this.dialog = true
-      this.domainSimpleVo.ids = val.id
+      this.domainSimpleVo.id = val.id // 用户id
+      this.domainSimpleVo.ids = rid  // 角色id
       this.domainSimpleVo.yhm = val.username
-      // this.domainSimpleVo.pass = val.pwd;
-      this.domainSimpleVo.ssbm = val.dept_name
-      this.xiugaixialid1 = val.dept_id
-      // this.domainSimpleVo.ssbm = val.id
-      // console.log(   this.domainSimpleVo.ssbm);
-      this.domainSimpleVo.xinphoto = val.phone
-      this.domainSimpleVo.xinrole = val.role_id
-      this.domainSimpleVo.state = JSON.stringify(val.state)
-      this.domainSimpleVo.time = val.create_time
-      this.domainSimpleVo.xinjh = val.police_num
-      this.domainSimpleVo.pass = val.password
-      this.domainSimpleVo.xinbz = val.remark
+      this.domainSimpleVo.state = curState
+      this.domainSimpleVo.xinrole = rid
     },
     tableRowClassName({ rowIndex }) {
       if (rowIndex % 2 === 0) {

@@ -68,7 +68,7 @@
               class="el-button-daochu"
               type="primary"
               size="mini"
-              @click.native="resetFun"
+              @click.native="addDialog"
               >新增</el-button
             >
             <!-- v-if="getRole1('downloadWarning')" -->
@@ -159,152 +159,69 @@
   
       <el-dialog
         :close-on-click-modal="false"
-        title="查看详情"
-        :visible.sync="xiangqing"
-        width="50%"
-        :before-close="handleClose1"
+        title="新 增"
+        :visible.sync="dialog"
+        width="35%"
         class="dialogInfo"
-        top="5vh"
+        
       >
-        <div class="xiangqinglist">
-          <div class="list1">
-            <div class="list2">
-              <div class="list4">
-                <span class="listtitle">诈骗时间：</span>
-                <span
-                  class="listtitle1" :title="xintableData.fraudTime"
-                  >{{ xintableData.fraudTime }}</span
-                >
-              </div>
-              <div class="list5">
-                <span class="listtitle">诈骗网站域名：</span>
-                <span
-                  class="listtitle1" :title="xintableData.domainName"
-                  >{{ xintableData.domainName }}</span
-                >
-              </div>
-            </div>
-            <div class="list3">
-              <div class="list4">
-                <span class="listtitle">诈骗类型：</span>
-                <span
-                  class="listtitle1"  :title="xintableData.fraudType"
-                  >{{ xintableData.fraudType }}</span
-                >
-              </div>
-              <div class="list5">
-                <span class="listtitle">预警等级：</span>
-                <span
-                  class="listtitle1" :title="xintableData.earlyGrade"
-                  >{{ xintableData.earlyGrade }}</span
-                >
-              </div>
-            </div>
-          </div>
-          <div class="list1">
-            <div class="list2">
-              <div class="list4">
-                <span class="listtitle">受害人IP：</span>
-                <span
-                  class="listtitle1"  :title="xintableData.userIp"
-                  >{{  xintableData.userIp }}</span
-                >
-              </div>
-              <div class="list5">
-                <span class="listtitle">受害人端口：</span>
-                <span
-                  class="listtitle1"   :title="xintableData.userPort"
-                  >{{ xintableData.userPort }}</span
-                >
-              </div>
-            </div>
-            <div class="list3">
-              <div class="list4">
-                <span class="listtitle">受害人IP归属地：</span>
-                <span class="listtitle1" :title="xintableData.userIpAscription">{{  
-                   xintableData.userIpAscription
-                }}</span>
-              </div>
-              <div class="list5">
-                <span class="listtitle">手机号：</span>
-                <span
-                  class="listtitle1"   :title="xintableData.phone"
-                  >{{  xintableData.phone }}</span
-                >
-              </div>
-            </div>
-          </div>
-  
-          <div class="list1">
-            <div class="list2">
-              <div class="list4">
-                <span class="listtitle">手机号归属地：</span>
-                <span
-                  class="listtitle1"  :title="xintableData.phoneAddress"
-                  >{{  xintableData.phoneAddress }}</span
-                >
-              </div>
-              <div class="list5">
-                <span class="listtitle">诈骗网站IP：</span>
-                <span
-                  class="listtitle1"   :title="xintableData.fraudIp"
-                  >{{  xintableData.fraudIp }}</span
-                >
-              </div>
-            </div>
-            <div class="list3">
-              <div class="list4">
-                <span class="listtitle">诈骗网站端口： </span>
-                <span
-                  class="listtitle1"   :title="xintableData.fraudPort"
-                  >{{  xintableData.fraudPort }}</span
-                >
-              </div>
-              <div class="list5">
-                <span class="listtitle">诈骗网站IP归属地：</span>
-                <span
-                  class="listtitle1"    :title="xintableData.fraudIpAscription"
-                  >{{  xintableData.fraudIpAscription }}</span
-                >
-              </div>
-            </div>
-          </div>
-          <div class="list1">
-            <div class="list2">
-              <div class="list4">
-                <span class="listtitle">身份证：</span>
-                <span
-                  class="listtitle1"   :title="xintableData.idCard"
-                  >{{  xintableData.idCard }}</span
-                >
-              </div>
-              <div class="list5">
-                <span class="listtitle">银行卡：</span>
-                <span
-                  class="listtitle1"  :title="xintableData.bankCard"
-                  >{{  xintableData.bankCard }}</span
-                >
-              </div>
-            </div>
-            <div class="list3">
-              <!-- <div class="list4">
-                <span class="listtitle">数据源: </span>
-                <span
-                  class="listtitle1"
-                  >{{  xintableData.dataSource}}</span
-                >
-              </div> -->
-              <div class="list4">
-                <span class="listtitle"></span>
-                <span class="listtitle1"></span>
-              </div>
-              <div class="list5">
-                <span class="listtitle"></span>
-                <span class="listtitle1"></span>
-              </div>
-            </div>
-          </div>
-        </div>
+      <el-form
+        :rules="rules"
+        ref="dialogInfo"
+        label-width="90px"
+        :inline="true"
+        :model="dialogInfo"
+        class="demo-form-inline search_select_form"
+        size="mini"
+      >
+        <el-form-item label="域名:" prop="dialog_domain">
+          <el-input
+            v-model.trim="dialogInfo.dialog_domain"
+            placeholder="例：https://www.****.com"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="诈骗类型:" prop="dialog_fraudType">
+          <el-select
+            v-model="dialogInfo.dialog_fraudType"
+            placeholder="诈骗类型"
+          >
+            <el-option
+              v-for="item in newdomainSimpleVo.fraudTypeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value">
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="原因:" prop="dialog_Reason">
+          <el-input
+            v-model.trim="dialogInfo.dialog_Reason"
+            placeholder="请输入原因"
+          ></el-input>
+        </el-form-item>
+        <el-form-item label="备注:" prop="dialog_Remark">
+          <el-input
+            v-model.trim="dialogInfo.dialog_Remark"
+            placeholder="请输入备注"
+          ></el-input>
+        </el-form-item>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button
+          @click="submitForm('dialogInfo')"
+          type="primary"
+          size="mini"
+          class="el-button-xitongerr"
+          >添 加</el-button
+        >
+        <el-button
+          class="el-button-xitongup"
+          type="primary"
+          @click="quxiao2"
+          size="mini"
+          >取 消</el-button
+        >
+      </span>
       </el-dialog>
     </div>
   </template>
@@ -317,42 +234,25 @@
   export default {
     data() {
       return {
+        rules:{
+          dialog_domain:[{ required: true, message: '请输入域名', trigger: 'blur' }],
+          dialog_fraudType:[{ required: true, message: '请选择诈骗类型', trigger: 'blur' }],
+          dialog_Reason:[{ required: true, message: '请输入原因', trigger: 'blur' }],
+          dialog_Remark:[{ required: true, message: '请输入备注', trigger: 'blur' }],
+        },
+        dialogInfo:{
+          dialog_domain:null,
+          dialog_fraudType:null,
+          dialog_Reason:null,
+          dialog_Remark:null
+        },
         heights: undefined,
         tableDatalist: [],
         loadingbuttext: '导出',
         loadingbut: false,
-        xintableData: {
-          fraudTime: '', //诈骗时间
-          domainName: '', //诈骗网站域名
-
-
-
-          fraudType: '', //诈骗类型
-
-
-
-          earlyGrade: '', //预警等级：
-          userIp: '', //受害人IP：
-          userPort: '', //受害人端口：
-          userIpAscription: '', //受害人IP归属地：
-          phone: '', //手机号
-          phoneAddress: '', //手机号归属地
-
-
-
-          fraudIp: '', //诈骗网站IP
-
-
-
-          fraudPort: '', //诈骗网站端口
-          fraudIpAscription: '', //诈骗网站IP归属地
-          idCard: '', //身份证：
-          bankCard: '', //银行卡：
-          dataSource: '', //数据源
-        },
         xiangqing: false,
         isLoading: false,
-
+        dialog:false,
 
         newdomainSimpleVo: {
           fraudType: null,
@@ -397,7 +297,7 @@
           // },
         ],
         mypageable: {
-          pageNo: 1,
+          pageNum: 1,
           pageSize: 10,
         },
         total: 1,
@@ -441,17 +341,67 @@
         newwarningStatisticsTypeList: [],
       }
     },
-    // created() {  // 7.4 测试关闭
-    //   this.getTabData()
-    //   // this.echartslist1()
-    // },
+    created() {  // 7.4 测试关闭
+      this.getOptionsData()
+      // this.echartslist1()
+    },
     components: {
       Navlist: Navlist, //将别名demo 变成 组件 Demo
     },
     mounted() {
       this.yangshi()
+      this.getTabData()
     },
     methods: {
+      submitForm(formName) {
+        let that = this
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            this.tianjia()
+
+            this.dialogVisible = false
+            this.$nextTick(() => {
+              that.$refs['dialogInfo'].clearValidate()
+            })
+          } else {
+            // console.log('error submit!!');
+            return false
+          }
+      })
+    },
+    async tianjia() {
+      let list = {
+        url: this.dialogInfo.dialog_domain,
+        fraudType: this.dialogInfo.dialog_fraudType,
+        reason:this.dialogInfo.dialog_Reason,
+        remark:this.dialogInfo.dialog_Remark
+      }
+      const { data: res } = await this.$http.post('/special/add', list)
+      if (res.code == 200) {
+        this.$message(res.message)
+        this.getTabData()
+        this.dialog = false
+      } else {
+        this.$message(res.message)
+        this.dialog = false
+      }
+    },
+    quxiao2() {
+      let that = this
+      this.$nextTick(() => {
+        that.$refs['dialogInfo'].clearValidate()
+      })
+      this.dialog = false
+    },
+      async getOptionsData(){
+        const {data:res} = await this.$http.get('/dict/fraudType')
+        if(res.code == 200){
+          const fraudTypeArr = res.data
+          fraudTypeArr!=null && fraudTypeArr.forEach(fraudType=>this.newdomainSimpleVo.fraudTypeOptions.push({key:fraudType, value:fraudType}))
+        }else{
+          this.$message(res.data)
+        }
+      },
       yangshi() {
         this.heights =
           window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 270
@@ -503,7 +453,7 @@
           method: 'GET',
           url: '/special/export',
           responseType: 'blob',
-          data: getTabDataList,
+          params: getTabDataList,
         })
           .then((res) => {
             // const blob = new Blob([res.data], {
@@ -606,137 +556,13 @@
       //   }
       // },
   
-      //曲线图++++++++++++++++++++++++++++++++++++1111
-      // drawLine() {
-      //   // eslint-disable-next-line camelcase
-      //   var bar_qx = this.$refs.chart
-      //   let myChart = this.$echarts.init(bar_qx)
-      //   myChart.setOption(this.setOption1())
-      // },
-      // setOption1() {
-      //   let option = {
-      //     feature: {
-      //       saveAsImage: {
-      //         show: false,
-      //       },
-      //     },
-      //     title: {},
-      //     tooltip: {
-      //       trigger: 'axis',
-      //       axisPointer: {
-      //         lineStyle: {
-      //           color: '#66B3FF',
-      //         },
-      //       },
-      //     },
-      //     color: ['#fac858', '#EE6666', '#91cc75'], //绿色  橙色
-      //     legend: {
-      //       data: [
-      //         {
-      //           name: '高',
-      //           textStyle: {
-      //             color: ['#fac858'],
-      //           },
-      //         },
-      //         {
-      //           name: '中',
-      //           textStyle: {
-      //             color: ['#EE6666'],
-      //           },
-      //           //  ["处置域名数", "域名访问量"]
-      //         },
-      //         {
-      //           name: '低',
-      //           textStyle: {
-      //             color: ['#91cc75'],
-      //           },
-      //           //  ["处置域名数", "域名访问量"]
-      //         },
-      //       ],
-      //     },
-      //     grid: {
-      //       y2: 140,
-      //     },
-  
-      //     xAxis: {
-      //       type: 'category',
-      //       boundaryGap: false,
-      //       data: this.newqutest,
-  
-      //       axisLabel: {
-      //         // rotate: -20,
-      //         //  让x轴文字方向为竖向
-      //         // interval: 0,
-      //       },
-      //       axisLine: {
-      //         lineStyle: {
-      //           color: '#fff',
-      //           width: 1,
-      //         },
-      //       },
-      //     },
-  
-      //     yAxis: {
-      //       type: 'value',
-      //       splitLine: {
-      //         lineStyle: {
-      //           color: ['#fff'],
-      //         },
-      //       },
-      //       nameTextStyle: {
-      //         color: ['#fff'],
-      //       },
-      //       axisLine: {
-      //         lineStyle: {
-      //           color: '#fff',
-      //           width: 1,
-      //         },
-      //       },
-      //     },
-      //     series: [
-      //       {
-      //         name: '高',
-      //         type: 'line',
-  
-      //         data: this.newqutest1,
-      //         smooth: true,
-      //       },
-      //       {
-      //         name: '中',
-      //         type: 'line',
-  
-      //         data: this.newqutest2,
-      //         smooth: true,
-      //       },
-      //       {
-      //         name: '低',
-      //         type: 'line',
-  
-      //         data: this.newqutest3,
-      //         smooth: true,
-      //       },
-      //     ],
-      //     dataZoom: [
-      //       {
-      //         id: 'dataZoomX',
-      //         type: 'inside',
-      //         xAxisIndex: [0],
-      //         filterMode: 'none',
-      //         start: 0,
-      //         end: 200,
-      //       },
-      //     ],
-      //     grid: {
-      //       x: 60,
-      //       y: 40,
-      //       x2: 40,
-      //       y2: 40,
-      //       borderWidth: 1,
-      //     },
-      //   }
-      //   return option
-      // },
-  
+     addDialog(){
+      this.dialog = true
+      this.dialogInfo.dialog_domain = null
+        this.dialogInfo.dialog_fraudType = null
+        this.dialogInfo.dialog_Reason = null
+        this.dialogInfo.dialog_Remark = null
+     },
       // 初始化数据
       async getTabData() {
         let getTabDataList = {
@@ -745,7 +571,7 @@
           endDay:this.newdomainSimpleVo.dateValue_find[1],
           fraudType: this.newdomainSimpleVo.fraudType,
           url:this.newdomainSimpleVo.url,
-          page:this.mypageable.pageNo,
+          page:this.mypageable.pageNum,
           pageSize:this.mypageable.pageSize
 
 
@@ -779,14 +605,14 @@
               }
             })
           }
-          this.total = res.dataList
-          this.totalPages = res.dataList // }else{ //   this.$message('无数据') // }
+          this.total = res.totalSum
+          this.totalPages = res.totalPage // }else{ //   this.$message('无数据') // }
         }
       },
   
       //查询
       searchTabData() {
-        this.mypageable.pageNo = 1
+        this.mypageable.pageNum = 1
         this.getTabData()
         // let getTabDataList = {
         //   warningSimpleVo: {
@@ -880,6 +706,8 @@
         this.newdomainSimpleVo.dateValue_find=[ dayjs().subtract(1, 'month').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
         this.newdomainSimpleVo.fraudType=null,
         this.newdomainSimpleVo.url=null,
+        this.mypageable.pageNum = 1
+        this.mypageable.pageSize = 10
         this.getTabData()
 
 
@@ -898,7 +726,7 @@
         // //   startCreateTime: null,
         // //   endCreateTime: null,
         // // }
-        // // this.mypageable.pageNo = 1
+        // // this.mypageable.pageNum = 1
       
       },
       // 分页
@@ -910,7 +738,7 @@
       handleCurrentChange(val) {
         // console.log(val, 111);
   
-        this.mypageable.pageNo = val
+        this.mypageable.pageNum = val
   
         // console.log( this.mypageable.pageNum);
         this.getTabData()
@@ -985,7 +813,11 @@
         }
       },
       handleClose1() {
-        this.xiangqing = false
+        console.log('执行了handleClose1');
+        this.dialogInfo.dialog_domain = null
+        this.dialogInfo.dialog_fraudType = null
+        this.dialogInfo.dialog_Reason = null
+        this.dialogInfo.dialog_Remark = null
       },
     },
   }
@@ -1008,7 +840,19 @@
     background: url(../assets/img/shouye/下载按钮.png) no-repeat;
     background-size: 100% 100%;
   }
-  
+  .right_main_under /deep/ .el-button-xitongerr:focus,
+.right_main_under /deep/ .el-button-xitongerr:hover {
+  background: url(../assets/img/shouye/确定按钮.png) no-repeat;
+  background-size: cover;
+  border: none;
+  color: #25c0fd;
+}
+.right_main_under /deep/ .el-button-xitongup:focus,
+.right_main_under /deep/ .el-button-xitongup:hover {
+  background: url(../assets/img/shouye/取消按钮.png) no-repeat;
+  background-size: cover;
+  border: none;
+}
   .el-table::before {
     height: 0;
     /* // 将高度修改为0 */

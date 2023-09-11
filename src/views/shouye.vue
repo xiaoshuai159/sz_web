@@ -104,18 +104,17 @@
       <div class="center3_one">
         <div class="gsh3"><span>·</span> 处置涉诈类型分析</div>
         <div class="pos">
-          <input type="checkbox" class="box"><span class="pos1">全部类型</span><br>
-          <input type="checkbox" class="box">虚假贷款<br>
-          <input type="checkbox" class="box">虚假电商<br>
-          <input type="checkbox" class="box">虚假理财<br>
-          <input type="checkbox" class="box">杀猪盘赌<br>
-          <input type="checkbox" class="box">下载链接<br>
-          <input type="checkbox" class="box">冒充客服<br>
-          <input type="checkbox" class="box">刷单返利<br>
-          <input type="checkbox" class="box">网络游戏<br>
-          <input type="checkbox" class="box">网络婚恋
+          <div ><input type="checkbox" class="box" v-model="selectAll" @change="updateSelectAll" :id="'selectAll'"><label :for="'selectAll'" class="pos1" style="cursor: pointer;">全部类型</label></div>
+          <div v-for="(item, index) in items" :key="index" style="cursor: pointer;">
+            <input type="checkbox" :id="'checkbox_'+index" class="box" v-model="selectedItems[index]">
+            <label :for="'checkbox_'+index" style="cursor: pointer;">{{ item }}</label><br>
+          </div>
         </div>
-        
+        <div style="position: fixed; display: inline-block; transform: translate(0.2rem,0); z-index: 99; color: aliceblue;">
+          <button :class="{ 'selected': mode === 'week' }" @click="mode = 'week'" class="transparent-button">星期</button>
+          /
+          <button :class="{ 'selected': mode === 'month' }" @click="mode = 'month'" class="transparent-button">月</button>
+        </div>
         
             <!-- :change="dataCreate_change(dateRange)" -->
         <div style="display: inline-block; margin-left: 15px; width: 88%; height: 71%;">
@@ -170,6 +169,20 @@ export default {
       }
     }
     return {
+      selectAll: false,
+      selectedItems: [],
+      items: [
+        '虚假贷款',
+        '虚假电商',
+        '虚假理财',
+        '杀猪盘赌',
+        '下载链接',
+        '冒充客服',
+        '刷单返利',
+        '网络游戏',
+        '网络婚恋'
+      ],
+      mode: 'month',
       dateRange:[
           dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
           dayjs().format('YYYY-MM-DD')
@@ -235,7 +248,6 @@ export default {
       Newname: [],
       Newname1: [],
       active: '',
-      items: [],
       name: 'wu',
       dialog: false,
       newdomainSimpleVo: {
@@ -263,6 +275,13 @@ export default {
     this.drawlineChart()
   },
   methods: {
+    updateSelectAll() {
+      if (this.selectAll) {
+        this.selectedItems = Array(this.items.length).fill(true);
+      } else {
+        this.selectedItems = [];
+      }
+    },
     async getfraudTop5(){
       const {data:res} = await this.$http.get('/statistics/block/top5fraud')
       if(res.code == 200){
@@ -327,7 +346,7 @@ export default {
       const {data:res} = await this.$http.get('/statistics/block/intro')
       if(res.code == 200){
         let {qoq,todayCnt,totalCnt} = res.data
-        qoq = 0.23
+        // qoq = 0.23
         parseInt(totalCnt) > 9999999 ? this.total = [9,9,9,9,9,9,9] : this.splitNum(totalCnt, 7)
         parseInt(todayCnt) > 9999 ? this.cur = [9,9,9,9] : this.splitNum(todayCnt, 4)
         if(qoq == '-'){
@@ -652,7 +671,7 @@ export default {
         },
         yAxis: [{
           type: 'value',
-          name: '星期/月',
+          // name: '星期/月',
           nameTextStyle: {
             color: '#fff' // 设置 Y 轴单位字的颜色
           },
@@ -758,11 +777,71 @@ export default {
       window.sessionStorage.clear()
     },
   },
+  watch:{
+    'mode':function(newVal){
+      if(newVal == 'month'){
+        this.dateRange=[
+          dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
+          dayjs().format('YYYY-MM-DD')
+        ]
+      }else if(newVal == 'week'){
+        this.dateRange=[
+          dayjs().subtract(1, 'week').format('YYYY-MM-DD'),
+          dayjs().format('YYYY-MM-DD')
+        ]
+      }
+    },
+    'dateRange':{
+      handler:function(newVal){
+        if(newVal[0] == dayjs().subtract(1, 'month').format('YYYY-MM-DD')){
+          this.mode = 'month'
+        }else if(newVal[0] == dayjs().subtract(1, 'week').format('YYYY-MM-DD')){
+          this.mode = 'week'
+        }else{
+          this.mode = ''
+        }
+      },
+      deep:true,
+      immediate:true
+    },
+    // 'selectAll': {
+    //   handler:function(newVal){
+    //     if (newVal) {
+    //       this.selectedItems = [...this.items];
+    //     } else {
+    //       this.selectedItems = [];
+    //     }
+    //   }
+    // },
+    'selectedItems': {
+      handler(value) {
+        if (value.length === this.items.length&& !value.includes(false)) {
+          this.selectAll = true;
+        } else {
+          this.selectAll = false;
+        }
+        console.log(value);
+      },
+      deep: true
+    },
+  },
+  
 }
 </script>
 
 <style  scoped lang='less'>
 @import '../common/font.css';
+
+.transparent-button {
+  cursor: pointer;
+  background-color: transparent;
+  border: none;
+  color: white; /* 未选中状态为白色 */
+}
+
+.transparent-button.selected {
+  color: #72e7ee; /* 选中状态为红色 */
+}
   .el-date-editor .el-range-input {
   background-color: #052666;
   color: #c0c4cc;
@@ -982,6 +1061,7 @@ export default {
   margin-left: 90px;
   font-size: 19px;
   color: #fff;
+  
 }
 
 .pos1 {

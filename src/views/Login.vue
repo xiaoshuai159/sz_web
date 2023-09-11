@@ -4,7 +4,7 @@
       <!-- 头部 -->
       <div class="top1">
         <div class="top1_title">
-          <div class="title">深圳市反诈技术支撑平台</div>
+          <div class="title">深圳涉诈网站、App业务展示平台</div>
         </div>
       </div>
       <!-- 头部_光条-->
@@ -139,8 +139,8 @@ export default {
   font-family: 'heiti';
   height:85px;
   line-height: 85px;
-  font-size: 40px;
-  letter-spacing: 3px /* 12/16 */;
+  font-size: 34px;
+  letter-spacing: 1px /* 12/16 */;
   background-image: linear-gradient(0deg, #f8f8fb 0%, #8ec4fd 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

@@ -3,7 +3,7 @@
   <!-- 长安发现 -->
   <!-- 长安发现 -->
   <div class="right_main_under">
-    <Navlist></Navlist>
+    <Navlist style="transform: translate( 0,-0.08rem);"></Navlist>
 
     <div class="search_select_form bg">
       <template>
@@ -74,7 +74,7 @@
               :loading="loadingbut"
               >{{ loadingbuttext }}</el-button
             >
-            <input type="file" @change="handleFileChange" style="display: none">
+            
             <el-button
               class="el-button-daochu"
               type="primary"
@@ -83,11 +83,14 @@
               :loading="loadingbut2"
               >{{ loadingbuttext2 }}</el-button
             >
+            
             <el-button
               class="el-button-daochu"
               type="primary"
               size="mini"
-              >APK上传</el-button
+              @click.native="apk_input"
+              :loading="loadingbut3"
+              >{{ loadingbuttext3 }}</el-button
             >
             <el-button
               class="el-button-daochu"
@@ -96,6 +99,8 @@
               @click.native="addDialog"
               >新增</el-button
             >
+            <input type="file" ref="fileInput1" @change="handleFileChange" style="display: none">
+            <input type="file" ref="fileInput2" @change="handleFileChange2" style="display: none">
             <!-- v-if="getRole1('downloadRaw')" :disabled="this.tableData.length == 0"  7.4 测试 -->
             <!-- </template> -->
           </el-form-item>
@@ -117,11 +122,14 @@
       class="tableStyle"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        type="selection"
-        width="55"
-      ></el-table-column>
-      <el-table-column label="域名" prop="url"></el-table-column>
+    <el-table-column label="序号" type="index" width="70">
+        <template slot-scope="scope">
+          <span v-if="scope.row.url">
+            {{ scope.$index + 1 }}
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="域名" prop="url" width="200" show-overflow-tooltip></el-table-column>
       <el-table-column label="诈骗类型" prop="fraudType"></el-table-column>
       <el-table-column label="协议" prop="protocol"> </el-table-column>
       <el-table-column label="上传人" prop="uploader"> </el-table-column>
@@ -268,6 +276,8 @@ export default {
       loadingbut: false,
       loadingbuttext2: '批量导入',
       loadingbut2: false,
+      loadingbuttext3: 'APK上传',
+      loadingbut3: false,
       loading: true,
       gridData: [
         // {
@@ -532,28 +542,6 @@ export default {
     handleSelectionChange(val) {
       this.tableDatalist = val
     },
-
-    // newput() {
-    //   if (this.tableDatalist.length == 0) {
-    //     this.$confirm(
-    //       '您可以对数据进行勾选下载，若要下载全部发现数据点击确定?',
-    //       '提示',
-    //       {
-    //         confirmButtonText: '确定',
-    //         cancelButtonText: '取消',
-    //         type: 'warning',
-    //       }
-    //     )
-    //       .then(async () => {
-    //         this.put()
-    //       })
-    //       .catch(() => {
-    //         this.$message('已取消')
-    //       })
-    //   } else {
-    //     this.put()
-    //   }
-    // },
     handleFileChange(event) {
       // 获取选中的文件
       const file = event.target.files[0];
@@ -579,8 +567,39 @@ export default {
         this.loadingbut2 = false
       });
     },
+    handleFileChange2(event) {
+      // 获取选中的文件
+      const file = event.target.files[0];
+      this.loadingbuttext3 = '...上传中'
+      this.loadingbut3 = true
+      console.log('执行了handleFileChange2');
+      // 执行上传的逻辑
+      const formData = new FormData();
+      formData.append('file', file);
+
+      this.$http.post('/file/upload', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data'
+        }
+      })
+      .then(() => {
+        this.$message('上传成功');
+        this.loadingbuttext3 = 'APK上传'
+        this.loadingbut3 = false
+        console.log('执行到then了');
+      })
+      .catch((error) => {
+        this.$message('上传失败：', error);
+        this.loadingbuttext3 = 'APK上传'
+        this.loadingbut3 = false
+      });
+    },
+    apk_input(){
+      console.log('执行了apk_input');
+      this.$refs.fileInput2.click();
+    },
     little_input(){
-      this.$el.querySelector('input[type=file]').click();
+      this.$refs.fileInput1.click();
     },
     //下载   //文件流
     async download_temp() {

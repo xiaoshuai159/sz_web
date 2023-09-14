@@ -1,6 +1,6 @@
 <template>
     <div class="right_main_under">
-      <Navlist></Navlist>
+      <Navlist style="transform: translate( 0,-0.08rem);"></Navlist>
       <!-- <div class="title_top">查询条件</div> -->
       <div class="search_select_form bg">
         <el-form
@@ -154,7 +154,12 @@
       >
         <!-- max-height="600px" -->
   
-        <el-table-column type="selection" :reserve-selection="true" width="55">
+        <el-table-column label="序号" type="index" width="70">
+          <template slot-scope="scope">
+            <span v-if="scope.row.blockTime">
+              {{ scope.$index + 1 }}
+            </span>
+          </template>
         </el-table-column>
         <el-table-column label="处置时间" prop="blockTime" show-overflow-tooltip>
         </el-table-column>
@@ -220,7 +225,10 @@
       <!-- </div>  -->
   
       <!-- ====================== -->
-  
+      <el-dialog :visible.sync="imgVisible">
+        <span><img :src="dialogImageUrl" alt="图片" width="100%"/></span>
+        
+      </el-dialog>
       <el-dialog
         :close-on-click-modal="false"
         title="查看详情"
@@ -381,6 +389,8 @@
   export default {
     data() {
       return {
+        imgVisible:false,
+        dialogImageUrl: "",
         heights: undefined,
         tableDatalist: [],
         loadingbuttext: '导出',
@@ -638,184 +648,7 @@
             this.loadingbut = false
           })
       },
-      // async put123() {
-      //   this.loadingbuttext = '...加载中'
-      //   this.loadingbut = true
-      //   let arr = []
-      //   this.tableDatalist.forEach((item) => {
-      //     arr.push(item.id)
-      //   })
-      //   let putlist = {
-      //     warningSimpleVo: {
-      //       // pushUnit: this.newdomainSimpleVo.unit,
-      //       dataSource: this.newdomainSimpleVo.sourceType,
-      //       earlyGrade: this.newdomainSimpleVo.Warning,
-      //       fraudType: this.newdomainSimpleVo.fraud,
-      //     },
-      //     warningTimeVo: {
-      //       startFraudTime: this.whiteSearchList.startCreateTime,
-      //       endFraudTime: this.whiteSearchList.endCreateTime,
-      //     },
-      //     idList: arr,
-      //   }
-  
-      //   const { data: res } = await this.$http.post(
-      //     '/warning/downloadWarning',
-      //     putlist
-      //   )
-      //   if (res.code == 200) {
-      //     this.loadingbuttext = '导出'
-      //     this.loadingbut = false
-      //     let newurl = res.expandData.url
-      //     let eleLink = document.createElement('a')
-      //     eleLink.download = name
-      //     // const down = window.location.origin
-      //     // eleLink.href = "http://172.31.1.61:8080" + newurl;
-      //     // const down = window.location.origin
-      //     eleLink.href = newurl
-  
-      //     // console.log(eleLink);
-      //     eleLink.click()
-      //     eleLink.remove()
-      //     if (this.tableDatalist.length > 0) {
-      //       this.$refs.multipleTable.clearSelection()
-      //     }
-      //   } else {
-      //     this.$message(res.message)
-      //   }
-      // },
-  
-      //曲线图++++++++++++++++++++++++++++++++++++1111
-      // drawLine() {
-      //   // eslint-disable-next-line camelcase
-      //   var bar_qx = this.$refs.chart
-      //   let myChart = this.$echarts.init(bar_qx)
-      //   myChart.setOption(this.setOption1())
-      // },
-      // setOption1() {
-      //   let option = {
-      //     feature: {
-      //       saveAsImage: {
-      //         show: false,
-      //       },
-      //     },
-      //     title: {},
-      //     tooltip: {
-      //       trigger: 'axis',
-      //       axisPointer: {
-      //         lineStyle: {
-      //           color: '#66B3FF',
-      //         },
-      //       },
-      //     },
-      //     color: ['#fac858', '#EE6666', '#91cc75'], //绿色  橙色
-      //     legend: {
-      //       data: [
-      //         {
-      //           name: '高',
-      //           textStyle: {
-      //             color: ['#fac858'],
-      //           },
-      //         },
-      //         {
-      //           name: '中',
-      //           textStyle: {
-      //             color: ['#EE6666'],
-      //           },
-      //           //  ["处置域名数", "域名访问量"]
-      //         },
-      //         {
-      //           name: '低',
-      //           textStyle: {
-      //             color: ['#91cc75'],
-      //           },
-      //           //  ["处置域名数", "域名访问量"]
-      //         },
-      //       ],
-      //     },
-      //     grid: {
-      //       y2: 140,
-      //     },
-  
-      //     xAxis: {
-      //       type: 'category',
-      //       boundaryGap: false,
-      //       data: this.newqutest,
-  
-      //       axisLabel: {
-      //         // rotate: -20,
-      //         //  让x轴文字方向为竖向
-      //         // interval: 0,
-      //       },
-      //       axisLine: {
-      //         lineStyle: {
-      //           color: '#fff',
-      //           width: 1,
-      //         },
-      //       },
-      //     },
-  
-      //     yAxis: {
-      //       type: 'value',
-      //       splitLine: {
-      //         lineStyle: {
-      //           color: ['#fff'],
-      //         },
-      //       },
-      //       nameTextStyle: {
-      //         color: ['#fff'],
-      //       },
-      //       axisLine: {
-      //         lineStyle: {
-      //           color: '#fff',
-      //           width: 1,
-      //         },
-      //       },
-      //     },
-      //     series: [
-      //       {
-      //         name: '高',
-      //         type: 'line',
-  
-      //         data: this.newqutest1,
-      //         smooth: true,
-      //       },
-      //       {
-      //         name: '中',
-      //         type: 'line',
-  
-      //         data: this.newqutest2,
-      //         smooth: true,
-      //       },
-      //       {
-      //         name: '低',
-      //         type: 'line',
-  
-      //         data: this.newqutest3,
-      //         smooth: true,
-      //       },
-      //     ],
-      //     dataZoom: [
-      //       {
-      //         id: 'dataZoomX',
-      //         type: 'inside',
-      //         xAxisIndex: [0],
-      //         filterMode: 'none',
-      //         start: 0,
-      //         end: 200,
-      //       },
-      //     ],
-      //     grid: {
-      //       x: 60,
-      //       y: 40,
-      //       x2: 40,
-      //       y2: 40,
-      //       borderWidth: 1,
-      //     },
-      //   }
-      //   return option
-      // },
-  
+
       // 初始化数据
       async getTabData() {
         let getTabDataList = {
@@ -1054,20 +887,25 @@
         }
         return ''
       },
-      async ckxq(val) {
-        // console.log(val);
-        const { data: res } = await this.$http.get('/block/snapshot', {
-          params: {
-            id: val,
-          },
+      ckxq(val) {
+        this.$http({
+          url:'/block/snapshot',
+          method:'get',
+          responseType: 'blob',	
+          params:{ id:val }
+        }).then(res=>{
+          let url = window.URL.createObjectURL(res.data);
+          this.dialogImageUrl = url
+          this.imgVisible = true
         })
-        console.log(res);
-        // if (res.code == 200) {
-        //   this.xintableData = res.data
-  
-        //   // console.log(this.xintableData);
-        //   this.xiangqing = true
-        // }
+        // const res = await this.$http.get('/block/snapshot', {
+        //   params: {
+        //     id: val,
+        //   },
+        // })
+        // const blob = new Blob([res.data], { type: res.headers['content-type'] });
+        // this.dialogImageUrl = window.URL.createObjectURL(blob);
+        // this.imgVisible = true
       },
       handleClose1() {
         this.xiangqing = false

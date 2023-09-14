@@ -1,6 +1,6 @@
 <template>
   <div class="right_main_under">
-    <Navlist></Navlist>
+    <Navlist style="transform: translate( 0,-0.08rem);"></Navlist>
     <!-- v-if="getRole1('saveRole')" 4.5 测试关闭 -->
     <el-row style="margin-bottom: 30px" >
       <!-- <el-col :span="24">

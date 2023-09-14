@@ -2,7 +2,7 @@
   <div class="app dp" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.8)">
     <!-- 头部 -->
-    <div class="top1">
+    <!-- <div class="top1">
       <div class="top1_title">
         <div class="title">深圳市反诈技术支撑平台</div>
         <div class="topguanli">
@@ -28,8 +28,8 @@
         </div>
 
       </div>
-    </div>
-    <Navlist></Navlist>
+    </div> -->
+    <Navlist style="transform: translate(0,-0.08rem);"></Navlist>
     <!-- <div class="nav">
       <div class="nav_li">
         <ul class="daohang3">
@@ -47,7 +47,7 @@
         </ul>
       </div>
     </div> -->
-    <div class="center2">
+    <div class="center2" >
       <div class="center2_left">
         <div class="gsh3"><span>·</span> 处置统计</div>
         <br>
@@ -117,7 +117,7 @@
         </div>
         
             <!-- :change="dataCreate_change(dateRange)" -->
-        <div style="display: inline-block; margin-left: 15px; width: 88%; height: 71%;">
+        <div style="display: inline-block; margin-left: 15px; width: 85%; height: 71%;">
           <div ref="mylineChart" style="width:100%; height: 100%;"></div>
         </div>
       </div>
@@ -169,18 +169,9 @@ export default {
       }
     }
     return {
-      selectAll: false,
+      selectAll: true,
       selectedItems: [],
       items: [
-        '虚假贷款',
-        '虚假电商',
-        '虚假理财',
-        '杀猪盘赌',
-        '下载链接',
-        '冒充客服',
-        '刷单返利',
-        '网络游戏',
-        '网络婚恋'
       ],
       mode: 'month',
       dateRange:[
@@ -268,13 +259,58 @@ export default {
     this.getDisposeNum()  // 获取处置统计
     this.getfraudTop5()
     this.getDisposeTrend()
+    this.getSimpleFraudType()
   },
   mounted() {
     // this.drawpieChart()
     // this.drawbarChart()
-    this.drawlineChart()
+    // this.drawlineChart()
   },
   methods: {
+    async getfraudTypeCntTrend(){
+      let selectedItemsData = this.items.filter((item,index)=>this.selectedItems[index])
+      const result = selectedItemsData.join(',');
+      const reqData = {
+        startDay: this.dateRange[0],
+        endDay: this.dateRange[1],
+        fraudType: result
+      }
+      const {data:res} = await this.$http.get('/statistics/block/fraudTypeCntTrend',{params:reqData})
+      if(res.code==200){
+        const data = res.data
+        const alarmDays = data.alarm.map(item => item.day);
+const blockDays = data.block.map(item => item.day);
+const days = [...new Set([...alarmDays, ...blockDays])].sort();
+        const xAxisData = days.map(day => day.slice(5));
+        const alarmData = [];
+        const blockData = [];
+        days.forEach(day => {
+          const alarmItem = data.alarm.find(alarm => alarm.day === day);
+          const blockItem = data.block.find(block => block.day === day);
+          alarmData.push(alarmItem ? alarmItem.cnt : 0);
+          blockData.push(blockItem ? blockItem.cnt : 0);
+        });
+        let curMax = Math.ceil(Math.max(...alarmData,...blockData)) 
+        let curInterval = Math.floor(curMax/7)
+        console.log(xAxisData);
+        console.log(alarmData);
+        console.log(blockData);
+        this.drawlineChart(xAxisData,alarmData,blockData,curMax,curInterval)
+      }else{
+        this.$message(res.message)
+      }
+      
+    },
+
+    async getSimpleFraudType(){
+      const {data:res} = await this.$http.get('/dict/simpleFraudType')
+      if(res.code == 200){
+        this.items = res.data
+        this.selectedItems = new Array(this.items.length).fill(true)
+      }else{
+        this.$message(res.message)
+      }
+    },
     updateSelectAll() {
       if (this.selectAll) {
         this.selectedItems = Array(this.items.length).fill(true);
@@ -337,10 +373,6 @@ export default {
         }
         this.drawbarChart(xAxisData,seriesData,curMax,curInterval)
       }
-    },
-    async getFraudTypeTrend(){
-
-      const {data:res} = await this.$http.get('/statistics/block/fraudTypeCntTrend')
     },
     async getDisposeNum(){
       const {data:res} = await this.$http.get('/statistics/block/intro')
@@ -634,17 +666,23 @@ export default {
       return option
     },
 
-    drawlineChart() {
+    drawlineChart(xAxisData,alarmData,blockData,curMax,curInterval) {
       let line_qx = this.$refs.mylineChart
       let lineChart = this.$echarts.init(line_qx)
       window.addEventListener('resize', function () {
         lineChart.resize()
       })
       lineChart.clear()
-      lineChart.setOption(this.setOptionLine()) // 待完善：记得销毁echarts和resize
+      lineChart.setOption(this.setOptionLine(xAxisData,alarmData,blockData,curMax,curInterval)) // 待完善：记得销毁echarts和resize
     },
-    setOptionLine() {
+    setOptionLine(xAxisData,alarmData,blockData,curMax,curInterval) {
       let option = {
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
         xAxis: {
           axisLabel: {
             textStyle:{
@@ -660,7 +698,7 @@ export default {
             }
           },
          
-          data: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19', '20', '21', '22', '23', '24', '25', '26', '27', '28', '29', '30']
+          data:xAxisData
         },
         grid: {
           top: '17%',
@@ -675,9 +713,9 @@ export default {
           nameTextStyle: {
             color: '#fff' // 设置 Y 轴单位字的颜色
           },
-          interval: 500,
+          interval: curInterval,
           min: 0,
-          max: 3500,
+          max: curMax,
           axisLine: {
             lineStyle: {
               color: '#384e5e'
@@ -699,9 +737,9 @@ export default {
         },
         {
             type: 'value',
-            interval: 100,
+            interval: curInterval,
             min: 0,
-            max: 700,
+            max: curMax,
             axisLabel: {
               textStyle:{
                 color:'#d3cb16'  // y轴字颜色 
@@ -727,7 +765,7 @@ export default {
         series: [
           {
             name: '同源处理量',
-            data: [1000, 2423, 2357, 2315, 1257, 2351, 3123, 1953, 2584, 1954, 2334, 2751, 2407, 3256, 1169, 2536, 2451, 2345, 2238, 3128, 3321, 1260, 2475, 2453, 1112, 2765, 1238, 2431, 1230, 2351],
+            data: blockData,
             type: 'line',
             areaStyle: {},
             symbol: 'square',
@@ -746,7 +784,7 @@ export default {
 
           {
             name: '案件量',
-            data: [1400, 2523, 2257, 2515, 3257, 1351, 3143, 1653, 2484, 1254, 2634, 2751, 2607, 3251, 1269, 3136, 1451, 3345, 1238, 3128, 1321, 2260, 3475, 1453, 3112, 1765, 3238, 1431, 3230, 1351],
+            data: alarmData,
             type: 'line',
             areaStyle: {},
             symbol: 'square',
@@ -800,6 +838,7 @@ export default {
         }else{
           this.mode = ''
         }
+        this.getfraudTypeCntTrend()
       },
       deep:true,
       immediate:true
@@ -814,13 +853,13 @@ export default {
     //   }
     // },
     'selectedItems': {
-      handler(value) {
+      async handler(value) {
         if (value.length === this.items.length&& !value.includes(false)) {
           this.selectAll = true;
         } else {
           this.selectAll = false;
         }
-        console.log(value);
+        this.getfraudTypeCntTrend()
       },
       deep: true
     },
@@ -975,8 +1014,8 @@ export default {
   height: 360px; // width/height=1.58
   width: 600px;
   margin-top: 20px;
-  margin-left: 20px;
-  margin-right: 30px;
+  margin-left: 10px;
+  margin-right: 15px;
   background: url(../assets/img/newbg/kuangbg.png);
   background-size: 100% 100%;
   background-repeat: no-repeat;
@@ -1061,9 +1100,24 @@ export default {
   margin-left: 90px;
   font-size: 19px;
   color: #fff;
-  
+  width: 0.69rem;
+  height:1.4rem;
+  overflow-y:auto;
+}
+.pos::-webkit-scrollbar {
+  width: 8px; /* 设置滚动条宽度 */
+  background-color: #f1f1f1; /* 设置滚动条背景颜色 */
+  border-radius: 8px; 
 }
 
+.pos::-webkit-scrollbar-thumb {
+  background-color: #888; /* 设置滚动条滑块颜色 */
+  border-radius: 8px; /* 设置滚动条滑块边框圆角 */
+}
+
+.pos::-webkit-scrollbar-thumb:hover {
+  background-color: #555; /* 设置鼠标悬停时滚动条滑块颜色 */
+}
 .pos1 {
   color: #72e7ee;
   margin-top: 7px;
@@ -1078,9 +1132,9 @@ export default {
 }
 
 .center3 {
-  margin-top: 30px;
-  margin-left: 55px;
-  margin-right: 65px
+  margin-top: 10px;
+  margin-left: 45px;
+  margin-right: 52px
 }
 
 .center3_one {

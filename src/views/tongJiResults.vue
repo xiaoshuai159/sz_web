@@ -150,7 +150,7 @@
       class="tableStyle"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55"> </el-table-column>
+      <el-table-column type="selection" width="70"> </el-table-column>
       <el-table-column label="id" prop="id" v-if="isLoading"> </el-table-column>
       <el-table-column label="创建时间" prop="id"> </el-table-column>
       <el-table-column label="下发时间" prop="protocol"> </el-table-column>

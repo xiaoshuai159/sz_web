@@ -23,27 +23,27 @@ const routes = [
     path: '*',
     redirect: '/home'
   },
-  {
-    path: '/shouye',
-    name: 'shouye',
-    meta: {
-      title: '首页'
-    },
-    component: () => import("../views/shouye")
-  },
+  // {
+  //   path: '/shouye',
+  //   name: 'shouye',
+  //   meta: {
+  //     title: '首页'
+  //   },
+  //   component: () => import("../views/shouye")
+  // },
   {
     path: '/home',
     name: 'Home',
     // redirect: '/shouye',
     children: [
-      // {
-      //   path: '/shouye',
-      //   name: 'shouye',
-      //   meta: {
-      //     title: '首页'
-      //   },
-      //   component: () => import("../views/shouye")
-      // },
+      {
+        path: '/shouye',
+        name: 'shouye',
+        meta: {
+          title: '首页'
+        },
+        component: () => import("../views/shouye")
+      },
 
       {
         path: '/domain',

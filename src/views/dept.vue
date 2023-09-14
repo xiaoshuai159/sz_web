@@ -1,6 +1,6 @@
 <template>
   <div class="right_main_under">
-    <Navlist></Navlist>
+    <Navlist style="transform: translate( 0,-0.08rem);"></Navlist>
     <div class="search_select_form bg">
       <template>
         <el-form :inline="true" class="demo-form-inline" size="mini">
@@ -61,6 +61,13 @@
       size="mini"
       class="tableStyle"
     >
+    <el-table-column label="序号" type="index" width="70">
+          <template slot-scope="scope">
+            <span v-if="scope.row.username">
+              {{ scope.$index + 1 }}
+            </span>
+          </template>
+        </el-table-column>
       <el-table-column label="用户名" prop="username"> </el-table-column>
       <el-table-column label="操作时间" prop="execTime"> </el-table-column>
       <el-table-column label="操作" prop="remark"> </el-table-column>

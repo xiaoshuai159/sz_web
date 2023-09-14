@@ -3,7 +3,7 @@
   <!-- 长安发现 -->
   <!-- 长安发现 -->
   <div class="right_main_under">
-    <Navlist></Navlist>
+    <Navlist style="transform: translate( 0,-0.08rem);"> </Navlist>
 
     <div class="search_select_form bg">
       <template>
@@ -88,18 +88,20 @@
       class="tableStyle"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column
-        type="selection"
-        width="55"
-        
-      ></el-table-column>
+      <el-table-column label="序号" type="index" width="70">
+        <template slot-scope="scope">
+          <span v-if="scope.row.discoverDate">
+            {{ scope.$index + 1 }}
+          </span>
+        </template>
+      </el-table-column>
       <!-- :reserve-selection="true" -->
       <el-table-column label="发现日期" prop="discoverDate">
         <!-- min-width="10%" -->
       </el-table-column>
       <el-table-column label="诈骗类型" prop="fraudType">
       </el-table-column>
-      <el-table-column label="域名" prop="url"> </el-table-column>
+      <el-table-column label="域名" prop="url" width="200" show-overflow-tooltip> </el-table-column>
       <el-table-column label="目的IP" prop="dstIp"> </el-table-column>
       <el-table-column label="访问量" prop="visits"> </el-table-column>
     </el-table>

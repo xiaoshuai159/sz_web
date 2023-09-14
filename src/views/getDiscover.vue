@@ -95,7 +95,7 @@
     >
       <!-- <el-table-column
         type="selection"
-        width="55"
+        width="70"
         :reserve-selection="true"
       ></el-table-column> -->
       <el-table-column label="id" prop="id" v-if="isLoading"> </el-table-column>

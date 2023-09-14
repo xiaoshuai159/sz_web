@@ -170,7 +170,7 @@
       class="tableStyle"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" :reserve-selection="true" width="55">
+      <el-table-column type="selection" :reserve-selection="true" width="70">
       </el-table-column>
       <el-table-column label="id" prop="id" v-if="isLoading"> </el-table-column>
       <el-table-column label="relation_id" prop="relation_id" v-if="isLoading">

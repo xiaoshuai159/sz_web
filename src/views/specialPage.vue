@@ -1,6 +1,6 @@
 <template>
     <div class="right_main_under">
-      <Navlist></Navlist>
+      <Navlist style="transform: translate( 0,-0.08rem);"></Navlist>
       <!-- <div class="title_top">查询条件</div> -->
       <div class="search_select_form bg">
         <el-form
@@ -92,7 +92,12 @@
       >
         <!-- max-height="600px" -->
   
-        <el-table-column type="selection" :reserve-selection="true" width="55">
+        <el-table-column label="序号" type="index" width="70">
+          <template slot-scope="scope">
+            <span v-if="scope.row.url">
+              {{ scope.$index + 1 }}
+            </span>
+          </template>
         </el-table-column>
         <el-table-column label="日期" prop="createTime" show-overflow-tooltip>
         </el-table-column>

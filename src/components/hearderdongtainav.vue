@@ -195,7 +195,8 @@ export default {
   margin-right: 8px;
   background: url(../assets/img/newbg/btnbg.png);
   background-size: cover;
-  color:#00fff3
+  color:#00fff3;
+  // position: relative; 
 }
 .nav_li .daohang3 li span{
   color:#00fff3

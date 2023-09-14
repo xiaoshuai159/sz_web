@@ -100,7 +100,7 @@
       class="tableStyle"
       @selection-change="handleSelectionChange"
     >
-      <el-table-column type="selection" width="55"    :reserve-selection="true"></el-table-column>
+      <el-table-column type="selection" width="70"    :reserve-selection="true"></el-table-column>
       <el-table-column prop="id" label="ID" v-if="loadshow"> </el-table-column>
       <el-table-column prop="handletime" label="处置时间"> </el-table-column>
       <el-table-column prop="url" label="URL" show-overflow-tooltip>

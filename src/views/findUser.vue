@@ -1,6 +1,6 @@
 <template>
   <div class="right_main_under">
-    <Navlist></Navlist>
+    <Navlist style="transform: translate( 0,-0.08rem);"></Navlist>
     <!-- <div class="title_top">查询条件</div> -->
     <div class="bg">
       <el-row>
@@ -83,6 +83,13 @@
     >
       <!-- :row-style="{ height: 0 }" -->
       <!-- :cell-style="{ padding: 0 }" -->
+      <el-table-column label="序号" type="index" width="70">
+          <template slot-scope="scope">
+            <span v-if="scope.row.username">
+              {{ scope.$index + 1 }}
+            </span>
+          </template>
+        </el-table-column>
       <el-table-column label="用户名" prop="username"> </el-table-column>
       <el-table-column label="角色" prop="role">
         <!-- <template slot-scope="scope">

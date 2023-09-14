@@ -155,7 +155,7 @@ export default {
       }
     }
     return {
-      curDate: dayjs().format("YYYY年MM月DD日"),
+      curDate: dayjs().format("YYYY年MM月DD日  HH时mm分ss秒"),
       rules: {
         oldpwd: [
           {
@@ -223,13 +223,22 @@ export default {
       return this.$store.state.webSocketMsg
     },
   },
+  created() {
+    this.startTimer()
+   
+  },
+  mounted(){
+    // this.startTimer()
+  },
 
   methods: {
-    // getPath() {
-    //   // this.namenav = this.$route.query.name
-    //   this.daohang()  // 7.4 测试
-    // },
-    //头部动态导航
+    startTimer()
+    {
+      setInterval(() => {
+      this.curDate=dayjs().format("YYYY年MM月DD日  HH时mm分ss秒")
+    }, 1000);
+    },
+
     navclick(val) {
       this.$router.push('/' + val)
       //  this.daohang()

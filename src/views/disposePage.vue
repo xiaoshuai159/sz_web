@@ -1,14 +1,18 @@
 <template>
     <div class="right_main_under">
       <Navlist style="transform: translate( 0,-0.08rem);"></Navlist>
-      <!-- <div class="title_top">查询条件</div> -->
+
+
       <div class="search_select_form bg">
+        <!-- 1.1查询条件盒子 -->
         <el-form
           :inline="true"
           :model="formInline"
           class="demo-form-inline"
           size="mini"
         >
+
+
         <!-- 数据来源 -->
         <el-form-item label="数据来源">
             <el-select
@@ -27,6 +31,8 @@
               </el-option>
             </el-select>
           </el-form-item>
+
+
           <!-- 诈骗时间 -->
           <el-form-item label="处置时间">
             <el-date-picker
@@ -40,6 +46,8 @@
             >
             </el-date-picker>
           </el-form-item>
+
+
           <!-- 诈骗类型 -->
           <el-form-item label="诈骗类型">
             <el-select
@@ -137,6 +145,8 @@
           </el-form-item>
         </el-form>
       </div>
+
+
       <!-- <div class="list_xia"> -->
       <!-- //列表 -->
       <!-- <div class="title_top">查询结果</div> -->
@@ -150,19 +160,25 @@
         size="mini"
         class="tableStyle"
         id="onetable"
+        
+       
         @selection-change="handleSelectionChange"
       >
         <!-- max-height="600px" -->
   
+
         <el-table-column label="序号" type="index" width="70">
           <template slot-scope="scope">
             <span v-if="scope.row.blockTime">
               {{ scope.$index + 1 }}
             </span>
           </template>
+
         </el-table-column>
-        <el-table-column label="处置时间" prop="blockTime" show-overflow-tooltip>
+
+        <el-table-column label="处置时间" prop="blockTime" show-overflow-tooltip min-width="13">
         </el-table-column>
+
         <el-table-column label="诈骗类型" show-overflow-tooltip width="150">
           <template slot-scope="scope">
             <!-- {{ shuzu(scope.row.fraudType) }}
@@ -170,28 +186,37 @@
             {{ scope.row.fraudType }}
           </template>
         </el-table-column>
+
         <el-table-column
-          width="200"
+          width="300"
           show-overflow-tooltip
           label="域名"
           prop="url"
         ></el-table-column>
+
         <el-table-column label="处置状态" prop="blockStatus" width="100">
         </el-table-column>
-        <el-table-column label="协议" prop="protocol"> </el-table-column>
+
+        <el-table-column label="协议" prop="protocol" width="250" > </el-table-column>
+
         <el-table-column
           label="数据来源"
           prop="source"
+          min-width="8"
           show-overflow-tooltip
         >
         </el-table-column>
+
         <el-table-column
           label="未处置原因"
           prop="rejectReason"
+          width="200"
           show-overflow-tooltip
+          
         >
         </el-table-column>
-        <el-table-column label="截图" width="100">
+
+        <el-table-column label="截图" width="140">
           <template slot-scope="scope">
             <div>
               <el-button
@@ -205,9 +230,15 @@
             </div>
           </template>
         </el-table-column>
+        
       </el-table>
+
+
+
+
       <!-- //分页 -->
       <div class="bottom">
+        <!-- 底部盒子 -->
         <div class="ss">
           <el-pagination
             @size-change="handleSizeChange"

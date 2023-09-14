@@ -1,6 +1,7 @@
 <template>
   <div class="app dp" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
     element-loading-background="rgba(0, 0, 0, 0.8)">
+
     <!-- 头部 -->
     <!-- <div class="top1">
       <div class="top1_title">
@@ -48,6 +49,7 @@
       </div>
     </div> -->
     <div class="center2" >
+
       <div class="center2_left">
         <div class="gsh3"><span>·</span> 处置统计</div>
         <br>
@@ -68,23 +70,26 @@
           <div class="picture_test4">{{ cur[2] }}</div>
           <div class="picture_test4">{{ cur[3] }}</div>
         </div>
-
         <div class="center2_left_test3">日环比 {{ compareNum }}</div>
         <img v-if="upOrDe==2" class="picture_test12" src="../assets/img/shouye/下降.png">
         <img v-else-if="upOrDe==1" class="picture_test12" src="../assets/img/shouye/上升.png">
       </div>
+
       <div class="center2_center">
         <div class="gsh3"><span>·</span> 7日处置高危类型TOP5</div>
         <div ref="mypieChart" class="add1"></div>
       </div>
+
       <div class="center2_right">
         <div class="gsh3"><span>·</span> 7日处置量趋势</div>
-        
         <div style="width: 100%;height: 100%;transform: translate(0, -40px);">
           <div ref="mybarChart" style="width:100%; height: 100%;"></div>
         </div>
       </div>
     </div>
+
+
+
 
     <div class="center3">
       <div style="float: right;">
@@ -182,7 +187,7 @@ export default {
       cur:[0,0,0,0],
       compareNum: '-',
       upOrDe:1,
-      curDate: dayjs().format("YYYY年MM月DD日"),
+      curDate: dayjs().format("YYYY年MM月DD日  HH时mm分ss秒"),
       rules: {
         oldpwd: [
           {
@@ -260,8 +265,10 @@ export default {
     this.getfraudTop5()
     this.getDisposeTrend()
     this.getSimpleFraudType()
+
   },
   mounted() {
+    this.startTimer();
     // this.drawpieChart()
     // this.drawbarChart()
     // this.drawlineChart()
@@ -310,6 +317,12 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
       }else{
         this.$message(res.message)
       }
+    },
+    startTimer(){
+      setInterval(() => {
+      this.curDate=dayjs().format("YYYY年MM月DD日  HH时mm分ss秒")
+    }, 1000);
+
     },
     updateSelectAll() {
       if (this.selectAll) {
@@ -481,7 +494,7 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
       let pie_qx = this.$refs.mypieChart
       let pieChart = this.$echarts.init(pie_qx)
       window.addEventListener('resize', function () {
-        pieChart.resize()
+      pieChart.resize()
       })
       pieChart.clear()
       pieChart.setOption(this.setOptionPie(dataArr)) // 待完善：记得销毁echarts和resize
@@ -497,9 +510,7 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
         },
         series: [
           {
-
             type: 'pie',
-            // radius: [12, 70],
             radius: ['12%', '70%'],
             center: ['50%', '45%'],
             roseType: 'area',
@@ -537,7 +548,7 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
                   borderColor: '#0041bd'
                 }
               }
-            }]
+            }],
           }
         ],
 
@@ -626,39 +637,6 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
           
         
         series: seriesDataArr
-        // [
-        //   {
-        //     name: '同源',
-        //     type: 'bar',
-        //     barWidth: 10,
-        //     data: [283, 346, 251, 412, 141, 312, 415],
-        //     itemStyle:{
-        //       color: new echarts.graphic.LinearGradient(
-        //         0, 0, 0, 1,
-        //         [
-        //           { offset: 0, color: '#12cddb' },
-        //           { offset: 1, color: '#020d2a' }
-        //         ]
-        //       )
-        //     },
-        //   },
-
-        //   {
-        //     name: '警情',
-        //     type: 'bar',
-        //     barWidth: 10,
-        //     data: [165, 252, 324, 163, 245, 451, 255],
-        //     itemStyle:{
-        //       color: new echarts.graphic.LinearGradient(
-        //         0, 0, 0, 1,
-        //         [
-        //           { offset: 0, color: '#e6210e' },
-        //           { offset: 1, color: '#f6c14e' }
-        //         ]
-        //       )
-        //     },
-        //   },
-        // ]
 
 
       }
@@ -866,7 +844,12 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
   },
   
 }
+
+
+
 </script>
+
+
 
 <style  scoped lang='less'>
 @import '../common/font.css';

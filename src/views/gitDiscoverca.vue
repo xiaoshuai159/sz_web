@@ -26,6 +26,8 @@
             >
             </el-date-picker>
           </el-form-item>
+
+
           <!-- 诈骗大类 -->
           <el-form-item label="诈骗类型">
             <el-select v-model.trim="newdomainSimpleVo.fraudType" clearable placeholder="诈骗类型">
@@ -38,11 +40,14 @@
               </el-option>
             </el-select>
           </el-form-item>
+
+
           <el-form-item label="目的IP">
             <el-input v-model.trim="newdomainSimpleVo.destIP" placeholder="IP">
-              
             </el-input>
           </el-form-item>
+
+
 
           <el-form-item>
             <el-button
@@ -106,6 +111,8 @@
       <el-table-column label="访问量" prop="visits"> </el-table-column>
     </el-table>
 
+
+    
     <!-- //分页 -->
     <div class="bottom">
       <div class="ss">
@@ -141,10 +148,14 @@
         alt=""
         class="img"
       />
-      <div v-if="this.xinshi" class="xinashititle">{{ xianshititle }}</div>
+      <div v-if="this.xinshi" class="xianshititle">{{ xianshititle }}</div>
     </el-dialog>
   </div>
 </template>
+
+
+
+
 
 <script>
 import Navlist from '@/components/hearderdongtainav.vue'
@@ -161,8 +172,12 @@ export default {
       newdomainSimpleVo:{
         dateRange:[ dayjs().subtract(1, 'month').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
         fraudType:null,
+
         destIP:null,
+        // isValidIP: true
+
       },
+     
       fraudTypeOptions:[],
       heights: undefined,
       errFlag: false,
@@ -324,6 +339,9 @@ export default {
     this.getOptionsData()
   },
   methods: {
+    
+
+
     async getOptionsData(){
       const {data:res} = await this.$http.get('/dict/fraudType')
       if(res.code == 200){
@@ -467,10 +485,23 @@ export default {
       //   this.totalPages = res.data.totalPages // }else{ //   this.$message('无数据') // }
       // }
     },
+    // 自定义函数判断IP地址是否正确
+    isIPAddress(ip) 
+    {
+      let regExp = /^((25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)\.){3}(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)$/;
+      return regExp.test(ip);
+    },
     //查询
     async searchTabData() {
-      this.mypageable.pageNum = 1
-      this.getTabData()
+
+      console.log(this.newdomainSimpleVo.destIP);  
+      if(!this.newdomainSimpleVo.destIP || this.isIPAddress(this.newdomainSimpleVo.destIP)){
+        this.mypageable.pageNum = 1
+        this.getTabData()
+      }else{
+        this.$message('ip格式输入错误')
+      }
+
       // this.getTabData()
       // this.resetFun()
       // let getlist = {

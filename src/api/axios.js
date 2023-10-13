@@ -14,7 +14,11 @@ const instance = axios.create({
 
 instance.interceptors.response.use(function (response) {
   // 响应数据  返回得到的响应数据  第一层data是axios默认包data, 第二个data是接口返回里面的包的data
+  // console.log(response);
   try {
+    if (response.data&&response.data.code==403) {
+      router.push('/home')
+    }
     return response
     
   } catch (error) {

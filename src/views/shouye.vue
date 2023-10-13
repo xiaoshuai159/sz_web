@@ -5,7 +5,7 @@
     <!-- 头部 -->
     <!-- <div class="top1">
       <div class="top1_title">
-        <div class="title">深圳市反诈技术支撑平台</div>
+        <div class="title">深圳涉诈域名反制平台</div>
         <div class="topguanli">
           <div class="role">
             <img :src="require('../assets/img/shouye/guanliyuan.png')" alt="" />
@@ -128,7 +128,7 @@
       </div>
     </div>
 
-    <div class="myfooter"></div>
+    <!-- <div class="myfooter"></div> -->
 
     <el-dialog title="修改密码" :visible.sync="dialog" width="30%" :before-close="handleClose1" class="dialogInfo"
       :close-on-click-modal="false">
@@ -252,6 +252,7 @@ export default {
       },
       yinc: false,
       // loading1: false,
+      timer:null
     }
   },
   computed: {
@@ -273,21 +274,30 @@ export default {
     // this.drawbarChart()
     // this.drawlineChart()
   },
+  
+  beforeDestroy() {
+    clearInterval(this.timer);
+  },
   methods: {
     async getfraudTypeCntTrend(){
       let selectedItemsData = this.items.filter((item,index)=>this.selectedItems[index])
-      const result = selectedItemsData.join(',');
+      // console.log(selectedItemsData.length);
+      // console.log(this.items.length);
+      let result = selectedItemsData.join(',');
+      if(selectedItemsData.length==this.items.length){
+        result = ''
+      }
       const reqData = {
         startDay: this.dateRange[0],
         endDay: this.dateRange[1],
-        fraudType: result
+        fraudTypes: result
       }
       const {data:res} = await this.$http.get('/statistics/block/fraudTypeCntTrend',{params:reqData})
       if(res.code==200){
         const data = res.data
         const alarmDays = data.alarm.map(item => item.day);
-const blockDays = data.block.map(item => item.day);
-const days = [...new Set([...alarmDays, ...blockDays])].sort();
+        const blockDays = data.block.map(item => item.day);
+        const days = [...new Set([...alarmDays, ...blockDays])].sort();
         const xAxisData = days.map(day => day.slice(5));
         const alarmData = [];
         const blockData = [];
@@ -299,9 +309,9 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
         });
         let curMax = Math.ceil(Math.max(...alarmData,...blockData)) 
         let curInterval = Math.floor(curMax/7)
-        console.log(xAxisData);
-        console.log(alarmData);
-        console.log(blockData);
+        // console.log(xAxisData);
+        // console.log(alarmData);
+        // console.log(blockData);
         this.drawlineChart(xAxisData,alarmData,blockData,curMax,curInterval)
       }else{
         this.$message(res.message)
@@ -319,7 +329,7 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
       }
     },
     startTimer(){
-      setInterval(() => {
+      this.timer = setInterval(() => {
       this.curDate=dayjs().format("YYYY年MM月DD日  HH时mm分ss秒")
     }, 1000);
 
@@ -353,19 +363,23 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
       const {data:res} = await this.$http.get('/statistics/block/latestBlockCnt')
       if(res.code == 200){
         const dataArr = res.data
-        const xAxisData = dataArr["警情"].map(item => item.day.substr(5));
+        const xAxisData1 = dataArr["警情"].map(item => item.day.substr(5));
+        const xAxisData2 = dataArr["同源"].map(item => item.day.substr(5));
+        const xAxisData = [...new Set([...xAxisData1,...xAxisData2])].sort()
+        // console.log(xAxisData);
         const seriesData = []
         let curMax, curInterval
         for (const key in dataArr) {
           if (Array.isArray(dataArr[key])) {
             const data = dataArr[key].map(item => item.cnt);
+            console.log(data);
             curMax = Math.ceil(Math.max(...data)) 
-            curInterval = Math.floor(curMax/5)
-            seriesData.push({
+            curInterval = Math.ceil(curMax/5)
+            const seriesItem = {
               name: key,
               type: 'bar',
               barWidth: 10,
-              data,
+              data: [],
               itemStyle: {
                 color: key === '警情' ? new echarts.graphic.LinearGradient(
                   0, 0, 0, 1,
@@ -373,7 +387,7 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
                     { offset: 0, color: '#e6210e' },
                     { offset: 1, color: '#f6c14e' }
                   ]
-                ):new echarts.graphic.LinearGradient(
+                ) : new echarts.graphic.LinearGradient(
                   0, 0, 0, 1,
                   [
                     { offset: 0, color: '#12cddb' },
@@ -381,19 +395,34 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
                   ]
                 )
               }
-            });
+            };
+
+            for (let i = 0; i < xAxisData.length; i++) {
+              const date = xAxisData[i];
+              const found = dataArr[key].find(item => item.day.substr(5) === date);
+              if (found) {
+                seriesItem.data.push(found.cnt);
+              } else {
+                seriesItem.data.push(0);
+              }
+            }
+            seriesData.push(seriesItem);
           }
         }
+        
         this.drawbarChart(xAxisData,seriesData,curMax,curInterval)
       }
     },
     async getDisposeNum(){
       const {data:res} = await this.$http.get('/statistics/block/intro')
+      // console.log(res);
       if(res.code == 200){
         let {qoq,todayCnt,totalCnt} = res.data
-        // qoq = 0.23
+        // console.log(qoq,todayCnt,totalCnt);
         parseInt(totalCnt) > 9999999 ? this.total = [9,9,9,9,9,9,9] : this.splitNum(totalCnt, 7)
+        // console.log(this.total);
         parseInt(todayCnt) > 9999 ? this.cur = [9,9,9,9] : this.splitNum(todayCnt, 4)
+        // console.log(this.cur);
         if(qoq == '-'){
           this.upOrDe = 3
           this.compareNum = '-'
@@ -511,6 +540,28 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
         series: [
           {
             type: 'pie',
+            radius: '12%',
+            center: ['50%', '45%'],
+            color: ['#ffffff'],
+            label: {
+              normal: {
+                show: false
+              }
+            },
+            data: [
+              {
+                value: 1,
+                name: '',
+              }
+            ],
+            clockWise: false, //顺时加载
+            hoverAnimation: false, 
+            tooltip: {
+              show: false
+            },
+          },
+          {
+            type: 'pie',
             radius: ['12%', '70%'],
             center: ['50%', '45%'],
             roseType: 'area',
@@ -518,20 +569,23 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
               borderRadius: 8,
               color: '#ffffff'
             },
-            data: dataArr
-            // [
-            //   { value: 25, name: '15%理财', itemStyle: { color: '#17acf0' }, labelLine: { normal: { show: false } } },
-            //   { value: 20, name: '14%贷款', itemStyle: { color: '#ecd456' }, labelLine: { normal: { show: false } } },
-            //   { value: 21, name: '8%网络婚恋，交友', itemStyle: { color: '#7d69ef' }, labelLine: { normal: { show: false } } },
-            //   { value: 22, name: '21%刷单返利', itemStyle: { color: '#fab300' }, labelLine: { normal: { show: false } } },
-            //   { value: 25, name: '40%赌博', itemStyle: { color: '#2dd3bd' }, labelLine: { normal: { show: false } } },
-            // ]
+            data: dataArr,
+            label: {
+            normal: {
+              textStyle: {
+                fontWeight: 'bold'  // 设置字体加粗
+              }
+            }
+          }
           },
           {
-            name: '外边框',
+            // name: '外边框',
+            tooltip: {
+              show: false
+            },
             type: 'pie',
             clockWise: false, //顺时加载
-            hoverAnimation: false, //鼠标移入变大
+            hoverAnimation: false, 
             center: ['50%', '45%'],
             radius: ['80%', '80%'],
             label: {
@@ -549,6 +603,7 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
                 }
               }
             }],
+            
           }
         ],
 
@@ -670,6 +725,7 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
           axisTick: {
             show: false // 隐藏 y 轴刻度线
           },
+          boundaryGap: false,
           axisLine: {
             lineStyle: {
               color: "#384e5e",  // x轴线颜色
@@ -701,7 +757,7 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
           },
           axisLabel: {
             textStyle:{
-              color:'#7d69ef'  // y轴字颜色 
+              color:'#17acf0'  // y轴字颜色 
             }
           },
           axisTick: {
@@ -742,19 +798,19 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
       ],
         series: [
           {
-            name: '同源处理量',
+            name: '同源处置量',
             data: blockData,
             type: 'line',
             areaStyle: {},
             symbol: 'square',
             symbolSize: 5,
             itemStyle: {
-              borderColor: '#4747a1',
+              borderColor: '#17acf0',
               normal:{
-                color: '#4747a1',
+                color: '#17acf0',
                 lineStyle:
                 {
-                  color: '#4747a1'
+                  color: '#17acf0'
                 }
               }
             }
@@ -769,13 +825,13 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
             symbolSize: 5,
             itemStyle:
             {
-              borderColor: '#7e861d',
+              borderColor: '#ecd456',
               normal:
               {
-                color: '#7e861d',
+                color: '#ecd456',
                 lineStyle:
                 {
-                  color: '#7e861d'
+                  color: '#ecd456'
                 }
               }
             }
@@ -939,10 +995,6 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
 .el-date-editor .el-range-input {
   color: #fdf6ec;
 }
-.add1 {
-  height: 300px;
-  width: 600px;
-}
 
 .dp {
   width: 100%;
@@ -980,7 +1032,7 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
 .center2 {
   display: flex;
   justify-content: space-between;
-  margin: 0 36px;
+  margin: 0 15px;
 }
 
 .gsh3 {
@@ -995,7 +1047,7 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
   font-size: 20px;
   color: #32c5ff;
   height: 360px; // width/height=1.58
-  width: 600px;
+  width: 570px;
   margin-top: 20px;
   margin-left: 10px;
   margin-right: 15px;
@@ -1004,6 +1056,10 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
   background-repeat: no-repeat;
 }
 
+.add1 {
+  height: 300px;
+  width: 560px;
+}
 .center2_left_test1 {
   color: #72e7ee;
   margin-left: 38px;
@@ -1115,9 +1171,9 @@ const days = [...new Set([...alarmDays, ...blockDays])].sort();
 }
 
 .center3 {
-  margin-top: 10px;
-  margin-left: 45px;
-  margin-right: 52px
+  margin-top: 0px;
+  margin-left: 25px;
+  margin-right: 29px
 }
 
 .center3_one {

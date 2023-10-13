@@ -19,6 +19,7 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               value-format="yyyy-MM-dd"
+              :clearable = 'false'
             >
             </el-date-picker>
           </el-form-item>
@@ -99,7 +100,7 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="日期" prop="createTime" show-overflow-tooltip>
+        <el-table-column label="日期" prop="createTime" min-width="130" show-overflow-tooltip>
         </el-table-column>
 
         <el-table-column
@@ -108,7 +109,7 @@
           label="域名"
           prop="url"
         ></el-table-column>
-        <el-table-column label="类型" show-overflow-tooltip width="150">
+        <el-table-column label="诈骗类型" show-overflow-tooltip min-width="150">
           <template slot-scope="scope">
             <!-- {{ shuzu(scope.row.fraudType) }}
              -->
@@ -118,12 +119,14 @@
         <el-table-column
           label="原因"
           prop="reason"
+          min-width="150"
           show-overflow-tooltip
         >
         </el-table-column>
         <el-table-column
           label="备注"
           prop="remark"
+          min-width="150"
           show-overflow-tooltip
         >
         </el-table-column>
@@ -388,7 +391,7 @@
         this.dialog = false
       } else {
         this.$message(res.message)
-        this.dialog = false
+        // this.dialog = false
       }
     },
     quxiao2() {
@@ -501,6 +504,7 @@
   
               this.loadingbuttext = '导出'
               this.loadingbut = false
+              this.$message.success('文件导出成功！')
               // 移除改下载标签
               document.body.removeChild(aLink)
             }
@@ -829,6 +833,9 @@
   </script>
   
   <style scoped lang='less'>
+  /deep/ .el-form-item__label {
+  font-size:0.085rem
+}
   // 按钮hover
   .right_main_under /deep/ .el-button-chaxun:focus,
   .right_main_under /deep/ .el-button-chaxun:hover {

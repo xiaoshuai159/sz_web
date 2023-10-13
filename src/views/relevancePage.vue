@@ -19,6 +19,7 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               value-format="yyyy-MM-dd"
+              :clearable = 'false'
             >
             </el-date-picker>
           </el-form-item>
@@ -101,7 +102,7 @@
             </span>
           </template>
         </el-table-column>
-        <el-table-column label="发现日期" prop="discoverDate" show-overflow-tooltip>
+        <el-table-column label="发现日期" prop="discoverDate" show-overflow-tooltip min-width="150">
         </el-table-column>
         <el-table-column
           width="200"
@@ -109,23 +110,38 @@
           label="发现域名"
           prop="url"
         ></el-table-column>
-        <el-table-column label="目的IP" prop="dstIp" width="100">
+        <el-table-column label="目的IP" prop="dstIp" min-width="100" show-overflow-tooltip>
         </el-table-column>
-        <el-table-column label="特征号" prop="feature"> </el-table-column>
+        <el-table-column label="特征号" prop="feature" min-width="100" show-overflow-tooltip> </el-table-column>
         <el-table-column
-          label="类型"
+          label="诈骗类型"
           prop="fraudType"
+          min-width="140"
           show-overflow-tooltip
         >
         </el-table-column>
         <el-table-column
           label="历史案发域名"
-          prop="historyCase"
-          show-overflow-tooltip
+          min-width="110"
         >
+        <template slot-scope="scope">
+      <div class="domain-container">
+        <span class="domain-name">{{ formatDomainNames(scope.row.historyCase) }}</span>
+        <el-button v-if="showCollapseButton(scope.row.historyCase)" type="text" @click="showDialog(scope.row.historyCase)">...</el-button>
+      </div>
+    </template>
         </el-table-column>
        
       </el-table>
+    <el-dialog title="全部域名" class="dialogInfo" width="35%" :visible.sync="dialogVisible" :max-height="dialogMaxHeight" :style="{ 'overflow-y': 'auto' }">
+        <ul>
+      <li v-for="domain in getDomainList(dialogContent)" :key="domain">{{ domain }}</li>
+    </ul>
+    <span slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="dialogVisible = false" size="mini"
+          class="el-button-xitongerr">确定</el-button>
+    </span>
+  </el-dialog>
       <!-- //分页 -->
       <div class="bottom">
         <div class="ss">
@@ -306,6 +322,9 @@
   export default {
     data() {
       return {
+        dialogVisible: false,
+      dialogContent: '',
+      dialogMaxHeight: '70vh',
         heights: undefined,
         tableDatalist: [],
         loadingbuttext: '导出',
@@ -433,6 +452,40 @@
       this.yangshi()
     },
     methods: {
+      formatDomainNames(historyCase) {
+        // console.log(historyCase);
+        if (typeof historyCase === 'string') {
+          const domainNames = historyCase.split(',');
+          if (domainNames.length === 1) {
+            return domainNames[0];
+          } else {
+            return domainNames[0] + '';
+          }
+        } else {
+          return '';
+        }
+      
+    },
+    showCollapseButton(historyCase) {
+      if (typeof historyCase === 'string') {
+        const domainNames = historyCase.split(',');
+        return domainNames.length > 1;
+      } else {
+        return false;
+      }
+    },
+    showDialog(historyCase) {
+      if (typeof historyCase === 'string') {
+        this.dialogContent = historyCase;
+        this.dialogVisible = true;
+      }
+    },
+    getDomainList(content) {
+      if (typeof content === 'string') {
+        return content.split(',');
+      }
+      return [];
+    },
       yangshi() {
         this.heights =
           window.innerHeight - this.$refs.multipleTable.$el.offsetTop - 270
@@ -528,6 +581,7 @@
   
               this.loadingbuttext = '导出'
               this.loadingbut = false
+              this.$message.success('文件导出成功！')
               // 移除改下载标签
               document.body.removeChild(aLink)
             }
@@ -565,9 +619,10 @@
           '/relation/list',
           {params:getTabDataList}
         )
-        
+        console.log(res);
         if (res.code == 200) {
           this.tableData = res.dataList
+          
           let tableDataLength = this.tableData.length
           let timer = null
           timer ? clearTimeout(timer) : ''
@@ -587,6 +642,8 @@
           }
           this.total = res.totalSum
           this.totalPages = res.totalPage // }else{ //   this.$message('无数据') // }
+        }else{
+          this.$message(res.message)
         }
       },
   
@@ -793,6 +850,49 @@
   </script>
   
   <style scoped lang='less'>
+  .dialogInfo /deep/ .el-dialog {
+    background: #021c2d url(../assets/img/shouye/背景框.png) no-repeat;
+    background-size: 100% 100%;
+    padding: 10px;
+    opacity: 0.9;
+    box-sizing: border-box;
+    .el-dialog__headerbtn {
+      top: 5px !important;
+      right: 10px !important;
+      .el-dialog__close {
+        color: #fff;
+        font-size: 14px;
+      }
+    }
+    .el-dialog__header {
+      margin: 20px 20px 0px 20px;
+      background: url(../assets/img/shouye/标题矩形.png) no-repeat;
+      background-size: 100% 100%;
+    }
+    .el-dialog__title,
+    .gailan h3,
+    .gailan1 h3 {
+      color: #2fbcfc;
+    }
+    .gailan h3,
+    .gailan1 h3 {
+      padding-left: 10px;
+    }
+  }
+  .domain-container {
+  display: flex;
+  align-items: center;
+}
+
+.domain-name {
+  overflow: hidden;
+  text-overflow:unset;
+  white-space: nowrap;
+  flex-grow: 1;
+}
+  /deep/ .el-form-item__label {
+  font-size:0.085rem
+}
   // 按钮hover
   .right_main_under /deep/ .el-button-chaxun:focus,
   .right_main_under /deep/ .el-button-chaxun:hover {
@@ -809,7 +909,13 @@
     background: url(../assets/img/shouye/下载按钮.png) no-repeat;
     background-size: 100% 100%;
   }
-  
+ /deep/ .el-button-xitongerr:focus,
+ /deep/ .el-button-xitongerr:hover {
+  background: url(../assets/img/shouye/确定按钮.png) no-repeat;
+  background-size: cover;
+  border: none;
+  color: #25c0fd;
+}
   .el-table::before {
     height: 0;
     /* // 将高度修改为0 */
@@ -943,7 +1049,15 @@
       }
     }
   }
-  
+.dialogInfo ul {
+  list-style: none; /* 去掉默认的列表样式 */
+}
+
+.dialogInfo li {
+  color: white; /* 文字颜色变为白色 */
+  font-size: 18px; /* 文字变大 */
+  padding-left: 15px; /* 设置左边距为20px */
+}
   // 弹窗
   .dialogInfo /deep/ .el-dialog {
     background: #021c2d url(../assets/img/shouye/背景框.png) no-repeat;

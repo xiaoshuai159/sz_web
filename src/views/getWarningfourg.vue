@@ -14,7 +14,7 @@
           size="mini"
         >
         <el-form-item label="上传人">
-          <el-input v-model.trim="newdomainSimpleVo.uploader" placeholder="上传人">
+          <el-input v-model.trim="newdomainSimpleVo.uploader" placeholder="上传人" style="width: 0.7rem;">
           </el-input>
         </el-form-item>
           <!-- 发现日期 -->
@@ -74,7 +74,14 @@
               :loading="loadingbut"
               >{{ loadingbuttext }}</el-button
             >
-            
+            <el-button
+              class="el-button-daochu"
+              type="primary"
+              size="mini"
+              @click.native="download_temp2"
+              :loading="loadingbut4"
+              >{{ loadingbuttext4 }}</el-button
+            >
             <el-button
               class="el-button-daochu"
               type="primary"
@@ -130,10 +137,10 @@
         </template>
       </el-table-column>
       <el-table-column label="域名" prop="url" width="200" show-overflow-tooltip></el-table-column>
-      <el-table-column label="诈骗类型" prop="fraudType"></el-table-column>
-      <el-table-column label="协议" prop="protocol"> </el-table-column>
-      <el-table-column label="上传人" prop="uploader"> </el-table-column>
-      <el-table-column label="备注" prop="remark"> </el-table-column>
+      <el-table-column label="诈骗类型"  min-width="170" prop="fraudType" show-overflow-tooltip></el-table-column>
+      <el-table-column label="协议" min-width="80" prop="protocol" show-overflow-tooltip> </el-table-column>
+      <el-table-column label="上传人" min-width="80" prop="uploader" show-overflow-tooltip> </el-table-column>
+      <el-table-column label="备注" min-width="170" prop="remark" show-overflow-tooltip> </el-table-column>
     </el-table>
 
     <!-- //分页 -->
@@ -272,8 +279,10 @@ export default {
       heights: undefined,
       errFlag: false,
       errFlagTimer: undefined,
-      loadingbuttext: '模板下载',
+      loadingbuttext: '笔录模板',
       loadingbut: false,
+      loadingbuttext4: '分类模板',
+      loadingbut4: false,
       loadingbuttext2: '批量导入',
       loadingbut2: false,
       loadingbuttext3: 'APK上传',
@@ -407,7 +416,7 @@ export default {
         this.dialog = false
       } else {
         this.$message(res.message)
-        this.dialog = false
+        // this.dialog = false
       }
     },
     quxiao2() {
@@ -556,10 +565,21 @@ export default {
           'Content-Type': 'multipart/form-data'
         }
       })
-      .then(() => {
-        this.$message('上传成功');
-        this.loadingbuttext2 = '批量导入'
-        this.loadingbut2 = false
+      .then((res) => {
+        if(res.data.code == 200){
+          console.log(res)
+          this.$message(res.data.message);
+          this.loadingbuttext2 = '批量导入'
+          this.loadingbut2 = false
+          this.getTabData()
+        }else{
+          console.log(res)
+          this.$message(res.data.message);
+          this.loadingbuttext2 = '批量导入'
+          this.loadingbut2 = false
+        }
+        
+        
       })
       .catch((error) => {
         this.$message('上传失败：', error);
@@ -582,11 +602,19 @@ export default {
           'Content-Type': 'multipart/form-data'
         }
       })
-      .then(() => {
-        this.$message('上传成功');
-        this.loadingbuttext3 = 'APK上传'
-        this.loadingbut3 = false
-        console.log('执行到then了');
+      .then((res) => {
+        if(res.data.code == 200){
+          console.log(res)
+          this.$message(res.data.message);
+          this.loadingbuttext3 = 'APK上传'
+          this.loadingbut3 = false
+        }else{
+          console.log(res)
+          this.$message(res.data.message);
+          this.loadingbuttext3 = 'APK上传'
+          this.loadingbut3 = false
+        }
+        
       })
       .catch((error) => {
         this.$message('上传失败：', error);
@@ -595,7 +623,6 @@ export default {
       });
     },
     apk_input(){
-      console.log('执行了apk_input');
       this.$refs.fileInput2.click();
     },
     little_input(){
@@ -618,13 +645,13 @@ export default {
             const reader = new FileReader()
             reader.onload = function () {
               that.$message('下载文件失败')
-              that.loadingbuttext = '模板下载'
+              that.loadingbuttext = '笔录模板'
               that.loadingbut = false
             }
             reader.readAsText(blob)
           } else {
 
-            let title = dayjs().format('YYYYMMDD') + '警情模板.xlsx'
+            let title = dayjs().format('YYYYMMDD') + '笔录模板.xlsx'
 
             let binaryData = []
             binaryData.push(blob)
@@ -636,51 +663,64 @@ export default {
             aLink.setAttribute('download', title)
             document.body.appendChild(aLink)
             aLink.click()
-            this.loadingbuttext = '模板下载'
+            this.loadingbuttext = '笔录模板'
             this.loadingbut = false
             document.body.removeChild(aLink)
             this.$message.success('模板下载成功！')
           }
         })
         .catch((err) => {
-          this.$message.error('文件下载失败！')
-          this.loadingbuttext = '模板下载'
+          this.$message.error('文件下载失败！',err)
+          this.loadingbuttext = '笔录模板'
           this.loadingbut = false
         })
-
-      // const { data: res } = await this.$http.post(
-      //   '/discover/downloadDiscover',
-      //   getlist
-      // )
-
-      // if (res.code == 200) {
-      //   this.loadingbuttext = '导出'
-      //   this.loadingbut = false
-      //   let newurl = res.expandData.url
-      //   let eleLink = document.createElement('a')
-      //   eleLink.download = name
-      //   // const down = window.location.origin
-      //   // eleLink.href = "http://172.31.1.61:8080" + newurl;
-      //   // const down = window.location.origin
-      //   eleLink.href = newurl
-      //   // console.log(eleLink);
-      //   eleLink.click()
-      //   eleLink.remove()
-      //   this.$refs.multipleTable.clearSelection()
-      // } else {
-      //   this.$message(res.message)
-      // }
-      // }
-      //  else {
-      //   // this.$message('请勾选')
-      //   this.errFlag = true
-      //   clearTimeout(this.errFlagTimer)
-      //   this.errFlagTimer = setTimeout(() => {
-      //     this.errFlag = false
-      //   }, 2000)
-      //   // this.err
-      // }
     },
+    async download_temp2() {
+
+      this.loadingbuttext4 = '...下载中'
+      this.loadingbut4 = true
+      this.$http({
+        method: 'GET',
+        url: '/alarm/template2',
+        responseType: 'blob'
+      })
+        .then((res) => {
+          let that = this
+          let blob = res.data
+          if (blob.type == 'application/json') {
+            const reader = new FileReader()
+            reader.onload = function () {
+              that.$message('下载文件失败')
+              that.loadingbuttext4 = '分类模板'
+              that.loadingbut4 = false
+            }
+            reader.readAsText(blob)
+          } else {
+
+            let title = dayjs().format('YYYYMMDD') + '分类模板.xlsx'
+
+            let binaryData = []
+            binaryData.push(blob)
+            let url = window.URL.createObjectURL(new Blob(binaryData), {
+              type: 'application/vnd.ms-excel',
+            })
+            const aLink = document.createElement('a')
+            aLink.href = url
+            aLink.setAttribute('download', title)
+            document.body.appendChild(aLink)
+            aLink.click()
+            this.loadingbuttext4 = '分类模板'
+            this.loadingbut4 = false
+            document.body.removeChild(aLink)
+            this.$message.success('模板下载成功！')
+          }
+        })
+        .catch((err) => {
+          this.$message.error('文件下载失败！',err)
+          this.loadingbuttext4 = '分类模板'
+          this.loadingbut4 = false
+        })
+      },
     //访问量
     // async fangwenl(val) {
     //   this.gridData = []
@@ -1122,6 +1162,9 @@ export default {
   background: url(../assets/img/shouye/取消按钮.png) no-repeat;
   background-size: cover;
   border: none;
+}
+/deep/ .el-form-item__label {
+  font-size:0.085rem
 }
 /deep/ .el-table__fixed-right::before,
 .el-table__fixed::before {

@@ -101,14 +101,14 @@
         </template>
       </el-table-column>
       <!-- :reserve-selection="true" -->
-      <el-table-column label="发现日期" prop="discoverDate">
+      <el-table-column label="发现日期" prop="discoverDate" min-width="90" show-overflow-tooltip>
         <!-- min-width="10%" -->
       </el-table-column>
-      <el-table-column label="诈骗类型" prop="fraudType">
+      <el-table-column label="诈骗类型" prop="fraudType" min-width="170" show-overflow-tooltip>
       </el-table-column>
       <el-table-column label="域名" prop="url" width="200" show-overflow-tooltip> </el-table-column>
-      <el-table-column label="目的IP" prop="dstIp"> </el-table-column>
-      <el-table-column label="访问量" prop="visits"> </el-table-column>
+      <el-table-column label="目的IP" prop="dstIp" min-width="120" show-overflow-tooltip> </el-table-column>
+      <el-table-column label="访问量" prop="visits" min-width="80" show-overflow-tooltip> </el-table-column>
     </el-table>
 
 
@@ -617,6 +617,7 @@ export default {
             aLink.click()
             this.loadingbuttext = '导出'
             this.loadingbut = false
+            this.$message.success('文件导出成功！')
             document.body.removeChild(aLink)
           }
         })
@@ -1072,6 +1073,9 @@ export default {
 </script>
 
 <style  scoped lang='less'>
+/deep/ .el-form-item__label {
+  font-size:0.085rem
+}
 .right_main_under /deep/ .el-button-chaxun:focus,
 .right_main_under /deep/ .el-button-chaxun:hover {
   background: url(../assets/img/shouye/查询按钮.png) no-repeat;

@@ -90,8 +90,8 @@
             </span>
           </template>
         </el-table-column>
-      <el-table-column label="用户名" prop="username"> </el-table-column>
-      <el-table-column label="角色" prop="role">
+      <el-table-column label="用户名" prop="username" min-width="90" show-overflow-tooltip> </el-table-column>
+      <el-table-column label="角色" prop="role" min-width="90" show-overflow-tooltip>
         <!-- <template slot-scope="scope">
              
                 {{ juese(scope.row.role_name) }}
@@ -99,14 +99,14 @@
       </el-table-column>
       <!-- <el-table-column label="电话号码" prop="phone"> </el-table-column> -->
       <!-- <el-table-column label="部门" prop="dept_name"> </el-table-column> -->
-      <el-table-column label="状态" prop="status">
+      <el-table-column label="状态" prop="status" min-width="70" show-overflow-tooltip>
       </el-table-column>
-      <el-table-column label="创建时间" prop="createTime"> </el-table-column>
-      <el-table-column label="更新时间" prop="lastUpdateTime"> </el-table-column>
-      <el-table-column label="备注" prop="remark" show-overflow-tooltip>
+      <el-table-column label="创建时间" prop="createTime" min-width="100" show-overflow-tooltip> </el-table-column>
+      <el-table-column label="更新时间" prop="lastUpdateTime" min-width="100" show-overflow-tooltip> </el-table-column>
+      <el-table-column label="备注" prop="remark" min-width="100" show-overflow-tooltip>
       </el-table-column>
       <!-- v-if="getRole1('updateUser' && 'delUser')" v-if="getRole1('updateUser')" v-if="getRole1('delUser')"  7.4 测试关闭 -->
-      <el-table-column label="操作"> 
+      <el-table-column label="操作" min-width="80" show-overflow-tooltip> 
         <template slot-scope="scope">
           <div v-if="Object.keys(scope.row).length > 0">
             <el-button
@@ -631,7 +631,7 @@ export default {
       if (res.code == 200) {
         // console.log(res.data)
         this.roleList = res.dataList
-        console.log(this.roleList);
+        // console.log(this.roleList);
       }
     },
     //tree
@@ -666,8 +666,8 @@ export default {
         type: 'warning',
       })
         .then(async () => {
-          const { data: res } = await this.$http.get('/user/delUser', {
-            params: { id: val },
+          const { data: res } = await this.$http.delete('/admin/user/delete', {
+            params: { userId: val },
           })
           if (res.code == 200) {
             this.$message('删除成功')
@@ -882,11 +882,13 @@ export default {
       curState = val.status == 'Disabled' ? '0' : '1'
       // console.log(val);
       this.dialog = true
+      
       this.domainSimpleVo.id = val.id // 用户id
       this.domainSimpleVo.ids = rid  // 角色id
       this.domainSimpleVo.yhm = val.username
       this.domainSimpleVo.state = curState
       this.domainSimpleVo.xinrole = rid
+      this.domainSimpleVo.pass = ''
     },
     tableRowClassName({ rowIndex }) {
       if (rowIndex % 2 === 0) {
@@ -926,6 +928,9 @@ export default {
 </script>
 
 <style scoped lang='less'>
+/deep/ .el-form-item__label {
+  font-size:0.085rem
+}
 // 按钮hover
 .right_main_under /deep/ .el-button-chaxun:focus,
 .right_main_under /deep/ .el-button-chaxun:hover {

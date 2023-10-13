@@ -43,6 +43,7 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               value-format="yyyy-MM-dd"
+              :clearable = 'false'
             >
             </el-date-picker>
           </el-form-item>
@@ -176,10 +177,10 @@
 
         </el-table-column>
 
-        <el-table-column label="处置时间" prop="blockTime" show-overflow-tooltip min-width="13">
+        <el-table-column label="处置时间" prop="blockTime" min-width="90" show-overflow-tooltip>
         </el-table-column>
 
-        <el-table-column label="诈骗类型" show-overflow-tooltip width="150">
+        <el-table-column label="诈骗类型" show-overflow-tooltip min-width="170">
           <template slot-scope="scope">
             <!-- {{ shuzu(scope.row.fraudType) }}
              -->
@@ -188,21 +189,21 @@
         </el-table-column>
 
         <el-table-column
-          width="300"
+          width="200"
           show-overflow-tooltip
           label="域名"
           prop="url"
         ></el-table-column>
 
-        <el-table-column label="处置状态" prop="blockStatus" width="100">
+        <el-table-column label="处置状态" prop="blockStatus" min-width="100" show-overflow-tooltip>
         </el-table-column>
 
-        <el-table-column label="协议" prop="protocol" width="250" > </el-table-column>
+        <el-table-column label="协议" prop="protocol" min-width="70" show-overflow-tooltip> </el-table-column>
 
         <el-table-column
           label="数据来源"
           prop="source"
-          min-width="8"
+          min-width="80"
           show-overflow-tooltip
         >
         </el-table-column>
@@ -210,7 +211,7 @@
         <el-table-column
           label="未处置原因"
           prop="rejectReason"
-          width="200"
+          min-width="150"
           show-overflow-tooltip
           
         >
@@ -529,13 +530,13 @@
     },
     methods: {
       async getOptionsData(){
-        const promiseArr = Promise.all([await this.$http.get('/dict/protocol'),await this.$http.get('/dict/fraudType'),await this.$http.get('/dict/rejectReason'),await this.$http.get('/dict/datasource'),await this.$http.get('/dict/blockStatus'),])
+        const promiseArr = Promise.all([await this.$http.get('/dict/protocol'),await this.$http.get('/dict/allFraudType'),await this.$http.get('/dict/rejectReason'),await this.$http.get('/dict/datasource'),await this.$http.get('/dict/blockStatus'),])
         promiseArr.then((successArr)=>{
           successArr.forEach(successData=>{
             if(successData.config.url=='/dict/protocol'){
               const protocolArr = successData.data.data
               protocolArr!=null && protocolArr.forEach(protocol=>this.selectData.Protocol.push({key:protocol, value:protocol}))
-            }else if(successData.config.url=='/dict/fraudType'){
+            }else if(successData.config.url=='/dict/allFraudType'){
               const fraudTypeArr = successData.data.data
               // console.log(fraudTypeArr);
               fraudTypeArr!=null && fraudTypeArr.forEach(fraudType=>this.selectData.fraudypeData.push({key:fraudType, value:fraudType}))
@@ -666,6 +667,7 @@
   
               this.loadingbuttext = '导出'
               this.loadingbut = false
+              this.$message.success('文件导出成功！')
               // 移除改下载标签
               document.body.removeChild(aLink)
             }
@@ -975,6 +977,9 @@
   /deep/.el-table--enable-row-hover .el-table__body tr:hover > td {
     background-color: transparent;
   }
+  /deep/ .el-form-item__label {
+  font-size:0.085rem
+}
   .tubiao {
     width: 100% /* 1558/16 */;
     height: 12.5rem /* 200/16 */ /* 300/16 */;

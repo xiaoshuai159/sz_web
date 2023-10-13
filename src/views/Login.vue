@@ -4,7 +4,7 @@
       <!-- 头部 -->
       <div class="top1">
         <div class="top1_title">
-          <div class="title">深圳涉诈网站、App业务展示平台</div>
+          <div class="title">深圳涉诈域名反制平台</div>
         </div>
       </div>
       <!-- 头部_光条-->
@@ -103,6 +103,7 @@ export default {
                 JSON.stringify(this.param.password),
 
               )
+              window.sessionStorage.setItem('role', res.data.data.role)
               window.sessionStorage.setItem('isLogin', 'true')
               // window.sessionStorage.setItem(
               //   'qx',
@@ -139,8 +140,8 @@ export default {
   font-family: 'heiti';
   height:85px;
   line-height: 85px;
-  font-size: 34px;
-  letter-spacing: 1px /* 12/16 */;
+  font-size: 42px;
+  letter-spacing: 5px /* 12/16 */;
   background-image: linear-gradient(0deg, #f8f8fb 0%, #8ec4fd 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;

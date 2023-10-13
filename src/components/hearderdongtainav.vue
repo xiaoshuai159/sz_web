@@ -7,8 +7,9 @@
             :key="index"
           >
             <span>
+              <!-- :class="c" -->
               <router-link
-                :to="{ path: item.path, query: { name: item.name } }" class="classA"
+                :to="{ path: item.path, query: { name: item.name } }" class="classA" :class="{ 'curClass':isActive(item.path) }"
                 >{{ item.name }}</router-link
               >
             </span>
@@ -23,7 +24,8 @@ export default {
   data() {
     return {
       //居中导航
-      daohang: [{  // 7.4 测试数据
+      daohang: [],
+      daohang1:[{  // 7.4 测试数据
           name: '首页',
           path: '/shouye',
         },
@@ -45,7 +47,27 @@ export default {
         },
         {
           name: '管理',
-          path: '/findRole',
+          path: '/dept',
+        }],
+        daohang2: [{  // 7.4 测试数据
+          name: '首页',
+          path: '/shouye',
+        },
+        {
+          name: '发现',
+          path: '/gitDiscoverca',
+        },{
+          name: '处置',
+          path: '/disposePage',
+        },{
+          name: '警情',
+          path:'/getWarningfourg'
+        },{
+          name: '特办',
+          path: '/specialPage'
+        },{
+          name: '关联',
+          path: '/relevancePage'
         }],
       namenav: '',
       navnumlist: [],
@@ -59,20 +81,25 @@ export default {
   mounted() {
     // this.daohang=   JSON.parse(window.localStorage.getItem("nav"))
   },
-  // created() {  // 7.4 测试暂时关闭接口
-  //   this.dh()
-  //   this.daohangzhiding()
-  // },
+  created() {  // 7.4 测试暂时关闭接口
+    this.dh()
+    // this.daohangzhiding()
+  },
   methods: {
+    isActive(path){
+      // console.log(path)
+      // console.log('----------');
+      return path == this.$router.currentRoute.path
+    },
     dh() {
-      let dntit = JSON.parse(window.sessionStorage.getItem('qx'))
+      let curRole = window.sessionStorage.getItem('role')
 
-      let cj = 'CD_SUPER_ADMIN'
+      // let cj = 'CD_SUPER_ADMIN'
 
-      if (dntit == cj) {
-        this.daohang = this.daohang1
-      } else  if (dntit != cj) {
+      if (curRole == 'OPERATOR') {
         this.daohang = this.daohang2
+      }else{
+        this.daohang = this.daohang1
       }
     },
     //导航
@@ -206,11 +233,15 @@ export default {
   color: #fff;
   border-bottom-color: #07e7e6;
 }
-.classA{
+.curClass{
+  color: rgba(0, 255, 243) !important;
+}
+span .classA{
   color:rgba(0, 255, 243, 0.75);
   font-size: 20px 
 }
-.classA:hover{
+span .classA:hover,
+span .classA:active {
   color: rgba(0, 255, 243);
 }
 .dianl {

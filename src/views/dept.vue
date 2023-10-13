@@ -14,6 +14,7 @@
               start-placeholder="开始日期"
               end-placeholder="结束日期"
               value-format="yyyy-MM-dd"
+              :clearable = 'false'
             >
             </el-date-picker>
           </el-form-item>
@@ -68,9 +69,9 @@
             </span>
           </template>
         </el-table-column>
-      <el-table-column label="用户名" prop="username"> </el-table-column>
-      <el-table-column label="操作时间" prop="execTime"> </el-table-column>
-      <el-table-column label="操作" prop="remark"> </el-table-column>
+      <el-table-column label="用户名" prop="username" min-width="120"  show-overflow-tooltip> </el-table-column>
+      <el-table-column label="操作时间" prop="createTime" min-width="120" show-overflow-tooltip> </el-table-column>
+      <el-table-column label="操作" prop="remark" min-width="130" show-overflow-tooltip> </el-table-column>
     </el-table>
    <!-- //分页 -->
     <div class="bottom">
@@ -279,6 +280,8 @@ export default {
     //初次渲染
     async getdata() {
       let list = {
+        startDay:this.newdomainSimpleVo.dateValue_find[0],
+        endDay:this.newdomainSimpleVo.dateValue_find[1],
         username:this.newdomainSimpleVo.username,
         content:this.newdomainSimpleVo.project,
         page:this.mypageable.pageNum,
@@ -590,6 +593,9 @@ export default {
 </script>
 
 <style scoped lang='less'  >
+/deep/ .el-form-item__label {
+  font-size:0.085rem
+}
 // 按钮hover
 .right_main_under /deep/ .el-button-chaxun:focus,
 .right_main_under /deep/ .el-button-chaxun:hover {

@@ -2,13 +2,13 @@
   <div class="app dp">
     <div class="top1">
       <div class="top1_title">
-        <div class="title">深圳市反诈技术支撑平台</div>
+        <div class="title">深圳涉诈域名反制平台</div>
         <div class="nav" v-show="$route.path==='/findUser'||$route.path==='/findRole'||$route.path==='/dept'">       
         <el-button
           size="mini"
           type="primary"
           class="navnum"
-          v-for="(item, index) in daohangnum"
+          v-for="(item, index) in daohangShow"
           :key="index"
           :class="['/' + item.name !== $route.path ? '' : 'yangshi']"
           @click="navclick(item.name, item.menuName)"
@@ -121,7 +121,7 @@
     </div>
     
     <!-- <div class="dp_top">
-      <div class="logo">深圳市反诈技术支撑平台—{{ namenav }}</div>
+      <div class="logo">深圳涉诈域名反制平台—{{ namenav }}</div>
       <div class="nav" v-show="$route.path==='/findUser'||$route.path==='/findRole'||$route.path==='/dept'">        
         <el-button
           size="mini"
@@ -191,15 +191,21 @@ export default {
       use: '',
       old: '',
       daohangtitle: '',
+      daohangShow:[],
       daohangnum: [
         { menuName: "角色管理", menuUrl: "/role/findRole",name: "findRole" },
+        { menuName: "用户管理", menuUrl: "/user/findUser",name: "findUser" },     
+        { menuName: "日志管理", menuUrl: "/dept",name: "dept" }
+      ],
+      daohangnum2 :[
         { menuName: "用户管理", menuUrl: "/user/findUser",name: "findUser" },
-        
         { menuName: "日志管理", menuUrl: "/dept",name: "dept" }
       ],
       namenav: '',
+      timer:null
     }
   },
+  
   // created() {  // 7.4 测试暂时关闭接口
   //   // console.log(this.$route.path);
   //   // this.namenav=window.location.search
@@ -225,16 +231,27 @@ export default {
   },
   created() {
     this.startTimer()
-   
+    this.getDaohang()
   },
   mounted(){
     // this.startTimer()
   },
-
+  beforeDestroy() {
+    clearInterval(this.timer);
+  },
   methods: {
+    getDaohang(){
+      let role = window.sessionStorage.getItem('role')
+      // console.log(role);
+      if(role == "SUPER_ADMIN"){
+        this.daohangShow = this.daohangnum
+      }else if(role == "ADMIN"){
+        this.daohangShow = this.daohangnum2
+      }
+    },
     startTimer()
     {
-      setInterval(() => {
+      this.timer = setInterval(() => {
       this.curDate=dayjs().format("YYYY年MM月DD日  HH时mm分ss秒")
     }, 1000);
     },
@@ -379,7 +396,7 @@ export default {
   font-family: 'heiti';
   height:75px;
   line-height: 75px;
-  font-size: 42px;
+  font-size: 46px;
   letter-spacing: 7px /* 12/16 */;
   color:#19c9d5;
 }

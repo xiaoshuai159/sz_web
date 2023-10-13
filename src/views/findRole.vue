@@ -28,7 +28,7 @@
     >
       <!-- <el-table-column label="序号" prop="id" v-if="loadings">
       </el-table-column> -->
-      <el-table-column prop="ID" label="序号" type="index" width="150">
+      <el-table-column prop="ID" label="序号" type="index" width="70">
         <template slot-scope="scope">
           <div v-if="Object.keys(scope.row).length > 0">
             <span v-text="getIndex(scope.$index)"></span>

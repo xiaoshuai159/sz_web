@@ -47,7 +47,10 @@
             </el-input>
           </el-form-item>
 
-
+          <el-form-item label="域名">
+            <el-input v-model.trim="newdomainSimpleVo.url" placeholder="域名">
+            </el-input>
+          </el-form-item>
 
           <el-form-item>
             <el-button
@@ -172,7 +175,7 @@ export default {
       newdomainSimpleVo:{
         dateRange:[ dayjs().subtract(1, 'month').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
         fraudType:null,
-
+        url:null,
         destIP:null,
         // isValidIP: true
 
@@ -422,6 +425,7 @@ export default {
           discoverDateEnd:this.newdomainSimpleVo.dateRange[1],
           fraudType:this.newdomainSimpleVo.fraudType,
           dstIp:this.newdomainSimpleVo.destIP,
+          url:this.newdomainSimpleVo.url,
           page:this.mypageable.pageNum,
           pageSize:this.mypageable.pageSize
         }
@@ -493,8 +497,6 @@ export default {
     },
     //查询
     async searchTabData() {
-
-      console.log(this.newdomainSimpleVo.destIP);  
       if(!this.newdomainSimpleVo.destIP || this.isIPAddress(this.newdomainSimpleVo.destIP)){
         this.mypageable.pageNum = 1
         this.getTabData()
@@ -508,8 +510,8 @@ export default {
       //   startDiscoverDate: this.whiteSearchList.startCreateTime,
       //   endDiscoverDate: this.whiteSearchList.endCreateTime,
       //   mypageable: this.mypageable,
-      //   // url: this.newdomainSimpleVo.domain,
-      //   type: this.newdomainSimpleVo.domain,
+      //   // url: this.newdomainSimpleVo.url,
+      //   type: this.newdomainSimpleVo.url,
       //   visits: this.newdomainSimpleVo.visits,
       // }
       // const { data: res } = await this.$http.post(
@@ -536,6 +538,7 @@ export default {
       this.newdomainSimpleVo.dateRange=[ dayjs().subtract(1, 'month').format('YYYY-MM-DD'), dayjs().format('YYYY-MM-DD')],
       this.newdomainSimpleVo.fraudType=null,
       this.newdomainSimpleVo.destIP=null,
+      this.newdomainSimpleVo.url=null,
       this.mypageable.pageNum = 1
       this.mypageable.pageSize = 10
       this.getTabData()
@@ -572,7 +575,8 @@ export default {
         discoverDateStart :this.newdomainSimpleVo.dateRange[0],
         discoverDateEnd:this.newdomainSimpleVo.dateRange[1],
         fraudType:this.newdomainSimpleVo.fraudType,
-        dstIp:this.newdomainSimpleVo.destIP
+        dstIp:this.newdomainSimpleVo.destIP,
+        url:this.newdomainSimpleVo.url,
         // discoverTimeDTO: {
         //   startTime: this.whiteSearchList.startCreateTime,
         //   endTime: this.whiteSearchList.endCreateTime,
@@ -604,7 +608,22 @@ export default {
             }
             reader.readAsText(blob)
           } else {
-            let title = dayjs().format('YYYYMMDD') + '发现导出.xlsx'
+            const s_date = dayjs(this.newdomainSimpleVo.dateRange[0]).format('YYYYMMDD'), f_date = dayjs(this.newdomainSimpleVo.dateRange[1]).format('YYYYMMDD'), fraudType = this.newdomainSimpleVo.fraudType == null ? '' : this.newdomainSimpleVo.fraudType, destIP = this.newdomainSimpleVo.destIP== null ? '' : this.newdomainSimpleVo.destIP, u = this.newdomainSimpleVo.url== null ? '' : this.newdomainSimpleVo.url;
+            let title = s_date + '至' + f_date
+            if (fraudType !== '') {
+              title += '-' + fraudType;
+            }
+
+            if (destIP !== '') {
+              title += '-' + destIP;
+            }
+
+            if (u !== '') {
+              title += '-' + u;
+            }
+
+            title += '-发现导出.xlsx';
+            // let title = dayjs().format('YYYYMMDD') + '发现导出.xlsx'
             let binaryData = []
             binaryData.push(blob)
             let url = window.URL.createObjectURL(new Blob(binaryData), {
@@ -622,6 +641,7 @@ export default {
           }
         })
         .catch((err) => {
+          console.log(err);
           this.$message.error('文件下载失败！')
           this.loadingbuttext = '导出'
           this.loadingbut = false

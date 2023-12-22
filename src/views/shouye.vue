@@ -369,6 +369,7 @@ export default {
         // console.log(xAxisData);
         const seriesData = []
         let curMax, curInterval
+        console.log(dataArr);
         for (const key in dataArr) {
           if (Array.isArray(dataArr[key])) {
             const data = dataArr[key].map(item => item.cnt);
@@ -1240,12 +1241,12 @@ export default {
 }
 
 .classA {
-  color: rgba(0, 255, 243, 0.75);
+  color: rgba(0, 255, 255, 0.5);
   font-size: 20px
 }
 
 .classA:hover {
-  color: rgba(0, 255, 243);
+  color: rgba(0, 255, 255);
 }
 
 .daohang3 {

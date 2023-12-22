@@ -87,9 +87,14 @@ export default {
   },
   methods: {
     isActive(path){
-      // console.log(path)
-      // console.log('----------');
-      return path == this.$router.currentRoute.path
+      // console.log(path +'?=='+this.$router.currentRoute.path)
+      if(this.$router.currentRoute.path == '/findUser'&&path =='/dept'||this.$router.currentRoute.path == '/findRole'&&path =='/dept'){
+        // console.log('true');
+        return true
+      }else{
+        return path == this.$router.currentRoute.path
+      }
+      
     },
     dh() {
       let curRole = window.sessionStorage.getItem('role')
@@ -234,15 +239,20 @@ export default {
   border-bottom-color: #07e7e6;
 }
 .curClass{
-  color: rgba(0, 255, 243) !important;
+  color: rgba(226, 241, 255, 0.85) !important;
+  // color:  hsl(173, 100%, 80%) !important;
+  font-size: 22px !important
 }
 span .classA{
-  color:rgba(0, 255, 243, 0.75);
+  color:rgba(0, 255, 255, 0.75); // rgba(0, 255, 120)
+  // color: hsl(173, 30%, 95%);
   font-size: 20px 
 }
 span .classA:hover,
 span .classA:active {
-  color: rgba(0, 255, 243);
+  color: rgba(226, 241, 255, 0.85);
+  font-size: 22px !important
+  // color:  hsl(173, 100%, 80%);
 }
 .dianl {
   position: absolute;

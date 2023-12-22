@@ -1,7 +1,4 @@
 <template>
-  <!-- 长安发现 -->
-  <!-- 长安发现 -->
-  <!-- 长安发现 -->
   <div class="right_main_under">
     <Navlist style="transform: translate( 0,-0.08rem);"></Navlist>
 
@@ -32,7 +29,7 @@
           </el-form-item>
           <!-- 诈骗大类 -->
           <el-form-item label="诈骗类型">
-            <el-select v-model.trim="newdomainSimpleVo.fraudType" clearable placeholder="诈骗类型" style="width: 120px;">
+            <el-select v-model.trim="newdomainSimpleVo.fraudType" clearable placeholder="诈骗类型" style="width: 120px;" :disabled="isAPKDisabled">
               <el-option
                 v-for="item in newdomainSimpleVo.fraudTypeOptions"
                 :key="item.value"
@@ -42,9 +39,19 @@
             </el-select>
           </el-form-item>
           <el-form-item label="协议">
-            <el-select v-model.trim="newdomainSimpleVo.protocol" clearable placeholder="协议" class="el-input-width">
+            <el-select v-model.trim="newdomainSimpleVo.protocol" clearable placeholder="协议" class="el-input-width" :disabled="isAPKDisabled">
               <el-option
                 v-for="item in newdomainSimpleVo.protocolOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value">
+              </el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item label="数据分类">
+            <el-select v-model.trim="newdomainSimpleVo.dataType" placeholder="数据分类" class="el-input-width">
+              <el-option
+                v-for="item in newdomainSimpleVo.dataTypeOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value">
@@ -117,48 +124,95 @@
     <!-- //列表 -->
     <Err v-if="errFlag"></Err>
     <!-- <div class="list_xia"> -->
-    <el-table
-      :row-class-name="tableRowClassName"
-      :row-key="getRowKeys"
-      ref="multipleTable"
-      :data="tableData"
-      style="width: 100%"
-      :height="heights"
-      id="onetable"
-      size="mini"
-      class="tableStyle"
-      @selection-change="handleSelectionChange"
-    >
-    <el-table-column label="序号" type="index" width="70">
-        <template slot-scope="scope">
-          <span v-if="scope.row.url">
-            {{ scope.$index + 1 }}
-          </span>
-        </template>
-      </el-table-column>
-      <el-table-column label="域名" prop="url" width="200" show-overflow-tooltip></el-table-column>
-      <el-table-column label="诈骗类型"  min-width="170" prop="fraudType" show-overflow-tooltip></el-table-column>
-      <el-table-column label="协议" min-width="80" prop="protocol" show-overflow-tooltip> </el-table-column>
-      <el-table-column label="上传人" min-width="80" prop="uploader" show-overflow-tooltip> </el-table-column>
-      <el-table-column label="备注" min-width="170" prop="remark" show-overflow-tooltip> </el-table-column>
-    </el-table>
-
-    <!-- //分页 -->
-    <div class="bottom">
-      <div class="ss">
-        <el-pagination
-          @size-change="handleSizeChange"
-          @current-change="handleCurrentChange"
-          :current-page="mypageable.pageNum"
-          :page-sizes="[15, 30, 45]"
-          :page-size="mypageable.pageSize"
-          layout="total, prev, pager, next, jumper"
-          :total="total"
-          class="pagePagination pageRight"
+      <!-- 非APK表格 -->
+      <div v-if="isAPKtable">
+        <el-table
+          :row-class-name="tableRowClassName"
+          :row-key="getRowKeys"
+          ref="multipleTable"
+          :data="tableData"
+          style="width: 100%"
+          :height="heights"
+          id="onetable"
+          size="mini"
+          class="tableStyle"
+          @selection-change="handleSelectionChange"
         >
-        </el-pagination>
+        <el-table-column label="序号" type="index" width="70">
+            <template slot-scope="scope">
+              <span v-if="scope.row.createTime">
+                {{ scope.$index + 1 }}
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column label="上传时间" min-width="150" prop="createTime" show-overflow-tooltip> </el-table-column>
+          <!-- <el-table-column label="包名" prop="pkgName" min-width="100" show-overflow-tooltip></el-table-column> -->
+          <el-table-column label="apk名称"  min-width="170" prop="originName" show-overflow-tooltip></el-table-column>
+          <el-table-column label="文件大小" min-width="80" prop="fileSize" show-overflow-tooltip> </el-table-column>
+          <el-table-column label="上传人" min-width="100" prop="uploader" show-overflow-tooltip> </el-table-column>
+        </el-table>
+        <div class="bottom">
+          <div class="ss">
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="mypageable.pageNum"
+              :page-sizes="[15, 30, 45]"
+              :page-size="mypageable.pageSize"
+              layout="total, prev, pager, next, jumper"
+              :total="total"
+              class="pagePagination pageRight"
+            >
+            </el-pagination>
+          </div>
+        </div>
       </div>
-    </div>
+      <!-- APK表格 -->
+      <div v-else>
+        <el-table
+          :row-class-name="tableRowClassName"
+          :row-key="getRowKeys"
+          ref="multipleTable"
+          :data="apkTableData"
+          style="width: 100%"
+          :height="heights"
+          id="onetable"
+          size="mini"
+          class="tableStyle"
+          @selection-change="handleSelectionChange"
+        >
+        <el-table-column label="序号" type="index" width="70">
+            <template slot-scope="scope">
+              <span v-if="scope.row.url">
+                {{ scope.$index + 1 }}
+              </span>
+            </template>
+          </el-table-column>
+          <el-table-column label="域名" prop="url" width="200" show-overflow-tooltip></el-table-column>
+          <el-table-column label="诈骗类型"  min-width="170" prop="fraudType" show-overflow-tooltip></el-table-column>
+          <el-table-column label="协议" min-width="80" prop="protocol" show-overflow-tooltip> </el-table-column>
+          <el-table-column label="上传人" min-width="80" prop="uploader" show-overflow-tooltip> </el-table-column>
+          <el-table-column label="备注" min-width="170" prop="remark" show-overflow-tooltip> </el-table-column>
+        </el-table>
+
+        <!-- //分页 -->
+        <div class="bottom">
+          <div class="ss">
+            <el-pagination
+              @size-change="handleSizeChange"
+              @current-change="handleCurrentChange"
+              :current-page="mypageable.pageNum"
+              :page-sizes="[15, 30, 45]"
+              :page-size="mypageable.pageSize"
+              layout="total, prev, pager, next, jumper"
+              :total="total"
+              class="pagePagination pageRight"
+            >
+            </el-pagination>
+          </div>
+        </div>
+      </div>
+   
     <!-- </div> -->
 
     <!-- 截图 -->
@@ -251,6 +305,8 @@ export default {
   // inject: ["reload"],
   data() {
     return {
+      isAPKtable:false,  // 控制APK表格
+      isAPKDisabled:false,  // APK状态的“禁用”状态
       dialog:false,
       dialogInfo:{
           dialog_domain:null,
@@ -263,6 +319,11 @@ export default {
           dialog_Remark:[{ required: true, message: '请输入备注', trigger: 'blur' }],
         },
       newdomainSimpleVo: {
+        dataTypeOptions:[
+          {value:'recordWord',label:'笔录'},
+          {value:'classified',label:'分类'},
+          {value:'apk',label:'APK'}
+        ],
         protocolOptions:[],
         fraudTypeOptions:[],
         uploader:null,  //上传人
@@ -270,6 +331,7 @@ export default {
         //发现日期
         fraudType: null,   //涉诈类型
         protocol:null,   //协议
+        dataType:'recordWord'
 
       },
       mypageable: {
@@ -358,6 +420,7 @@ export default {
         //   visits: "100",
         // },
       ],
+      apkTableData: [],
       tableDatalist: [],
 
       newurl: '',
@@ -380,7 +443,20 @@ export default {
     this.getTabData()
   },
   methods: { 
-    
+    changeSelect(isAPK){
+      if(isAPK){
+        this.isAPKDisabled = true
+      }else{
+        this.isAPKDisabled = false
+      }
+    },
+    changeTable(isAPK){
+      if(isAPK){
+        this.isAPKtable = true
+      }else{
+        this.isAPKtable = false
+      }
+    },
     addDialog(){
       this.dialog = true
       this.dialogInfo.dialog_domain = null
@@ -447,7 +523,7 @@ export default {
     },
     //初始化获取数据
     async getTabData() {
-
+      // console.log(this.newdomainSimpleVo.dataType)
       let getlist = {
         startDay: this.newdomainSimpleVo.dateRange[0],
         endDay:this.newdomainSimpleVo.dateRange[1],
@@ -457,12 +533,33 @@ export default {
         pageSize: this.mypageable.pageSize,
         fraudType: this.newdomainSimpleVo.fraudType
       }
-      const { data: res } = await this.$http.get(
-        '/alarm/list',
-        {params:getlist}
-      )
+      let resAll
+      if(this.newdomainSimpleVo.dataType == 'recordWord'){
+        resAll = await this.$http.get(
+          '/alarm/list2',
+          {params:getlist}
+        )
+      }else if(this.newdomainSimpleVo.dataType == 'classified'){
+        resAll = await this.$http.get(
+          '/alarm/list',
+          {params:getlist}
+        )
+      }else if(this.newdomainSimpleVo.dataType == 'apk'){
+        resAll = await this.$http.get(
+          '/apk/list',
+          {params:{
+            startDay: this.newdomainSimpleVo.dateRange[0],
+            endDay:this.newdomainSimpleVo.dateRange[1],
+            uploader:this.newdomainSimpleVo.uploader,
+            page: this.mypageable.pageNum,
+            pageSize: this.mypageable.pageSize,
+          }}
+        )
+      }
+      let res = resAll.data
       if (res.code == 200) {
         // if(res.data.content.length>0){
+        this.apkTableData = res.dataList
         this.tableData = res.dataList
         let tableDataLength = this.tableData.length
         let timer = null
@@ -483,6 +580,13 @@ export default {
         }
         this.total = res.totalSum
         this.totalPages = res.totalPage // }else{ //   this.$message('无数据') // }
+        if(this.newdomainSimpleVo.dataType == 'apk'){
+          this.changeSelect(true)
+          this.changeTable(true)
+        }else{
+          this.changeSelect(false)
+          this.changeTable(false)
+        }
       }
     },
 
@@ -545,6 +649,7 @@ export default {
       this.newdomainSimpleVo.fraudType = null
       this.newdomainSimpleVo.protocol = null
       this.newdomainSimpleVo.uploader = null
+      this.newdomainSimpleVo.dataType = 'recordWord'
       this.newdomainSimpleVo.dateRange = [dayjs().subtract(1, 'month').format('YYYY-MM-DD'),dayjs().format('YYYY-MM-DD')]
         this.getTabData()
     },
@@ -559,7 +664,7 @@ export default {
       // 执行上传的逻辑
       const formData = new FormData();
       formData.append('file', file);
-
+      // formData.append('test', 'aaa');
       this.$http.post('/alarm/import', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
@@ -592,7 +697,6 @@ export default {
       const file = event.target.files[0];
       this.loadingbuttext3 = '...上传中'
       this.loadingbut3 = true
-      console.log('执行了handleFileChange2');
       // 执行上传的逻辑
       const formData = new FormData();
       formData.append('file', file);
@@ -605,9 +709,13 @@ export default {
       .then((res) => {
         if(res.data.code == 200){
           console.log(res)
-          this.$message(res.data.message);
+          // this.$message(res.data.message);
           this.loadingbuttext3 = 'APK上传'
           this.loadingbut3 = false
+          this.newdomainSimpleVo.dataType = 'apk'
+          this.getTabData()
+          this.changeSelect(true)
+          this.changeTable(true)
         }else{
           console.log(res)
           this.$message(res.data.message);
@@ -623,9 +731,11 @@ export default {
       });
     },
     apk_input(){
+      this.$refs.fileInput2.value = '';
       this.$refs.fileInput2.click();
     },
     little_input(){
+      this.$refs.fileInput1.value = '';
       this.$refs.fileInput1.click();
     },
     //下载   //文件流
@@ -1130,10 +1240,25 @@ export default {
       return str
     },
   },
+  watch:{
+    'newdomainSimpleVo.dataType':function(newVal){
+      if(newVal == 'apk'){
+        this.changeSelect(true)
+      }else{
+        this.changeSelect(false)
+      }
+    }
+  }
 }
 </script>
 
 <style  scoped lang='less'>
+/deep/.el-input.is-disabled  .el-input__inner {
+    background-color: #ffffff4f;
+    border-color: #65697233;
+    color: #03163b7d;
+    cursor: not-allowed;
+}
 // 按钮hover
 .right_main_under /deep/ .el-button-chaxun:focus,
 .right_main_under /deep/ .el-button-chaxun:hover {

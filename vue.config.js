@@ -17,7 +17,9 @@ module.exports = {
         // target:'https://10.8.0.105:8443', 
         // target:'http://10.8.0.5:8080',   //zx   admin   123446
         // target: 'http://10.8.0.5:8080',
-        target: 'http://192.168.20.41:8805',
+        target:'http://10.8.0.120:8805',
+        // target: 'http://192.168.20.41:8805',
+        
         ws: true,
         changeOrigin: true,
         secure: false, // 如果是https接口，需要配置这个参数

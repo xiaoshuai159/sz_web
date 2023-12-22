@@ -118,6 +118,14 @@
               </el-option>
             </el-select>
           </el-form-item>
+          <el-form-item label="域名">
+            <el-input v-model.trim="newdomainSimpleVo.url" placeholder="域名">
+            </el-input>
+          </el-form-item>
+          <el-form-item label="历史案发域名">
+            <el-input v-model.trim="newdomainSimpleVo.histCase" placeholder="历史案发域名">
+            </el-input>
+          </el-form-item>
           <el-form-item>
             <el-button
               class="el-button-daochu"
@@ -194,7 +202,19 @@
           label="域名"
           prop="url"
         ></el-table-column>
-
+        <el-table-column
+          width="140"
+          show-overflow-tooltip
+          label="历史案发域名"
+          prop="histCase"
+        >
+        <template slot-scope="scope">
+      <div class="domain-container">
+        <span class="domain-name">{{ formatDomainNames(scope.row.histCase) }}</span>
+        <el-button v-if="showCollapseButton(scope.row.histCase)" type="text" @click="showDialog(scope.row.histCase)">...</el-button>
+      </div>
+    </template>
+      </el-table-column>
         <el-table-column label="处置状态" prop="blockStatus" min-width="100" show-overflow-tooltip>
         </el-table-column>
 
@@ -233,7 +253,15 @@
         </el-table-column>
         
       </el-table>
-
+      <el-dialog title="全部域名" class="dialogInfo" width="35%" :visible.sync="dialogVisible" :max-height="dialogMaxHeight" :style="{ 'overflow-y': 'auto' }">
+        <ul>
+      <li v-for="domain in getDomainList(dialogContent)" :key="domain">{{ domain }}</li>
+    </ul>
+    <span slot="footer" class="dialog-footer">
+      <el-button type="primary" @click="dialogVisible = false" size="mini"
+          class="el-button-xitongerr">确定</el-button>
+    </span>
+  </el-dialog>
 
 
 
@@ -421,6 +449,9 @@
   export default {
     data() {
       return {
+        dialogVisible: false,
+        dialogContent:'',
+        dialogMaxHeight:'70vh',
         imgVisible:false,
         dialogImageUrl: "",
         heights: undefined,
@@ -459,8 +490,8 @@
             dayjs().subtract(1, 'month').format('YYYY-MM-DD'),
             dayjs().format('YYYY-MM-DD'),
           ], //诈骗时间
-
-
+          histCase:null,
+          url:null,
           photo: null, //手机号
           dateValue_find1: null, //图表时间
           unit: null, //推送单位
@@ -529,6 +560,40 @@
       this.getOptionsData()
     },
     methods: {
+      formatDomainNames(histCase) {
+        // console.log(histCase);
+        if (typeof histCase === 'string') {
+          const domainNames = histCase.split(',');
+          if (domainNames.length === 1) {
+            return domainNames[0];
+          } else {
+            return domainNames[0] + '';
+          }
+        } else {
+          return '';
+        }
+      
+    },
+    showCollapseButton(histCase) {
+      if (typeof histCase === 'string') {
+        const domainNames = histCase.split(',');
+        return domainNames.length > 1;
+      } else {
+        return false;
+      }
+    },
+    showDialog(histCase) {
+      if (typeof histCase === 'string') {
+        this.dialogContent = histCase;
+        this.dialogVisible = true;
+      }
+    },
+    getDomainList(content) {
+      if (typeof content === 'string') {
+        return content.split(',');
+      }
+      return [];
+    },
       async getOptionsData(){
         const promiseArr = Promise.all([await this.$http.get('/dict/protocol'),await this.$http.get('/dict/allFraudType'),await this.$http.get('/dict/rejectReason'),await this.$http.get('/dict/datasource'),await this.$http.get('/dict/blockStatus'),])
         promiseArr.then((successArr)=>{
@@ -609,7 +674,9 @@
           fraudType:this.newdomainSimpleVo.fraudType,
           protocol:this.newdomainSimpleVo.protocol,
           rejectReason:this.newdomainSimpleVo.rejectReason,
-          treatStatus:this.newdomainSimpleVo.treatStatus
+          treatStatus:this.newdomainSimpleVo.treatStatus,
+          url:this.newdomainSimpleVo.url,
+          histCase:this.newdomainSimpleVo.histCase
           // earlyGrade: this.newdomainSimpleVo.Status,
           // endFraudTime: this.whiteSearchList.endCreateTime,
   
@@ -646,8 +713,38 @@
               }
               reader.readAsText(blob)
             } else {
-              let title = dayjs().format('YYYYMMDD') + '-处置导出.xlsx'
-  
+              let s_date = dayjs(this.newdomainSimpleVo.dateValue_find[0]).format('YYYYMMDD'), f_date = dayjs(this.newdomainSimpleVo.dateValue_find[1]).format('YYYYMMDD'), fraudType = this.newdomainSimpleVo.fraudType == null ? '' : this.newdomainSimpleVo.fraudType, sourceType = this.newdomainSimpleVo.sourceType== null ? '' : this.newdomainSimpleVo.sourceType, protocol = this.newdomainSimpleVo.protocol== null ? '' : this.newdomainSimpleVo.protocol,rejectReason = this.newdomainSimpleVo.rejectReason== null ? '' : this.newdomainSimpleVo.rejectReason,u = this.newdomainSimpleVo.url== null ? '' : this.newdomainSimpleVo.url,histCase = this.newdomainSimpleVo.histCase==null?'':this.newdomainSimpleVo.histCase,treatStatus=this.newdomainSimpleVo.treatStatus==null?'':this.newdomainSimpleVo.treatStatus;
+              this.selectData.Reason.map((item)=>{
+                if(item.value == rejectReason) rejectReason = item.label
+              })
+              this.selectData.Status.map((item)=>{
+                if(item.value == treatStatus) treatStatus = item.label
+              })
+              // console.log(rejectReason);
+              // console.log(treatStatus);
+              let title = s_date + '至' + f_date
+              if (fraudType !== '') {
+                title += '-' + fraudType;
+              }
+              if (sourceType !== '') {
+                title += '-' + sourceType;
+              }
+              if (protocol !== '') {
+                title += '-' + protocol;
+              }
+              if (rejectReason !== '') {
+                title += '-' + rejectReason;
+              } 
+              if (treatStatus !== '') {
+                title += '-' + treatStatus;
+              }
+              if (u !== '') {
+                title += '-' + u;
+              }
+              if (histCase !== '') {
+                title += '-' + histCase;
+              }
+              title += '-处置导出.xlsx';
               let binaryData = []
               binaryData.push(blob)
               let url = window.URL.createObjectURL(new Blob(binaryData), {
@@ -693,6 +790,8 @@
           treatStatus:this.newdomainSimpleVo.treatStatus,
           protocol:this.newdomainSimpleVo.protocol,
           rejectReason:this.newdomainSimpleVo.rejectReason,
+          url:this.newdomainSimpleVo.url,
+          histCase:this.newdomainSimpleVo.histCase,
           page:this.mypageable.pageNo,
           pageSize:this.mypageable.pageSize
 
@@ -832,6 +931,8 @@
         this.newdomainSimpleVo.sourceType=null,
         this.newdomainSimpleVo.protocol=null,
         this.newdomainSimpleVo.rejectReason=null,
+        this.newdomainSimpleVo.url=null,
+        this.newdomainSimpleVo.histCase = null,
         this.newdomainSimpleVo.treatStatus=null,
         this.mypageable.pageNum = 1,
         this.mypageable.pageSize = 10
@@ -948,6 +1049,17 @@
   </script>
   
   <style scoped lang='less'>
+  
+  .domain-container {
+  display: flex;
+  align-items: center;
+}
+.domain-name {
+  overflow: hidden;
+  text-overflow:unset;
+  white-space: nowrap;
+  flex-grow: 1;
+}
   // 按钮hover
   .right_main_under /deep/ .el-button-chaxun:focus,
   .right_main_under /deep/ .el-button-chaxun:hover {
@@ -964,7 +1076,13 @@
     background: url(../assets/img/shouye/下载按钮.png) no-repeat;
     background-size: 100% 100%;
   }
-  
+  /deep/ .el-button-xitongerr:focus,
+ /deep/ .el-button-xitongerr:hover {
+  background: url(../assets/img/shouye/确定按钮.png) no-repeat;
+  background-size: cover;
+  border: none;
+  color: #25c0fd;
+}
   .el-table::before {
     height: 0;
     /* // 将高度修改为0 */
@@ -1132,6 +1250,15 @@
       padding-left: 10px;
     }
   }
+  .dialogInfo ul {
+  list-style: none; /* 去掉默认的列表样式 */
+}
+
+.dialogInfo li {
+  color: white; /* 文字颜色变为白色 */
+  font-size: 18px; /* 文字变大 */
+  padding-left: 15px; /* 设置左边距为20px */
+}
   .list_xia {
     padding-bottom: 20px;
     background-color: rgba(8, 38, 61, 0.6);

@@ -140,6 +140,14 @@ const routes = [
         component: () => import('../views/disposePage')
       },
       {
+        path: '/lzPage',
+        name: 'lzPage',
+        meta: {
+          title: '流转'
+        },
+        component: () => import('../views/lzPage')
+      },
+      {
         path: '/specialPage',
         name: 'specialPage',
         meta: {

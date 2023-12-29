@@ -231,6 +231,9 @@ export default {
         }, {
           name: '关联',
           path: '/relevancePage'
+        },{
+          name: '流转',
+          path: '/lzPage',
         },
         {
           name: '管理',

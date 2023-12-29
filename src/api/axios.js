@@ -3,7 +3,7 @@ import https from 'https'
 import router from '@/router' // 引入路由对象实例
 const baseUrl = '/platform'  // 打包之前 ， 添加此路径
 const instance = axios.create({
-  // baseURL:baseUrl,
+  baseURL:baseUrl,
   headers: { 'Content-Type': 'application/json' },
   //忽略证书
   httpsAgent: new https.Agent({  

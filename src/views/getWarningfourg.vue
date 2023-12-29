@@ -110,6 +110,38 @@
               class="el-button-daochu"
               type="primary"
               size="mini"
+              @click.native="selectOutput"
+              :loading="loadingbut8"
+              >{{ loadingbuttext8 }}</el-button
+            >
+            <!-- <el-button
+              class="el-button-daochu"
+              type="primary"
+              size="mini"
+              @click.native="apk_output"
+              :loading="loadingbut5"
+              >{{ loadingbuttext5 }}</el-button
+            >
+            <el-button
+              class="el-button-daochu"
+              type="primary"
+              size="mini"
+              @click.native="fl_output"
+              :loading="loadingbut6"
+              >{{ loadingbuttext6 }}</el-button
+            >
+            <el-button
+              class="el-button-daochu"
+              type="primary"
+              size="mini"
+              @click.native="bl_output"
+              :loading="loadingbut7"
+              >{{ loadingbuttext7 }}</el-button
+            > -->
+            <el-button
+              class="el-button-daochu"
+              type="primary"
+              size="mini"
               @click.native="addDialog"
               >新增</el-button
             >
@@ -349,6 +381,19 @@ export default {
       loadingbut2: false,
       loadingbuttext3: 'APK上传',
       loadingbut3: false,
+
+      // 原方法：导出分开了
+      loadingbuttext5: 'APK导出',
+      loadingbut5: false,
+      loadingbuttext6: '分类导出',
+      loadingbut6: false,
+      loadingbuttext7: '笔录导出',
+      loadingbut7: false,
+
+      // 修改后：三个导出合成一个，根据筛选框做判断
+      loadingbuttext8: '导出',
+      loadingbut8: false,
+
       loading: true,
       gridData: [
         // {
@@ -442,7 +487,20 @@ export default {
     this.yangshi()
     this.getTabData()
   },
-  methods: { 
+  methods: {
+    // 根据筛选条件选择调用哪个导出接口
+    selectOutput(){
+      if(this.newdomainSimpleVo.dataType == 'recordWord'){
+        console.log('导出笔录');
+        this.bl_output()
+      }else if(this.newdomainSimpleVo.dataType == 'classified'){
+        console.log('导出分类');
+        this.fl_output()
+      }else if(this.newdomainSimpleVo.dataType == 'apk'){
+        console.log('导出apk');
+        this.apk_output()
+      }
+    },
     changeSelect(isAPK){
       if(isAPK){
         this.isAPKDisabled = true
@@ -829,6 +887,161 @@ export default {
           this.$message.error('文件下载失败！',err)
           this.loadingbuttext4 = '分类模板'
           this.loadingbut4 = false
+        })
+      },
+          //下载   //文件流
+    async apk_output() {
+      this.loadingbuttext8 = '...下载中'
+      this.loadingbut8 = true
+      this.$http({
+        method: 'GET',
+        url: '/apk/export',
+        responseType: 'blob',
+        params: {
+          uploader:this.newdomainSimpleVo.uploader,
+          startDay:this.newdomainSimpleVo.dateRange[0],
+          endDay:this.newdomainSimpleVo.dateRange[1]
+        }
+      })
+        .then((res) => {
+          let that = this
+          let blob = res.data
+          if (blob.type == 'application/json') {
+            const reader = new FileReader()
+            reader.onload = function () {
+              that.$message('下载文件失败')
+              that.loadingbuttext8 = '导出'
+              that.loadingbut8 = false
+            }
+            reader.readAsText(blob)
+          } else {
+
+            let title = dayjs().format('YYYYMMDD') + 'APK导出.xlsx'
+
+            let binaryData = []
+            binaryData.push(blob)
+            let url = window.URL.createObjectURL(new Blob(binaryData), {
+              type: 'application/vnd.ms-excel',
+            })
+            const aLink = document.createElement('a')
+            aLink.href = url
+            aLink.setAttribute('download', title)
+            document.body.appendChild(aLink)
+            aLink.click()
+            this.loadingbuttext8 = '导出'
+            this.loadingbut8 = false
+            document.body.removeChild(aLink)
+            this.$message.success('下载成功！')
+          }
+        })
+        .catch((err) => {
+          this.$message.error('下载失败！',err)
+          this.loadingbuttext8 = '导出'
+          this.loadingbut8 = false
+        })
+      },
+    async fl_output() {
+      this.loadingbuttext8 = '...下载中'
+      this.loadingbut8 = true
+      this.$http({
+        method: 'GET',
+        url: '/alarm/export',
+        responseType: 'blob',
+        params: {
+          uploader:this.newdomainSimpleVo.uploader,
+          startDay:this.newdomainSimpleVo.dateRange[0],
+          endDay:this.newdomainSimpleVo.dateRange[1],
+          fraudType:this.newdomainSimpleVo.fraudType,
+          protocol:this.newdomainSimpleVo.protocol
+        }
+      })
+        .then((res) => {
+          let that = this
+          let blob = res.data
+          if (blob.type == 'application/json') {
+            const reader = new FileReader()
+            reader.onload = function () {
+              that.$message('下载文件失败')
+              that.loadingbuttext8 = '导出'
+              that.loadingbut8 = false
+            }
+            reader.readAsText(blob)
+          } else {
+
+            let title = dayjs().format('YYYYMMDD') + '分类导出.xlsx'
+
+            let binaryData = []
+            binaryData.push(blob)
+            let url = window.URL.createObjectURL(new Blob(binaryData), {
+              type: 'application/vnd.ms-excel',
+            })
+            const aLink = document.createElement('a')
+            aLink.href = url
+            aLink.setAttribute('download', title)
+            document.body.appendChild(aLink)
+            aLink.click()
+            this.loadingbuttext8 = '导出'
+            this.loadingbut8 = false
+            document.body.removeChild(aLink)
+            this.$message.success('下载成功！')
+          }
+        })
+        .catch((err) => {
+          this.$message.error('下载失败！',err)
+          this.loadingbuttext8 = '导出'
+          this.loadingbut8 = false
+        })
+      },
+      async bl_output() {
+        this.loadingbuttext8 = '...下载中'
+        this.loadingbut8 = true
+        this.$http({
+          method: 'GET',
+          url: '/alarm/export2',
+          responseType: 'blob',
+          params: {
+            uploader:this.newdomainSimpleVo.uploader,
+            startDay:this.newdomainSimpleVo.dateRange[0],
+            endDay:this.newdomainSimpleVo.dateRange[1],
+            fraudType:this.newdomainSimpleVo.fraudType,
+            protocol:this.newdomainSimpleVo.protocol
+          }
+        })
+        .then((res) => {
+          let that = this
+          let blob = res.data
+          if (blob.type == 'application/json') {
+            const reader = new FileReader()
+            reader.onload = function () {
+              that.$message('下载文件失败')
+              that.loadingbuttext8 = '导出'
+              that.loadingbut8 = false
+            }
+            reader.readAsText(blob)
+          } else {
+
+            let title = dayjs().format('YYYYMMDD') + '笔录导出.xlsx'
+
+            let binaryData = []
+            binaryData.push(blob)
+            let url = window.URL.createObjectURL(new Blob(binaryData), {
+              type: 'application/vnd.ms-excel',
+            })
+            const aLink = document.createElement('a')
+            aLink.href = url
+            aLink.setAttribute('download', title)
+            document.body.appendChild(aLink)
+            aLink.click()
+            this.loadingbuttext8 = '导出'
+            this.loadingbut8 = false
+            document.body.removeChild(aLink)
+            this.$message.success('下载成功！')
+          }
+        })
+        .catch((err) => {
+          this.$message.error('下载失败！',err)
+          this.loadingbuttext8 = '导出'
+          this.loadingbut8 = false
         })
       },
     //访问量

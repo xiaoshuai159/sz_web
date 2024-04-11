@@ -646,39 +646,6 @@ export default {
           this.loadingbuttext = '导出'
           this.loadingbut = false
         })
-
-      // const { data: res } = await this.$http.post(
-      //   '/discover/downloadDiscover',
-      //   getlist
-      // )
-
-      // if (res.code == 200) {
-      //   this.loadingbuttext = '导出'
-      //   this.loadingbut = false
-      //   let newurl = res.expandData.url
-      //   let eleLink = document.createElement('a')
-      //   eleLink.download = name
-      //   // const down = window.location.origin
-      //   // eleLink.href = "http://172.31.1.61:8080" + newurl;
-      //   // const down = window.location.origin
-      //   eleLink.href = newurl
-      //   // console.log(eleLink);
-      //   eleLink.click()
-      //   eleLink.remove()
-      //   this.$refs.multipleTable.clearSelection()
-      // } else {
-      //   this.$message(res.message)
-      // }
-      // }
-      //  else {
-      //   // this.$message('请勾选')
-      //   this.errFlag = true
-      //   clearTimeout(this.errFlagTimer)
-      //   this.errFlagTimer = setTimeout(() => {
-      //     this.errFlag = false
-      //   }, 2000)
-      //   // this.err
-      // }
     },
     //访问量
     // async fangwenl(val) {

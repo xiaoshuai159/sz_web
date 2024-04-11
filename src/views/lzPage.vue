@@ -159,6 +159,8 @@
         </el-table-column>
         <el-table-column label="处置时间" prop="blockTime" min-width="90" show-overflow-tooltip>
         </el-table-column>
+        <el-table-column label="上传时间" prop="uploadTime" min-width="90" show-overflow-tooltip>
+        </el-table-column>
         <el-table-column
           label="未处置原因"
           prop="rejectReason"
@@ -263,7 +265,13 @@
             show-overflow-tooltip
             label="同源域名"
             prop="url"
-          ></el-table-column>
+          >
+          <template slot-scope="scope">
+            <div class="clickable-cell" @click="tyymClick(scope.row.id)">
+              {{ scope.row.url }}
+            </div>
+          </template>
+        </el-table-column>
           <el-table-column label="诈骗类型" show-overflow-tooltip min-width="80">
             <template slot-scope="scope">
               <!-- {{ shuzu(scope.row.fraudType) }}
@@ -309,6 +317,10 @@
         <span><img :src="dialogImageUrl" alt="图片" width="100%"/></span>
         
       </el-dialog>
+      <el-dialog :visible.sync="tyymImgVisible">
+        <span><img :src="tyymDialogImageUrl" alt="图片" width="100%"/></span>
+        
+      </el-dialog>
       <el-dialog
         :close-on-click-modal="false"
         title="查看详情"
@@ -334,6 +346,8 @@
         dialogMaxHeight:'70vh',
         imgVisible:false,
         dialogImageUrl: "",
+        tyymImgVisible:false,
+        tyymDialogImageUrl: "",
         heights: undefined,
         tableDatalist: [],
         loadingbuttext: '导出',
@@ -435,12 +449,24 @@
     },
     mounted() {
       this.yangshi()
-      this.getTabData()
+      
     },
     created(){
       this.getOptionsData()
     },
     methods: {
+      tyymClick(val){
+        this.$http({
+          url:'/rd/snapshot',
+          method:'get',
+          responseType: 'blob',	
+          params:{ id:val }
+        }).then(res=>{
+          let url = window.URL.createObjectURL(res.data);
+          this.tyymDialogImageUrl = url
+          this.tyymImgVisible = true
+        })
+      },
       confirmDialog(){
         // console.log('执行取消函数了');
         this.dialogtableData = []
@@ -461,10 +487,7 @@
         }
       },
       async getdialogData(){
-        console.log(this.selectedTable);
-        console.log(this.mypageable.pageNo2);
-        console.log(this.selectedFeature);
-        console.log(this.dialogSelectedFeature);
+
         let getTabDataList;
         if(this.selectedTable == 'pageTable'){
           getTabDataList = {
@@ -529,10 +552,14 @@
                   this.selectData.Status.push({value:i, label:itemArr[i]})
                 }
               }
-              // console.log(this.selectData.Status);
+              this.newdomainSimpleVo.treatStatus = "BLOCKED"
+              console.log(this.selectData.Status);
+              this.getTabData()
               // itemArr!=null && itemArr.forEach(item=>this.selectData.Status.push({key:item, value:item}))
             }
-          })
+          },
+          
+          )
         })
         .catch(function(e){console.log(e)})
       },
@@ -680,12 +707,17 @@
           page:this.mypageable.pageNo,
           pageSize:this.mypageable.pageSize
         }
+        console.log(this.newdomainSimpleVo.treatStatus);
         const { data: res } = await this.$http.get(
           '/rd/list',
           {params:getTabDataList}
         )
         if (res.code == 200) {
           
+          if(res.dataList.length == 0){
+            this.$message('暂无结果')
+
+          }
           this.tableData = res.dataList
           let tableDataLength = this.tableData.length
           let timer = null
@@ -801,7 +833,8 @@
         this.newdomainSimpleVo.fraudType=null,
         this.newdomainSimpleVo.rejectReason=null,
         this.newdomainSimpleVo.url=null,
-        this.newdomainSimpleVo.treatStatus=null,
+        // this.newdomainSimpleVo.treatStatus=null,
+        this.newdomainSimpleVo.treatStatus = "BLOCKED",
         this.mypageable.pageNum = 1,
         this.mypageable.pageSize = 10
         this.getTabData()
@@ -905,14 +938,6 @@
           this.dialogImageUrl = url
           this.imgVisible = true
         })
-        // const res = await this.$http.get('/block/snapshot', {
-        //   params: {
-        //     id: val,
-        //   },
-        // })
-        // const blob = new Blob([res.data], { type: res.headers['content-type'] });
-        // this.dialogImageUrl = window.URL.createObjectURL(blob);
-        // this.imgVisible = true
       },
       handleClose1() {
         this.xiangqing = false

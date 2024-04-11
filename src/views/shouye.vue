@@ -51,7 +51,8 @@
     <div class="center2" >
 
       <div class="center2_left">
-        <div class="gsh3"><span>·</span> 处置统计</div>
+        <div class="gsh3"><span>·</span> 处置统计<span style="font-size: 12px;">（{{ czDate }}）</span></div>
+        <!-- <div style="float: right;transform: translate(-10px,-16px);font-size: 12px;">日期：<span>{{ czDate }}</span></div> -->
         <br>
         <div class="center2_left_test1">总处置数量</div>
         <div style="display: flex; font-size: 0.20rem;">
@@ -70,9 +71,9 @@
           <div class="picture_test4">{{ cur[2] }}</div>
           <div class="picture_test4">{{ cur[3] }}</div>
         </div>
-        <div class="center2_left_test3">日环比 {{ compareNum }}</div>
+        <!-- <div class="center2_left_test3">日环比 {{ compareNum }}</div>
         <img v-if="upOrDe==2" class="picture_test12" src="../assets/img/shouye/下降.png">
-        <img v-else-if="upOrDe==1" class="picture_test12" src="../assets/img/shouye/上升.png">
+        <img v-else-if="upOrDe==1" class="picture_test12" src="../assets/img/shouye/上升.png"> -->
       </div>
 
       <div class="center2_center">
@@ -92,7 +93,8 @@
 
 
     <div class="center3">
-      <div style="float: right;">
+      <!-- 4.10 暂时关闭 -->
+      <!-- <div style="float: right;">
           <el-date-picker
             style="transform: translate(-0.25rem,0.39rem); width: 200px; z-index: 99;"
             v-model="dateRange"
@@ -105,7 +107,7 @@
             size="mini"
           >
           </el-date-picker>
-        </div>
+        </div> -->
       <div class="center3_one">
         <div class="gsh3"><span>·</span> 处置涉诈类型分析</div>
         <div class="pos">
@@ -115,11 +117,12 @@
             <label :for="'checkbox_'+index" style="cursor: pointer;">{{ item }}</label><br>
           </div>
         </div>
-        <div style="position: fixed; display: inline-block; transform: translate(0.2rem,0); z-index: 99; color: aliceblue;">
+        <!-- 4.10 暂时关闭 -->
+        <!-- <div style="position: fixed; display: inline-block; transform: translate(0.2rem,0); z-index: 99; color: aliceblue;">
           <button :class="{ 'selected': mode === 'week' }" @click="mode = 'week'" class="transparent-button">星期</button>
           /
           <button :class="{ 'selected': mode === 'month' }" @click="mode = 'month'" class="transparent-button">月</button>
-        </div>
+        </div> -->
         
             <!-- :change="dataCreate_change(dateRange)" -->
         <div style="display: inline-block; margin-left: 15px; width: 85%; height: 71%;">
@@ -174,6 +177,7 @@ export default {
       }
     }
     return {
+      czDate:"",
       selectAll: true,
       selectedItems: [],
       items: [
@@ -228,10 +232,12 @@ export default {
         }, {
           name: '特办',
           path: '/specialPage'
-        }, {
-          name: '关联',
-          path: '/relevancePage'
-        },{
+        }, 
+        // {
+        //   name: '关联',
+        //   path: '/relevancePage'
+        // },
+        {
           name: '流转',
           path: '/lzPage',
         },
@@ -297,11 +303,50 @@ export default {
       }
       const {data:res} = await this.$http.get('/statistics/block/fraudTypeCntTrend',{params:reqData})
       if(res.code==200){
-        const data = res.data
+        let data = res.data
+        console.log(data);
+        data = {
+          alarm:[
+            {day:'2023-01',cnt:6243},
+            {day:'2023-02',cnt:8156},
+            {day:'2023-03',cnt:9704},
+            {day:'2023-04',cnt:10131},
+            {day:'2023-05',cnt:9567},
+            {day:'2023-06',cnt:8555},
+            {day:'2023-07',cnt:8660},
+            {day:'2023-08',cnt:7011},
+            {day:'2023-09',cnt:5861},
+            {day:'2023-10',cnt:6167},
+            {day:'2023-11',cnt:6124},
+            {day:'2023-12',cnt:5610},
+            {day:'2024-01',cnt:6018},
+            {day:'2024-02',cnt:3332},
+            {day:'2024-03',cnt:5539},
+          ],
+          block:[
+            // {day:'2023-01',cnt:0},
+            // {day:'2023-02',cnt:0},
+            // {day:'2023-03',cnt:0},
+            {day:'2023-04',cnt:26462},
+            {day:'2023-05',cnt:34347},
+            {day:'2023-06',cnt:44390},
+            {day:'2023-07',cnt:45841},
+            {day:'2023-08',cnt:45294},
+            {day:'2023-09',cnt:44079},
+            {day:'2023-10',cnt:44718},
+            {day:'2023-11',cnt:45684},
+            {day:'2023-12',cnt:46423},
+            {day:'2024-01',cnt:48512},
+            {day:'2024-02',cnt:35388},
+            {day:'2024-03',cnt:45517},
+          ]
+        }
+        // 4.10 写成假数据暂时关闭 start --------------
         const alarmDays = data.alarm.map(item => item.day);
         const blockDays = data.block.map(item => item.day);
         const days = [...new Set([...alarmDays, ...blockDays])].sort();
-        const xAxisData = days.map(day => day.slice(5));
+        // const xAxisData = days.map(day => day.slice(5));   // 4.10  暂时关闭
+        const xAxisData = days.map(day => day);
         const alarmData = [];
         const blockData = [];
         days.forEach(day => {
@@ -310,12 +355,19 @@ export default {
           alarmData.push(alarmItem ? alarmItem.cnt : 0);
           blockData.push(blockItem ? blockItem.cnt : 0);
         });
-        let curMax = Math.ceil(Math.max(...alarmData,...blockData)) 
-        let curInterval = Math.floor(curMax/7)
-        // console.log(xAxisData);
-        // console.log(alarmData);
-        // console.log(blockData);
-        this.drawlineChart(xAxisData,alarmData,blockData,curMax,curInterval)
+        let curMaxAlarmData = Math.ceil(Math.max(...alarmData));
+        curMaxAlarmData = 14000
+        let curMaxBlockData = Math.ceil(Math.max(...blockData));
+        
+        console.log(curIntervalAlarmData);
+        let curMinAlarmData = 3000;
+        let curMinBlockData = 0;
+        let curIntervalAlarmData = Math.floor(curMaxAlarmData/7);
+        let curIntervalBlockData = Math.floor(curMaxBlockData/7);
+        curIntervalAlarmData = 3000;
+        curIntervalBlockData = 10000;
+        // end --------------------------------
+        this.drawlineChart(xAxisData,alarmData,blockData,curMaxAlarmData,curMaxBlockData,curMinAlarmData,curMinBlockData,curIntervalAlarmData,curIntervalBlockData)
       }else{
         this.$message(res.message)
       }
@@ -325,7 +377,12 @@ export default {
     async getSimpleFraudType(){
       const {data:res} = await this.$http.get('/dict/simpleFraudType')
       if(res.code == 200){
+        if (res.data.includes("网络交友")) {
+          let index = res.data.indexOf("网络交友");
+          res.data.splice(index, 1);
+        }
         this.items = res.data
+
         this.selectedItems = new Array(this.items.length).fill(true)
       }else{
         this.$message(res.message)
@@ -372,11 +429,11 @@ export default {
         // console.log(xAxisData);
         const seriesData = []
         let curMax, curInterval
-        console.log(dataArr);
+        // console.log(dataArr);
         for (const key in dataArr) {
           if (Array.isArray(dataArr[key])) {
             const data = dataArr[key].map(item => item.cnt);
-            console.log(data);
+            // console.log(data);
             curMax = Math.ceil(Math.max(...data)) 
             curInterval = Math.ceil(curMax/5)
             const seriesItem = {
@@ -421,7 +478,8 @@ export default {
       const {data:res} = await this.$http.get('/statistics/block/intro')
       // console.log(res);
       if(res.code == 200){
-        let {qoq,todayCnt,totalCnt} = res.data
+        let {qoq,todayCnt,totalCnt,day} = res.data
+        this.czDate = day
         // console.log(qoq,todayCnt,totalCnt);
         parseInt(totalCnt) > 9999999 ? this.total = [9,9,9,9,9,9,9] : this.splitNum(totalCnt, 7)
         // console.log(this.total);
@@ -578,7 +636,16 @@ export default {
             normal: {
               textStyle: {
                 fontWeight: 'bold'  // 设置字体加粗
+              },
+            formatter: function(params) {
+              // 判断标签内容长度是否超过设定的阈值
+              if (params.name.length > 9) { // 你可以根据需要调整阈值
+                // 如果超过阈值，换行显示
+                return params.name.substring(0, 9) + '\n' + params.name.substring(9);
+              } else {
+                return params.name;
               }
+            }
             }
           }
           },
@@ -703,16 +770,18 @@ export default {
       return option
     },
 
-    drawlineChart(xAxisData,alarmData,blockData,curMax,curInterval) {
+    drawlineChart(xAxisData,alarmData,blockData,curMaxAlarmData,curMaxBlockData,curMinAlarmData,curMinBlockData,curIntervalAlarmData,curIntervalBlockData) {
       let line_qx = this.$refs.mylineChart
       let lineChart = this.$echarts.init(line_qx)
       window.addEventListener('resize', function () {
         lineChart.resize()
       })
       lineChart.clear()
-      lineChart.setOption(this.setOptionLine(xAxisData,alarmData,blockData,curMax,curInterval)) // 待完善：记得销毁echarts和resize
+      lineChart.setOption(this.setOptionLine(xAxisData,alarmData,blockData,curMaxAlarmData,curMaxBlockData,curMinAlarmData,curMinBlockData,curIntervalAlarmData,curIntervalBlockData)) // 待完善：记得销毁echarts和resize
     },
-    setOptionLine(xAxisData,alarmData,blockData,curMax,curInterval) {
+    setOptionLine(xAxisData,alarmData,blockData,curMaxAlarmData,curMaxBlockData,curMinAlarmData,curMinBlockData,curIntervalAlarmData,curIntervalBlockData) {
+      // console.log("curMaxAlarmData："+curMaxAlarmData);
+      // console.log("curMaxBlockData："+curMaxBlockData);
       let option = {
         tooltip: {
           trigger: 'axis',
@@ -751,9 +820,9 @@ export default {
           nameTextStyle: {
             color: '#fff' // 设置 Y 轴单位字的颜色
           },
-          interval: curInterval,
-          min: 0,
-          max: curMax,
+          interval: curIntervalBlockData,
+          min: curMinBlockData,
+          max: curMaxBlockData,
           axisLine: {
             lineStyle: {
               color: '#384e5e'
@@ -771,22 +840,25 @@ export default {
             lineStyle:{
               color:'#384e5e'
             }
+            // show: false
           }
         },
+        
         {
             type: 'value',
-            interval: curInterval,
-            min: 0,
-            max: curMax,
+            interval: curIntervalAlarmData,
+            min: curMinAlarmData,
+            max: curMaxAlarmData,
             axisLabel: {
               textStyle:{
                 color:'#d3cb16'  // y轴字颜色 
               }
             },
             splitLine: {
-              lineStyle:{
-                color:'#384e5e'
-              }
+              // lineStyle:{
+              //   color:'#384e5e'
+              // }
+              show: false
             }
           }
       ],
@@ -817,7 +889,8 @@ export default {
                   color: '#17acf0'
                 }
               }
-            }
+            },
+            yAxisIndex: 0 // 使用左侧的 y 轴
           },
 
           {
@@ -838,7 +911,8 @@ export default {
                   color: '#ecd456'
                 }
               }
-            }
+            },
+            yAxisIndex: 1 // 使用左侧的 y 轴
           }
 
         ]
@@ -1040,6 +1114,7 @@ export default {
 }
 
 .gsh3 {
+
   margin-top: 28px;
   margin-left: 28px;
   font-size: 20px;

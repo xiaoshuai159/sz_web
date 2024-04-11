@@ -41,10 +41,12 @@ export default {
         },{
           name: '特办',
           path: '/specialPage'
-        },{
-          name: '关联',
-          path: '/relevancePage'
-        },{
+        },
+        // {
+        //   name: '关联',
+        //   path: '/relevancePage'
+        // },
+        {
           name: '流转',
           path: '/lzPage',
         },
@@ -68,13 +70,16 @@ export default {
         },{
           name: '特办',
           path: '/specialPage'
-        },{
-          name: '关联',
-          path: '/relevancePage'
-        },{
+        },
+        // {
+        //   name: '关联',
+        //   path: '/relevancePage'
+        // },
+        {
           name: '流转',
           path: '/lzPage',
-        }],
+        }
+      ],
       namenav: '',
       navnumlist: [],
     }
